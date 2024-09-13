@@ -38,6 +38,7 @@ data](), *WP*.
 
 Packages needed:
 
+
 ``` r
 library(mapsf) # cartography
 library(maptiles) # import spatial contours
