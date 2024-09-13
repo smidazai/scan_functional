@@ -38,8 +38,6 @@ data](), *WP*.
 
 Packages needed:
 
-j12345
-
 ``` r
 library(mapsf) # cartography
 library(maptiles) # import spatial contours
@@ -59,6 +57,8 @@ The document is divided into three sections:
   `Simulations Study`,
 - the last part allows to reproduce the results presented in the section
   `Application to real data`.
+
+Data can be provided upon request.
 
 # 1 Functions created
 
@@ -305,11 +305,11 @@ functional data of the observations. Additional parameters may be used,
 like the minimum/maximum size of the cluster to be detected, the number
 of replications to be used to compute the significance, etc.
 
-For instance, to compute the four methods (“DFFSS”, “PFSS”, “NPFSS”,
-“HFSS”), the function `SpatialScan()` can be used like this:
+For instance, to compute the methods (“DFFSS”, “PFSS”, “NPFSS”), the
+function `SpatialScan()` can be used like this:
 
 ``` r
-fss_result <- HDSpatialScan::SpatialScan(c("NPFSS", "PFSS", "DFFSS", "Horvath"),
+fss_result <- HDSpatialScan::SpatialScan(c("NPFSS", "PFSS", "DFFSS"),
         t(X), sites_coord = matCoord, mini = 1, maxi = 49,
         system = "Euclidean", MC=99, typeI = 0.25)
 ```
