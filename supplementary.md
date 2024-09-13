@@ -38,7 +38,7 @@ data](), *WP*.
 
 Packages needed:
 
-j
+j1
 
 ``` r
 library(mapsf) # cartography
