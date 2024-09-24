@@ -749,7 +749,6 @@ temp <- X_aggregated %>%
   as.matrix()
 compute_h(my_pairs[[1]], my_pairs[[2]], temp, d = 3, plot_eigen = T)
 abline(h = 0.995, lty = 2, col = "red")
-if ()
   }
 }
 ```
