@@ -2032,7 +2032,7 @@ Preparation of the data:
 long_lat_temp <- my_grid[, c("long", "lat")] %>%
   filter(lat > -90, lat < 90, long > -180, long < 180) %>%
   arrange(lat, long)   %>%
-  select(long, lat)
+  dplyr::select(long, lat)
 df_sf_temp <- st_as_sf(long_lat_temp, coords = c("long", "lat"))
 st_crs(df_sf_temp) <- 4326
 all_cells <- df_sf_temp %>% 
