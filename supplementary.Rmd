@@ -640,7 +640,155 @@ From the significance and the detected clusters, we compute:
 * the percentage of True Positive,
 * the percentage of False Negative.
 
-For the Horvath/Hotelling method, for reasons of simplification, we fix the value of $d=5$ which leads to explain more or less $99\%$ of the variance. 
+For the HDFS method, based on the CPV criteria performed on a few simulations, we choose $K=3$ for the Exponential scenario and $K=5$ for the other scenarios.
+
+```{r, eval = F}
+# parameters of simulation 
+nobs <- nrow(Matcoord)
+npoints <- 100
+ndrop <- 100
+t.disc <- (1:(npoints)) / (npoints) # (1:(npoints+ndrop)) / (npoints+ndrop)
+
+vecclus <- c(74, 92, 91, 93, 77, 90, 94, 76)
+nclus <- length(vecclus)
+veccluster <- numeric(nobs)
+veccluster[vecclus] <- 1
+
+# restriction on the size of the cluster 
+mini <- 2 
+maxi <- trunc(nobs / 2)
+cluster_g1 <- my_pairs[[1]] 
+cluster_g2 <- my_pairs[[2]] 
+size_group <- sapply(cluster_g1, length)
+ind_restriction <- size_group >= mini & size_group <= maxi
+cluster_g1 <- cluster_g1[ind_restriction]
+cluster_g2 <- cluster_g2[ind_restriction] 
+# number of combinaison
+nb_combi <- length(cluster_g1)
+K_choice <- data.frame(
+  x = numeric(),
+  y = numeric(),
+  shift = character(),
+  proba = character(),
+  alpha = integer()
+)
+shift_levels <- levels(X_aggregated$shift)
+proba_levels <- levels(X_aggregated$proba)
+nsimu <- 10
+
+for(alpha in c(1, 5, 10)) {
+  for (shape in c("gauss", "student", "chisq", "exp")) {
+    for (type_shift in 2:4) {
+      cpv <- numeric(npoints)
+      # simulations 
+      i_simu <- 1
+      res_k <- numeric(nsimu)
+      while (i_simu <= nsimu) {
+        X <- matrix(0, npoints+ndrop, nobs)
+        for (k in 1:nobs) {
+          X[, k] <- simulvec(npoints+(ndrop-1), shape = shape) 
+          if(type_shift == 1) {
+            X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * (veccluster[k] == 1)
+            } else {
+              if (type_shift == 2) {
+                X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * t.disc * (veccluster[k] == 1)
+                } else {
+                  if (type_shift == 3) {
+                    X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * t.disc * (1 - t.disc) * (veccluster[k] == 1)
+                    } else {
+                      X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * exp(-100 * (t.disc - 0.5) ^ 2) / 3 * (veccluster[k] == 1)
+                    }
+                }
+            }
+        }
+        # drop first observation 
+        X <- X[-(1:ndrop), ]
+  
+        # initialization
+        npoints <- nrow(X)
+        my_dist <- as(dist(t(X)), "matrix")
+  
+        # observed stat
+        for (i in (1:nb_combi)) {
+          vecindin <- cluster_g1[[i]]
+          vecindout <- cluster_g2[[i]]
+    
+          nx <- length(vecindin)
+          ny <- length(vecindout)
+    
+          if(nx == 1) {
+            myX <- matrix(X[,vecindin], nrow(X), 1)
+            cov_1 <- matrix(0, npoints, npoints)
+            } else {
+              myX <- X[, vecindin]
+              cov_1 <- cov(t(myX)) 
+              }
+          if(ny == 1) {    
+            myY <- matrix(X[,vecindout], nrow(X), 1)
+            cov_2 <- matrix(0, npoints, npoints)
+            } else {
+              myY <- X[, vecindout]
+              cov_2 <- cov(t(myY)) # 
+            }
+          ##### Initi
+          D <- 1 / (nx + ny - 2) * ((nx - 1) * cov_1  +  (ny - 1) * cov_2)
+          D_hotelling <- (nx + ny) / (nx * ny) * D
+          
+          temp_svd <- eigen(D_hotelling)
+          tau_k <- temp_svd$values
+          cpv <- cpv + cumsum(tau_k) / sum(tau_k)
+        }
+        res_k[i_simu] <- which(cpv / nb_combi > seuil)[1]
+        i_simu <- i_simu + 1
+      } 
+      K_choice <- rbind(K_choice,
+                        data.frame(
+                          x = 1:15,
+                          y = cpv[1:15] / (nsimu * nb_combi),
+                          shift = type_shift,
+                          proba = shape,
+                          alpha = alpha)
+                        )
+    }
+  }
+}
+K_choice$shift <- factor(K_choice$shift) 
+levels(K_choice$shift) = c(`2` = TeX("$\\Delta_1(t)$"), 
+                               `3` = TeX("$\\Delta_2(t)$"), 
+                               `4` = TeX("$\\Delta_3(t)$"))
+
+K_choice$proba <- factor(K_choice$proba, levels = c("gauss", "student", "exp", "chisq"))
+levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
+                            `student` = TeX("$t(4)$"),
+                            `exp` = TeX("$Exp(4)$"),
+                            `chisq` = TeX("$\\chi^2(4)$"))
+save(K_choice, file = "results/K_choice.RData")
+```
+
+
+```{r}
+load("results/K_choice.RData")
+my_plot <- vector("list", 3)
+my_alpha <- c(1, 5, 10)
+for(k in 1:3) {
+  my_plot[[k]] <- K_choice %>%
+    filter(alpha == my_alpha[k]) %>%
+    ggplot(aes(x = x, y = y)) +
+    geom_line() +
+    geom_point(size = 0.5) +
+    theme_bw() +
+    theme(strip.background = element_rect(color = "black", fill = alpha("#EE9E94", 0.1))) +
+    facet_grid(rows=vars(proba),
+               cols=vars(shift),
+               labeller=label_parsed,
+               scales = "free") +
+    xlab("Eigen Values") +
+    ylab(TeX("Average of $\\bar{CPV}$"))
+}
+cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], nrow = 1,
+          labels =   c("a)", "b)", "c)", "d)")) # c(TeX("$\\alpha$"), TeX("$\\alpha$"), TeX("$\\alpha$")))
+ggsave("figures/choice_K.pdf", width = 20, height = 10)
+```
 
 The codes used are given in the files [batch_cluster_size_8.R](codes/batch_cluster_size_8.R), by using the functions in [functions_to_cluster.R](codes/functions_to_cluster.R).
 
@@ -670,6 +818,15 @@ for(k in 1:nrow(parms_df)) {
 power_to_plot$method <- c("DFFSS", "PFSS", "NPFSS", "hotelling_1", "hotelling_2", 
                           "hotelling_3", "hotelling_4", "HFSS", "hotelling_10", 
                           "hotelling_15")
+
+# Alternatives: change K = 5 by K = 3 for Exp
+#power_to_plot$method <- ifelse(power_to_plot$method == "hotelling_3" & 
+#                               power_to_plot$shape == "exp", "HFSS", 
+#                               power_to_plot$method)
+#power_to_plot$method <- ifelse(power_to_plot$method == "hotelling_5" & 
+#                               power_to_plot$shape != "exp", "HFSS", 
+#                               power_to_plot$method)
+
 FP_to_plot <- TP_to_plot <- power_to_plot
 
 for(k in 1:length(res_par_1)) {
@@ -728,29 +885,9 @@ levels(to_plot$shape) <- c(`gauss` = TeX("$N(0,1)$"),
                                 `student` = TeX("$t(4)$"), 
                                 `exp` = TeX("$Exp(4)$"),
                                 `chisq` = TeX("$\\chi^2(4)$"))
-to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS"))
-```
-
-### Choice of $K$
-
-```{r}
-shift_levels <- levels(X_aggregated$shift)
-proba_levels <- levels(X_aggregated$proba)
-par(oma = c(0, 0, 0, 0), mar = c(3.5, 3, 1, 1),  mfrow = c(4, 3),
-        mgp = c(2, 1, 0), las = 1)
-for (i in 1:length(shift_levels)) {
-  for (j in 1:length(proba_levels)) {
-temp <- X_aggregated %>%
-  filter(shift == shift_levels[i], proba == proba_levels[j]) %>%
-  select(y, id) %>% 
-  mutate(id = paste0("obs_", id)) %>%
-  pivot_wider(names_from = 2, values_from = 1, values_fn = list) |> 
-              unnest(cols = everything() ) %>%
-  as.matrix()
-compute_h(my_pairs[[1]], my_pairs[[2]], temp, d = 3, plot_eigen = T)
-abline(h = 0.995, lty = 2, col = "red")
-  }
-}
+to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS",
+                                           "hotelling_1", "hotelling_2", "hotelling_3", "hotelling_4",
+                                           "hotelling_5", "hotelling_10", "hotelling_15"))
 ```
 
 
