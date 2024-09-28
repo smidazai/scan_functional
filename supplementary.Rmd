@@ -1,6 +1,6 @@
 ---
 title: "Supplementary material of the paper: ``A new parametric spatial scan statistic for functional data: application to climate change data''"
-author: "Zaineb Smida and Thibault Laurent"
+author: "Zaineb Smida, Thibault Laurent, Lionel Cucala"
 date: "Last update: `r Sys.Date()`"
 header-includes:
 - \usepackage{booktabs}
@@ -24,7 +24,7 @@ options(kableExtra.latex.load_packages = FALSE)
 
 This document presents the **R** codes used to obtain the computational results included in the paper "A new parametric spatial scan statistic for functional data: application to climate change data". To cite this work, please use:
 
-Zaineb Smida and Thibault Laurent (2024). [A Hotelling spatial scan statistic for functional data: application to economic and climate data](), *WP*.
+Zaineb Smida, Thibault Laurent and Lionel Cucala (2024). [A Hotelling spatial scan statistic for functional data: application to economic and climate data](), *WP*.
 
 Packages needed:
 
@@ -139,10 +139,10 @@ matplot(X, type = "l", lty = 1, col ="grey")
 
 ## Detect all potential clusters
 
-The function `find_all_cluster()` takes as argument the matrix of Cartesian coordinates and returns all potential clusters. It returns a list of size 2. The first element is a list with all the potential clusters and the second element is a list with the complement of the potential clusters. 
+The `find_all_cluster()` function takes as argument the matrix of Cartesian coordinates and returns all potential clusters. The output is a list of two elements: the first element contains a list of all potential clusters, while the second element contains a list of their corresponding complements.
 
-If the geographical coordinates are given in Longitude/Latitude, we recommend the user to transform them in an appropriate Coordinate Reference System (see, for instance, https://epsg.io), using package **sf**.  
- 
+If the geographical coordinates are provided in Longitude/Latitude format, we recommend converting them to an appropriate Coordinate Reference System (CRS). For guidance, you can refer to https://epsg.io and use the `sf` package for the transformation.
+
 ```{r}
 find_all_cluster <- function (Matcoord) {
   n <- nrow(Matcoord)
@@ -196,18 +196,18 @@ matCoord <- cbind(runif(nobs), runif(nobs))
 plot(matCoord, xlab = "x", ylab = "y", asp = 1)
 ```
 
-We compute all potentially spatial clusters:
+We identify all potential spatial clusters.
 
 ```{r}
 my_pairs_ex <- find_all_cluster(matCoord)
 ```
 
-**Remark**: once the potential clusters have been identified, this allows us to test 1644 combinations instead of $50\times 49=2450$.
+**Remark**: Once the potential clusters are identified, this reduces the number of combinations to test from 2450 ($50 \times 49$) to 1644.
 
 
 ## Representation of a circle in a map
 
-The function `draw.circle()` returns the coordinates of a circle of radius `radius` and centered around coordinates `x` and `y`:
+The `draw.circle()` function returns the coordinates of a circle of radius `radius` and centered at the coordinates `x` and `y`:
 
 ```{r}
 draw.circle <- function (x, y, radius, nv = 100) {
@@ -222,7 +222,7 @@ draw.circle <- function (x, y, radius, nv = 100) {
 }
 ```
 
-**Example**: we consider a fictitious cluster $C$ of size eight in the data created previously. The cluster is centered around the observation 50 and contains the eight closest observations to observation 50. The radius of the cluster is the distance between the observation 50 and the last observation in the cluster (observation 13).  
+**Example**: We consider a hypothetical cluster, $C$, consisting of eight observations from the previously generated data. The cluster is centered around observation 50 and includes the eight closest observations to it. The radius of the cluster is defined as the distance between observation 50 and the farthest observation within the cluster (observation 13).
 
 ```{r}
 my_cluster <- c(50, 9, 15, 8, 43, 17, 32, 13)
@@ -238,7 +238,7 @@ temp_plot <- draw.circle(matCoord[50, 1], matCoord[50, 2],
 lines(temp_plot, col = "red")
 ```
 
-For the rest of this section, we modify the functional data of the fictitious cluster. We apply a shift $\Delta_2(t)=ct(1-t)$, with $c=2$. We aim to detect the cluster by using several methods. 
+For the remainder of this section, we modify the functional data of the hypothetical cluster. We apply a shift $\Delta_2(t) = \alpha t(1 - t)$, with $\alpha = 2$. Our goal is to detect the cluster using various methods.
 
 ```{r}
 t.disc <- (1:75) / (75)
@@ -260,9 +260,9 @@ lines(temp_plot, col = "red")
 
 ## Package HDSpatialScan
 
-The function `SpatialScan()` from package `HDSpatialScan` (Frévent et al, 2021) can be used to compute various methods. It takes as main arguments the name(s) of the method, the spatial coordinates and the functional data of the observations. Additional parameters may be used, like the minimum/maximum size of the cluster to be detected, the number of replications to be used to compute the significance, etc. 
+The `SpatialScan()` function from the `HDSpatialScan` package (Frévent et al., 2021) can be used to compute various methods. Its main arguments include a vector of method names, the spatial coordinates, and the functional data of the observations. Additional parameters can also be specified, such as the minimum and maximum cluster sizes to be detected, the number of replications for significance testing, and more.
 
-For instance, to compute the methods ("DFFSS", "PFSS", "NPFSS"), the function `SpatialScan()` can be used like this:  
+For example, to compute the methods ("DFFSS", "PFSS", "NPFSS"), the `SpatialScan()` function can be used as follows:
  
 ```{r, eval = F}
 fss_result <- HDSpatialScan::SpatialScan(c("NPFSS", "PFSS", "DFFSS"),
@@ -275,7 +275,7 @@ For practical reasons, we implement our own functions and use them in our simula
 ## Functions for Scan Statistic 
 
 We implement the functions `compute_np()`, `compute_p()`, `compute_dffss()` and 
-`compute_h()`, that correspond to the four methods "NPFSS", "PFSS", "DFFSS", "HFSS". Each function takes as argument the list of the possible cluster `c1` (resp. the complement of the possible cluster `c2`) and the functional data `my_mat`. They return the value of the test statistic that was the largest among all the possible combination. They also return the associated cluster. The functions used are available in the file [functions_to_cluster.R](functions_to_cluster.R)  
+`compute_h()`, which correspond to the four methods "NPFSS", "PFSS", "DFFSS", and "HFSS", respectively. Each function takes as arguments the list of potential clusters `c1` (and, correspondingly, the complement of the potential clusters `c2`) and the functional data `my_mat`. They return the highest test statistic value found across all possible combinations, along with the associated cluster. These functions are available in the file [functions_to_cluster.R](functions_to_cluster.R)  
 
 ```{r}
 source("codes/functions_to_cluster.R")
@@ -284,14 +284,14 @@ source("codes/functions_to_cluster.R")
 
 ### Non Parametric NPFSS method
 
-To compute the result of the NPFSS method, we use the function `compute_np()`. We obtain the following value of statistic and associated cluster. 
+To compute the result for the NPFSS method, we use the `compute_np()` function. This yields the following test statistic and associated cluster.
 
 ```{r}
 res_np <- compute_np(my_pairs_ex[[1]], my_pairs_ex[[2]], X)
 res_np
 ```
 
-The detected cluster contains `r length(res_np$vec)` observations. To compute the significance, we make $B$ permutations on the data and compute the number of times the scan statistic is lower than the observed one: 
+The detected cluster contains `r length(res_np$vec)` observations. To assess significance, we perform $B$ permutations on the data and count how many times the scan statistic is less than the observed value.
 
 ```{r, eval = F}
 p_value_np <- 0
@@ -313,19 +313,18 @@ cat("p-value:  0.33")
 ```
 
 
-In this example, the cluster detected by the method NPFSS is not significant.
+In this example, the cluster detected by the NPFSS method is not significant.
 
 
 ### Parametric PFSS
 
-To compute the result of the PFSS method, we use the function `compute_p()`. 
+To obtain the result for the PFSS method, we use the `compute_p()` function.
 
 ```{r}
 res_p <- compute_p(my_pairs_ex[[1]], my_pairs_ex[[2]], X)
 res_p
 ```
-
-The cluster detected contains `r length(res_p$vec)` observations. To compute the significance, we make $B$ permutations on the data and compute the number of times the scan statistic is lower than the observed one: 
+The detected cluster contains `r length(res_p$vec)` observations. To assess significance, we perform $B$ permutations on the data and count the number of times the scan statistic is less than the observed value.
 
 ```{r, eval = F}
 p_value_p <- 0
@@ -346,18 +345,18 @@ p_value_p / 100
 cat("p-value:  0.03")
 ```
 
-The detected cluster is significant. Among the `r length(res_p$vec)` observations, `r length(intersect(res_p$vec, my_cluster))` belongs to the real cluster. 
+The detected cluster is significant. Among the `r length(res_p$vec)` observations, `r length(intersect(res_p$vec, my_cluster))` belong to the real cluster. 
 
 ### Method DFFSS
 
-To compute the result of the DFFSS method, we use the function `compute_dffss()`. 
+To obtain the result for the DFFSS method, we use the `compute_dffss()` function.
 
 ```{r}
 res_dffss <- compute_dffss(my_pairs_ex[[1]], my_pairs_ex[[2]], X)
 res_dffss
 ```
 
-The detected cluster contains `r length(res_dffss$vec)` observations. To compute the significance, we make $B$ permutations on the data and compute the number of times the scan statistic is lower than the observed one: 
+The detected cluster contains `r length(res_dffss$vec)` observations. To assess significance, we perform $B$ permutations on the data and count how many times the scan statistic is less than the observed value.
 
 ```{r, eval = F}
 p_value_dffss <- 0
@@ -379,35 +378,31 @@ p_value_dffss / 100
 cat("p-value:  0.03")
 ```
 
-The detected cluster is significant. Among the `r length(res_dffss$vec)` observations, `r length(intersect(res_dffss$vec, my_cluster))` belongs to the real cluster. 
-
-### Method Horvath/Hotelling
-
-To compute the result of the Horvath/Hotelling method, we use the function `compute_h()`. An additional argument allows to select the value of $d$, corresponding to the number of eigen vectors in the formula $\displaystyle\sum_{k=1}^d\frac{a_k^2}{\lambda_k}$. 
-
-The choice of $d$ has a strong role on the result. For instance, if $d$ equals the number of measurements (i.e. 75 in our example), we remark that the statistic test is abnormally huge and the detected cluster contains only one observation  (which is a False Positive). 
-
-This is due to numerical precision errors obtained for the small eigen values. Indeed, when $k$ becomes large, we divide a term very small (and sometimes even negative like in the order of $-10^{-16}$) by another term also very small. In that case, the numerical precision errors explain why we obtain a result that can tend to +/- infinity.    
+The detected cluster is significant. Among the `r length(res_dffss$vec)` observations, `r length(intersect(res_dffss$vec, my_cluster))` are part of the actual cluster.
 
 
-One solution proposed for choosing the value $d$ is to use the cumulative percentage of total variance (CPV) criteria (see for instance, Joseph, Galeano and Lilo, 2015. The CPV is defined as follow : $CPV(k)=\frac{\displaystyle\sum_{j=1}^k\lambda_j}{\displaystyle\sum_{j=1}^{npoints}\lambda_j}$. Then, we select the value of $d$ as the value of $k$ from which the function CPV grows very slowly to 1.
+### Method HFSS
 
-The argument `plot_eigen` allows to plot CPV of the function `compute_h()`. Here, we recommend choosing $d=5$ which leads to explain more than $99.8\%$. 
+To obtain the result for the HFSS method, we use the `compute_h()` function. An additional argument allows for the selection of the optimal $K$.
 
-**Example** when $d=npoints$:
+The `plot_eigen` argument enables the plotting of the CPV function. In this example, we recommend choosing 
+$K=5$.
+
+
+**Example**:
 ```{r, fig.width = 6, fig.height = 3}
-res_h <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], X, d = npoints,
+res_h <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], X, npoints,
                            plot_eigen = T)
 res_h
 ```
 
-**Example** when $d=5$:
+**Example** when $K=5$:
 ```{r}
-res_h <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], X, d = 5)
+res_h <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], X, 5)
 res_h
 ```
 
-To compute the significance, we make $B$ permutations on the data and compute the number of times the scan statistic is lower than the observed one: 
+To assess significance, we perform $B$ permutations on the data and count how many times the scan statistic is less than the observed value.
 
 ```{r, eval = F}
 p_value_h <- 0
@@ -429,18 +424,16 @@ p_value_h / 100
 cat("p-value:  0.02")
 ```
 
-The detected cluster is significant. Among the `r length(res_h$vec)` observations, `r length(intersect(res_h$vec, my_cluster))` belongs to the real cluster.
+The detected cluster is significant. Among the `r length(res_h$vec)` observations, `r length(intersect(res_h$vec, my_cluster))` are part of the actual cluster.
 
-
-**Improving computational time**: if `plot_eigen=T`, the spectral decomposition of the covariance matrix is done with the function `eigen()`. It means that all the eigen values/eigen vectors are computed. If `plot_eigen=F`, we use the function `eigs_sym()` from package **rARPACK** that allows to compute only the $d$ first eigen values/eigen vectors. It improves the computation time by a factor 3. 
-
+**Improving Computational Time**: If `plot_eigen = TRUE`, the spectral decomposition of the covariance matrix is performed using the `eigen()` function, which computes all eigenvalues and eigenvectors. Conversely, if `plot_eigen = FALSE`, we utilize the `eigs_sym()` function from the `rARPACK` package, which computes only the first $K$ eigenvalues and eigenvectors. This approach improves computation time by a factor of 3.
 
 
 # Simulation part
 
 ## The spatial data
 
-We import first the contours of the French departments:
+First, we import the contours of the French departments:
 
 ```{r, warning = F, message = F}
 dep <- read_sf("data/departements.geojson")
@@ -451,7 +444,7 @@ nc_osm <- get_tiles(dep, provider = "Esri.WorldShadedRelief",
                       zoom = 7, crop = T)
 ```
 
-Then, we compute the Cartesian coordinates of the centroids of the departments in the official French Coordinates Reference System (CRS 2154), such that the distances between locations are computed in meters.
+Next, we compute the Cartesian coordinates of the centroids of the departments in the official French Coordinate Reference System (CRS 2154), ensuring that distances between locations are measured in meters.
 
 ```{r, warning = F, message = F}
 my_proj <- 2154
@@ -460,7 +453,7 @@ Matcoord <- st_coordinates(st_centroid(dep_proj))
 dist_proj <- as(dist(Matcoord), "matrix")
 ```
 
-We show the departments located around the city of Paris (74, 92, 91, 93, 77, 90, 94, 76) that will be simulated differently from the rest of the departments, such that they represent the cluster we would like to detect.
+We highlight the departments surrounding the city of Paris (74, 92, 91, 93, 77, 90, 94, 76), which will be simulated differently from the other departments to represent the cluster we aim to detect.
 
 ```{r, warning = F, message = F}
 cols = c("#D35C79", "#009593")
@@ -472,7 +465,7 @@ col_geo[vecclus] <- alpha(cols[1], 0.8)
 ```
 
 ```{r, warning = F, message = F}
-#pdf("figures/french_cluster.pdf", width = 7, height = 7)
+pdf("figures/french_cluster.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 plot_tiles(nc_osm, adjust = T)
 mf_shadow(st_geometry(st_union(dep[vecclus, ])), add = T, cex = 0.5)
@@ -482,16 +475,16 @@ plot(st_geometry(my_region), add = T, lwd = 0.5)
 #text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "A)", pos = 4, cex = 2)
-#dev.off()
+dev.off()
 ```
 
 ## The different shifts/probabilistic models
 
 We consider three types of shift:
 
-* $\Delta_1(t)=ct$,
-* $\Delta_2(t)=ct(1-t)$,
-* $\Delta_3(t)=c\exp(-100(t-0.5)^2)/3$,
+* $\Delta_1(t)=\alpha t$,
+* $\Delta_2(t)=\alpha  t(1-t)$,
+* $\Delta_3(t)=\alpha  \exp(-100(t-0.5)^2)/3$,
 
 and four different probabilistic models $Z_{i,k}/\sigma_k$:
 
@@ -500,7 +493,7 @@ and four different probabilistic models $Z_{i,k}/\sigma_k$:
 * a Chi $\chi^2(4)$
 * an Exponential $e(4)$
 
-with $i=1,\ldots,94$ and $t=1,\ldots,200$. The first 100 simulations are not kept to give time for the process to converge. For each combination shift/probabilistic, we consider different values of $c$. 
+with $i=1,\ldots,94$ and $t=1,\ldots,200$. The first 100 simulations are discarded to allow the process to converge. For each combination of shift and probabilistic method, we consider different values of $\alpha$.
 
 ```{r}
 nobs <- nrow(Matcoord)
@@ -512,7 +505,7 @@ veccluster[vecclus] <- 1
 ```
 
   
-For $c=3$, we plot an example of simulations for each of the combination shift/probabilistic model:   
+For $\alpha=3$, we plot an example of simulations for each combination of shift and probabilistic model:
 
 ```{r}
 alpha <- 10
@@ -570,9 +563,6 @@ levels(X_aggregated$proba) <- c(`gauss` = TeX("$N(0,1)$"),
                                 `chisq` = TeX("$\\chi^2(4)$"))
 ```
 
-* $\Delta_1(t)=ct$,
-* $\Delta_2(t)=ct(1-t)$,
-* $\Delta_3(t)=c\exp(-100(t-0.5)^2)/3$,
 
 ```{r}
 temp <- X_aggregated[order(as.numeric(X_aggregated$Cluster), X_aggregated$id),]
@@ -593,7 +583,7 @@ ggsave("figures/simu.pdf", width = 10, height = 8)
 
 ## Results
 
-We used a server with 94 cores and launched on each core a unique parameter set shift/probabilistic model/value of $c$. The computation time was around 7 days. We repeated the following procedure on each core:
+We utilized a server with 94 cores, launching a unique parameter set for each core, comprising the shift, probabilistic model, and value of $\alpha$. The computation time was approximately 7 days. We repeated the following procedure on each core:
 
 ```{r}
 parms_df <- rbind(
@@ -628,19 +618,23 @@ parms_df <- rbind(
 )
 ```
 
-Repeat 200 times:
+Repeat the following procedure 200 times:
 
-* simulate a set of functional data (with a shift on the Paris region),
-* compute the scan statistic for the following methods: "HFSS", "PFSS", "NPFSS", "DFFSS", 
-* draw 199 permutation samples, and compute the scan statistics on each of them to obtain significance.
+* Simulate a set of functional data (with a shift in the Paris region).
+* Compute the scan statistics for the methods: "HFSS," "PFSS," "NPFSS," and "DFFSS."
+* Generate 199 permutation samples and compute the scan statistics for each to assess significance.
 
-From the significance and the detected clusters, we compute:
+Based on the significance results and the detected clusters, we calculate:
 
-* the power,
-* the percentage of True Positive,
-* the percentage of False Negative.
+* The power,
+* The percentage of true positives,
+* The percentage of false negatives.
 
-For the HDFS method, based on the CPV criteria performed on a few simulations, we choose $K=3$ for the Exponential scenario and $K=5$ for the other scenarios.
+### Choice of the optimal $K$
+
+For the HDFS method, we use the Cumulative Proportion of Variance (CPV) criterion to determine the optimal $K$.
+
+Empirically, we generate CPV curves for several simulations across different values of $\alpha$, the three shifts, and the four probabilistic models.
 
 ```{r, eval = F}
 # parameters of simulation 
@@ -676,7 +670,8 @@ shift_levels <- levels(X_aggregated$shift)
 proba_levels <- levels(X_aggregated$proba)
 nsimu <- 10
 
-for(alpha in c(1, 5, 10)) {
+for(alpha in c(1, 3, 5, 10)) {
+  print(alpha)
   for (shape in c("gauss", "student", "chisq", "exp")) {
     for (type_shift in 2:4) {
       cpv <- numeric(npoints)
@@ -762,15 +757,29 @@ levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
                             `student` = TeX("$t(4)$"),
                             `exp` = TeX("$Exp(4)$"),
                             `chisq` = TeX("$\\chi^2(4)$"))
+shift <- rep(rep(c("delta_1", "delta_2", "delta_3"), each = 15), times = 16)
+K_choice$shift <- shift
+proba <- rep(rep(c("gauss", "student", "chisq", "exp"), each = 45), times = 4)
+K_choice$proba <- proba
+
+K_choice$shift <- factor(K_choice$shift) 
+levels(K_choice$shift) = c(`delta_1` = TeX("$\\Delta_1(t)$"), 
+                               `delta_2` = TeX("$\\Delta_2(t)$"), 
+                               `delta_3` = TeX("$\\Delta_3(t)$"))
+K_choice$proba <- factor(K_choice$proba, levels = c("gauss", "student", "exp", "chisq"))
+levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
+                            `student` = TeX("$t(4)$"),
+                            `exp` = TeX("$Exp(4)$"),
+                            `chisq` = TeX("$\\chi^2(4)$"))
 save(K_choice, file = "results/K_choice.RData")
 ```
 
 
 ```{r}
 load("results/K_choice.RData")
-my_plot <- vector("list", 3)
-my_alpha <- c(1, 5, 10)
-for(k in 1:3) {
+my_plot <- vector("list", 4)
+my_alpha <- c(1, 3, 5, 10)
+for(k in 1:4) {
   my_plot[[k]] <- K_choice %>%
     filter(alpha == my_alpha[k]) %>%
     ggplot(aes(x = x, y = y)) +
@@ -782,13 +791,26 @@ for(k in 1:3) {
                cols=vars(shift),
                labeller=label_parsed,
                scales = "free") +
-    xlab("Eigen Values") +
-    ylab(TeX("Average of $\\bar{CPV}$"))
+    xlab("k") +
+    ylab(TeX("Mean function of $\\bar{CPV}(k)$ curves for 10 simulations"))
 }
-cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], nrow = 1,
+cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[3]], nrow = 2,
           labels =   c("a)", "b)", "c)", "d)")) # c(TeX("$\\alpha$"), TeX("$\\alpha$"), TeX("$\\alpha$")))
-ggsave("figures/choice_K.pdf", width = 20, height = 10)
+ggsave("figures/choice_K.pdf", width = 12, height = 12)
 ```
+
+* We plot the theoretical CPV for the Gaussian case:
+
+```{r, fig.width = 10, fig.height = 8}
+my_sigma_k <- function(k)
+  1 / (pi * (k - 0.5)) ^ 2
+
+my_val <- my_sigma_k(1:100)
+plot(cumsum(my_val) / sum(my_val), type = "b",
+     xlab = "k", ylab = "CPV")
+```
+
+### Batch code
 
 The codes used are given in the files [batch_cluster_size_8.R](codes/batch_cluster_size_8.R), by using the functions in [functions_to_cluster.R](codes/functions_to_cluster.R).
 
@@ -801,7 +823,7 @@ load("results/my_res_new_3.RData")
 load("results/my_res_new_4.RData")
 ```
 
-We present the results in a format that can be easily represented in a graph:
+We present the results in a format that can be easily visualized in a graph:
 
 ```{r}
 power_to_plot <- data.frame(
@@ -889,87 +911,6 @@ to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS",
                                            "hotelling_1", "hotelling_2", "hotelling_3", "hotelling_4",
                                            "hotelling_5", "hotelling_10", "hotelling_15"))
 ```
-
-
-
-### Power 
-
-```{r}
-to_plot %>%
-  filter(criteria == "power") %>%
-   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-  ggplot(aes(x = alpha, y = value, color = method)) +
-  geom_line(data = to_plot %>% 
-              filter(criteria == "power") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
-            aes(group = method)) +
-  geom_point(size = 0.8, pch = 15) +
-  ggh4x::facet_grid2(rows=vars(shape),
-  cols=vars(type_shift),
-  labeller=label_parsed, scales = "free_x", independent = "x")  +
-  theme_bw()
-# ggsave("figures/simu_8_power.pdf", width = 9, height = 8)
-```
-
-When the probabilistic model is from the Exponential distribution, the method "HFSS" dramatically improves the power for any shift. When the probabilistic distribution belongs to Normal, Student or $\chi^2$, the method "HFSS" behaves slightly better for $\Delta_1$ and much better for $\Delta_2$ and $\Delta_3$. 
-
-### True Positive 
-
-```{r}
-to_plot %>%
-  filter(criteria == "TP") %>%
-  filter(alpha != 0) %>%
-   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-  ggplot(aes(x = alpha, y = value, color = method)) +
-  geom_line(data = to_plot %>% 
-              filter(criteria == "TP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0), 
-            aes(group = method)) +
-  geom_point(size = 1, pch = 15, alpha = 0) +
-  geom_point(data = to_plot %>% 
-              filter(criteria == "TP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0),
-             size = 0.8, pch = 15) +
-  ggh4x::facet_grid2(rows=vars(shape),
-  cols=vars(type_shift),
-  labeller=label_parsed, scales = "free_x", independent = "x") +
-  theme_bw()
-#ggsave("figures/simu_8_TP.pdf", width = 9, height = 8)
-```
-
-The percentage of True positive with the method "HFSS", tends to be better for any situations, excepted for $\Delta_1$, when the probabilistic model is Gaussian or Student. In that case, the percentage of TP is slightly for small values of $c$.
-
-
-### False Positive 
-
-```{r}
-to_plot %>%
-  filter(criteria == "FP") %>%
-  filter(alpha != 0) %>%
-   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-  ggplot(aes(x = alpha, y = value, color = method)) +
-  geom_line(data = to_plot %>% 
-              filter(criteria == "FP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0), 
-            aes(group = method)) +
-  geom_point(size = 1, pch = 15, alpha = 0) +
-  geom_point(data = to_plot %>% 
-              filter(criteria == "FP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0),
-             size = 0.8, pch = 15) +
-  ggh4x::facet_grid2(rows=vars(shape),
-  cols=vars(type_shift),
-  labeller=label_parsed, scales = "free_x", independent = "x")  +
-  theme_bw()
-#ggsave("figures/simu_8_FP.pdf", width = 9, height = 8)
-```
-
-
-The percentage of False positive with the method "HFSS", tends to be better for any shift/probabilistic model. 
 
 
 
@@ -1100,7 +1041,7 @@ to_plot2 %>%
 
 ## Checking Robustess
 
-We apply the same procedure by varying the size of the cluster. We consider a cluster of size 10. We added two more departments to the previous list:  59, 27
+We apply the same procedure while varying the size of the cluster. This time, we consider a cluster of size 10 and add two more departments to the previous list: 59 and 27.
 
 
 ```{r, warning = F, message = F}
@@ -1112,7 +1053,7 @@ col_geo[vecclus] <- alpha("#D35C79", 0.8)
 ```
 
 ```{r, warning = F, message = F}
-#pdf("figures/french_cluster_10.pdf", width = 7, height = 7)
+pdf("figures/french_cluster_10.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 plot_tiles(nc_osm, adjust = T)
 mf_shadow(st_geometry(st_union(dep[vecclus, ])), add = T, cex = 0.5)
@@ -1122,7 +1063,7 @@ plot(st_geometry(my_region), add = T, lwd = 0.5)
 #text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "B)", pos = 4, cex = 2)
-#dev.off()
+dev.off()
 ```
 
 The interpretations are the same as in the previous section.
@@ -1216,71 +1157,6 @@ levels(to_plot$shape) <- c(`gauss` = TeX("$N(0,1)$"),
 to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS"))
 ```
 
-### Power 
-
-```{r}
-to_plot %>%
-  filter(criteria == "power") %>%
-   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-  ggplot(aes(x = alpha, y = value, color = method)) +
-  geom_line(data = to_plot %>% 
-              filter(criteria == "power") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
-            aes(group = method)) +
-  geom_point(size = 0.8, pch = 15) +
-  ggh4x::facet_grid2(rows=vars(shape),
-  cols=vars(type_shift),
-  labeller=label_parsed, scales = "free_x", independent = "x")
-#ggsave("figures/simu_10_power.pdf", width = 9, height = 8)
-```
-
-### True Positive 
-
-```{r}
-to_plot %>%
-  filter(criteria == "TP") %>%
-   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-  ggplot(aes(x = alpha, y = value, color = method)) +
-  geom_line(data = to_plot %>% 
-              filter(criteria == "TP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0), 
-            aes(group = method)) +
-  geom_point(size = 1, pch = 15, alpha = 0) +
-  geom_point(data = to_plot %>% 
-              filter(criteria == "TP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0),
-             size = 0.8, pch = 15) +
-  ggh4x::facet_grid2(rows=vars(shape),
-  cols=vars(type_shift),
-  labeller=label_parsed, scales = "free_x", independent = "x")
-#ggsave("figures/simu_10_TP.pdf", width = 9, height = 8)
-```
-
-### False Positive 
-
-```{r}
-to_plot %>%
-  filter(criteria == "FP") %>%
-   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-  ggplot(aes(x = alpha, y = value, color = method)) +
-  geom_line(data = to_plot %>% 
-              filter(criteria == "FP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0), 
-            aes(group = method)) +
-  geom_point(size = 1, pch = 15, alpha = 0) +
-  geom_point(data = to_plot %>% 
-              filter(criteria == "FP") %>%
-              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
-              filter(alpha != 0),
-             size = 0.8, pch = 15) +
-  ggh4x::facet_grid2(rows=vars(shape),
-  cols=vars(type_shift),
-  labeller=label_parsed, scales = "free_x", independent = "x")
-#ggsave("figures/simu_10_FP.pdf", width = 9, height = 8)
-```
 
 ### Delta 1 
 
@@ -1415,10 +1291,10 @@ to_plot2 %>%
 
 ## Spanish region 
 
-The file [spain_unemp.RData](spain_unemp.RData) contains three objects:
+The [spain_unemp.RData](spain_unemp.RData) file contains three objects:
 
 * `Matcoordalpha`, the coordinates of the centroid of the Spanish regions (expressed in Cartesian coordinates),
-* `MatX`, the unemployment evolution of the Spanish regions across 80 quarters from 2002 to 2022,
+* `MatX`,  the unemployment trends in Spanish regions over 80 quarters from 2002 to 2022,
 * `region_spain`, the spatial contours of the Spanish regions.
 
 ```{r}
@@ -1436,10 +1312,10 @@ my_proj <- st_crs(region_spain)
 spain <- st_union(region_spain)
 ```
 
-We first plot the data:
+First, we plot the data:
 
 ```{r, fig.width = 10, height = 4}
-#pdf(file = "figures/spain_data.pdf", width = 10, height = 4.5)
+pdf(file = "figures/spain_data.pdf", width = 10, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.15, 0.75, 0))
 # map
@@ -1465,18 +1341,18 @@ text(x = seq(2002, 2022, by = 1), y = par()$usr[3] - 0.03 * (par()$usr[4] - par(
 for(j in 2:47)
   lines(dates, MatX[,j], ylim = y_lim, lwd = 1.3, 
         col = rgb(0.4, 0.4, 0.4, alpha = 0.3)) 
-#dev.off()
+dev.off()
 ```
 
 #### Descriptive Analysis
 
-We represent the variable "Unemployment" aggregated over different periods of 2 years (i.e. eight quarters).
+We represent the variable "Unemployment" aggregated over different 2-year periods (i.e., eight quarters).
 
 ```{r, fig.width = 12, fig.height= 4.5}
 nb_split <- 10
 step_years <- split(1:80, 
            sort(rep_len(1:nb_split, length.out = length(dates))))
-#pdf(paste0("figures/Spain_evol.pdf"), width = 10, height = 7)
+pdf(paste0("figures/Spain_evol.pdf"), width = 10, height = 7)
 par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -1507,16 +1383,16 @@ par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "bottomright", 
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
-#dev.off()
+dev.off()
 ```
 
-Average across all the years :
+Average over all the years:
 
 ```{r, fig.width = 12, fig.height= 4.5}
 nb_split <- 1
 step_years <- split(1:80, 
            sort(rep_len(1:nb_split, length.out = length(dates))))
-#pdf(paste0("figures/Spain_mean.pdf"), width = 8, height = 7)
+pdf(paste0("figures/Spain_mean.pdf"), width = 8, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -1547,20 +1423,20 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "bottomright", 
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
-#dev.off()
+dev.off()
 ```
 
-We compute all the potential clusters :
+We calculate all possible clusters:
 
 ```{r}
 my_pairs_sp <- find_all_cluster(Matcoordalpha)
 ```
 
-We use the different methods to detect clusters.
+We use the four methods to detect clusters.
 
 ### NPFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_np <- compute_np(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX)
@@ -1590,9 +1466,9 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
-We drop from the list of potential cluster all the observations belonging to the most likely cluster. For instance, if the most likely cluster contains the observations 1, 3, 5, the potential cluster with observations 8, 1, 3, 5, 10,  is replaced by 8, 10. We then compute the NPFSS method on the new possible combinations
+We remove all observations belonging to the most likely cluster from the list of potential clusters. For example, if the most likely cluster contains observations 1, 3, and 5, then the potential cluster with observations 8, 1, 3, 5, and 10 is replaced by 8 and 10. We then compute the NPFSS method on the new combinations.
 
 ```{r}
 cluster_g1_temp <- sapply(my_pairs_sp[[1]], function(x) setdiff(x, res_np$vec))
@@ -1631,7 +1507,7 @@ cat("p-value:  0.023")
 
 ### PFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_p <- compute_p(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX)
@@ -1659,7 +1535,7 @@ cat("p-value: ", (1 + p_value_p) /  (1 + B))
 cat("p-value:  0.001")
 ```
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(my_pairs_sp[[1]], function(x) setdiff(x, res_p$vec))
@@ -1673,7 +1549,8 @@ res_p_2 <- compute_p(cluster_g1_temp[-id_pos],
                        cluster_g2_temp[-id_pos], MatX)
 res_p_2
 ```
-**Significance of the secondary cluster 1**
+
+**Significance of the secondary cluster**
 
 ```{r, eval = F}
 p_value_p_2 <- 0
@@ -1698,7 +1575,7 @@ cat("p-value:  0.015")
 
 ### DFFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_dffss <- compute_dffss(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX)
@@ -1727,7 +1604,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(my_pairs_sp[[1]], function(x) setdiff(x, res_dffss$vec))
@@ -1742,7 +1619,7 @@ res_dffss_2 <- compute_dffss(cluster_g1_temp[-id_pos],
 res_dffss_2
 ```
 
-**Significance of the secondary cluster 1**
+**Significance of the 2MLC**
 
 ```{r, eval = F}
 p_value_dffss_2 <- 0
@@ -1766,21 +1643,21 @@ cat("p-value:  0.004")
 
 ### HFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
-We first determine the value of $d$:
+We first determine the optimal $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf("figures/spain_h_CPV.pdf", width = 6, height = 4)
+pdf("figures/spain_h_CPV.pdf", width = 6, height = 4)
 temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX, 
-                           d = nrow(MatX), plot_eigen = T)
-#dev.off()
+                           nrow(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=2$ (which corresponds to around $90\%$ of the variance explained; note that using $d=10$, which corresponds to $95\%$ of the variance leads to the same detected cluster)
+We select $K=2$, which explains approximately $90\%$ of the variance. Note that using $K=10$, which accounts for $95\%$ of the variance, leads to the same identified clusters.
 
 ```{r}
-res_h <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX, d = 2)
+res_h <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX, 2)
 res_h
 ```
 
@@ -1792,8 +1669,7 @@ for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(MatX))
   MatXsim <- MatX[, perm]
-  temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatXsim,
-                               d = 2)
+  temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatXsim, 2)
   p_value_h <- p_value_h + (res_h$stat < temp$stat)
 }
 (1 + p_value_h) /  (1 + B)
@@ -1805,7 +1681,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(my_pairs_sp[[1]], function(x) setdiff(x, res_h$vec))
@@ -1815,24 +1691,24 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 ```
 
 
-We look for an optimal value of $d$:
+We aim to find the optimal value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf("figures/spain_h_CPV_2.pdf", width = 6, height = 4)
+pdf("figures/spain_h_CPV_2.pdf", width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], MatX, 
-                           d = nrow(MatX), plot_eigen = T)
-#dev.off()
+                           nrow(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=2$.
+We choose $K=2$.
 
 ```{r}
 res_h_2 <- compute_h(cluster_g1_temp[-id_pos], 
-                     cluster_g2_temp[-id_pos], MatX, d = 2)
+                     cluster_g2_temp[-id_pos], MatX, 2)
 res_h_2
 ```
 
-**Significance of the secondary cluster 1**
+**Significance of the 2MLC**
 
 ```{r, eval = F}
 p_value_h_2 <- 0
@@ -1843,7 +1719,7 @@ for(b in 1:B) {
   perm <- sample(ncol(MatX))
   MatXsim <- MatX[, perm]
   temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], 
-                    MatXsim, d = 2)
+                    MatXsim, 2)
   p_value_h_2 <- p_value_h_2 + (res_h_2$stat < temp$stat)
 }
 cat("p-value: ", (1 + p_value_h_2) /  (1 + B))
@@ -1885,7 +1761,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.9) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.9) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -1943,7 +1819,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
     mtext(my_var,
        side = 4, line = -2.8, las = 0)
     
-  legend("topleft", legend = c("Most likely cluster", "Secondary cluster 1"),
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
       
   ##### Functional data
@@ -1972,7 +1848,7 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
        ylab = '', xaxt = "n", 
        col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
         type = "l")
-  legend("topleft", legend = c("Secondary cluster 1"),
+  legend("topleft", legend = c("Secondary cluster"),
          lty = 1, col = c(cols[2]), cex = 0.9)
   abline(v = seq(2002, 2022, by = 4), lty = 2, 
              col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
@@ -1992,11 +1868,11 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
   lines(dates, rowMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 }
 ```
 
-We present in the following table the results obtained by the different methods. 
+The following table presents the results obtained from the different methods.
 
 ```{r}
 res_spain <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -2049,7 +1925,7 @@ chosen_years <- 20:43
 
 ### Great-Britain
 
-We select the ISO3 corresponding to Great-Britain. 
+We select the ISO3 code corresponding to Great-Britain. 
 
 ```{r}
 my_country <- "GBR"
@@ -2058,7 +1934,6 @@ my_proj <- 3035
 
 ```{r, warning = F, message = F}
 select_countries <- countries_regions[countries_regions$color_code %in% my_country, ]
-  
 # drop the islands
 sf_obj <- select_countries %>%
     filter(iso3 == my_country[1]) %>%
@@ -2069,7 +1944,10 @@ sf_obj <- select_countries %>%
     mutate(area = st_area(geometry)) %>%
     group_by(rowid) %>%
     top_n(1, area)
-  
+```
+
+
+```{r, warning = F, message = F}
 if(length(my_country) > 1) {
   for(i in 2:length(my_country)) {
     sf_obj <- rbind(sf_obj, select_countries %>%
@@ -2103,7 +1981,7 @@ poly_cell <- st_intersection(poly_cell, my_contours)
 poly_cell <- poly_cell[!duplicated(cbind(poly_cell$long, poly_cell$lat)), ]
 ```
 
-We compute all the potential clusters:
+We compute all possible clusters:
 
 ```{r, warning = F}
   coord_proj <- st_coordinates(st_centroid(coord_temp))
@@ -2122,12 +2000,12 @@ We compute all the potential clusters:
 
 #### Descriptive Analysis
 
-We first plot the data:
+First, we plot the data:
 
 ```{r, fig.width = 10, height = 4}
 y_lim <- range(MatX)
 dates <- unique_year[chosen_years]
-#pdf(file = "figures/GBR_data.pdf", width = 10, height = 4.5)
+pdf(file = "figures/GBR_data.pdf", width = 10, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.8, 0))
 # map
@@ -2150,16 +2028,16 @@ plot_tiles(nc_osm)
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-#dev.off()
+dev.off()
 ```
 
-We map the variable "Difference from average temperatures" aggregated over different periods of four years. 
+We map the variable "Difference from average temperatures" aggregated over different four-year periods. 
 
 ```{r, fig.width = 12, fig.height= 3.5}
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/GB_evol.pdf"), width = 12, height = 8)
+pdf(paste0("figures/GB_evol.pdf"), width = 12, height = 8)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2188,15 +2066,16 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Diff Temp")
     }
-#dev.off()
+dev.off()
 ```
 
 Average mean of difference temperatures:
+
 ```{r, fig.width = 12, fig.height= 3.5}
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/GBR_mean.pdf"), width = 7, height = 8)
+pdf(paste0("figures/GBR_mean.pdf"), width = 7, height = 8)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2219,18 +2098,17 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
         col = my_col,
         border = my_col, lwd = 0.001, add = T)
       my_years <- unique_year[chosen_years_5]
-     # title(paste0(my_years[1], "-", my_years[length(my_years)]), line = -1.25)
      plot(st_geometry(my_contours), add = T, lwd = 0.5)
      if(j == 1)
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Diff Temp")
     }
-#dev.off()
+dev.off()
 ```
 
 #### NPFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_np <- compute_np(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -2267,7 +2145,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_np$vec))
@@ -2305,7 +2183,7 @@ cat("p-value:  0.001")
 
 #### PFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_p <- compute_p(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -2333,7 +2211,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_p$vec))
@@ -2371,7 +2249,7 @@ cat("p-value:  0.001")
 
 #### DFFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_dffss <- compute_dffss(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -2398,7 +2276,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_dffss$vec))
@@ -2437,21 +2315,21 @@ cat("p-value:  0.001")
 
 #### HFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
-We first determine the value of $d$:
+First, we determine the value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$:
+We select $K=6$:
 
 ```{r}
-res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), d = 6)
+res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 6)
 res_h
 ```
 
@@ -2463,7 +2341,7 @@ c2 <- pairs_geo[[2]]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h$stat <x))) /  (1 + B))
@@ -2475,7 +2353,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_h$vec))
@@ -2484,25 +2362,25 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
 
-We look for an optimal value of $d$:
+We seek the optimal value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$.
+We choose $K=6$.
 
 ```{r}
 res_h_2 <- compute_h(cluster_g1_temp[-id_pos], 
-                     cluster_g2_temp[-id_pos], t(MatX), d = 6)
+                     cluster_g2_temp[-id_pos], t(MatX), 6)
 res_h_2
 ```
 
 
-**Significance of the secondary cluster 1**
+**Significance of 2MLC**
 
 ```{r, eval = F}
 c1 <- cluster_g1_temp[-id_pos]
@@ -2510,7 +2388,7 @@ c2 <- cluster_g2_temp[-id_pos]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1 + B))
@@ -2548,7 +2426,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.8) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.8) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -2621,7 +2499,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
     mtext(my_var,
        side = 4, line = -3.5, las = 0)
     
-  legend("topleft", legend = c("Most likely cluster", "Secondary cluster 1"),
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
       
   ##### Functional data
@@ -2650,7 +2528,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
        ylab = 'Difference from average temperatures (in C)', xaxt = "n", 
        col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
         type = "l")
-  legend("topleft", legend = c("Secondary cluster 1"),
+  legend("topleft", legend = c("Secondary cluster"),
          lty = 1, col = c(cols[2]), cex = 0.9)
   abline(v = seq(1980, 2025, by = 5), lty = 2, 
              col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
@@ -2670,7 +2548,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 }
 ```
 
@@ -2693,7 +2571,7 @@ knitr::kable(res_GB)
 
 ### Nigeria
 
-We select the ISO3 of Nigeria:
+We select the ISO3 code of Nigeria:
 
 ```{r}
 my_country <- "NGA"
@@ -2746,7 +2624,7 @@ coord_temp <- st_transform(poly_cell, my_proj)
 poly_cell <- st_intersection(poly_cell, my_contours)
 ```
 
-We compute all the potential clusters:
+We compute all possible clusters:
 
 ```{r, warning = F}
   coord_proj <- st_coordinates(st_centroid(coord_temp))
@@ -2765,12 +2643,12 @@ We compute all the potential clusters:
 
 #### Descriptive Analysis
 
-We first plot the data:
+First, we plot the data:
 
 ```{r, fig.width = 10, height = 4}
 y_lim <- range(MatX)
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
-#pdf(file = "figures/NGA_data.pdf", width = 12, height = 4.5)
+pdf(file = "figures/NGA_data.pdf", width = 12, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.5, 0))
 # map
@@ -2793,7 +2671,7 @@ abline(h = seq(0, 2500, by = 500),
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-#dev.off()
+dev.off()
 ```
 
 We map the average of the variable over a 3-year window. 
@@ -2802,7 +2680,7 @@ We map the average of the variable over a 3-year window.
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/NGA_evol.pdf"), width = 12, height = 5)
+pdf(paste0("figures/NGA_evol.pdf"), width = 12, height = 5)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2831,15 +2709,16 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-#dev.off()
+dev.off()
 ```
 
 Average mean:
+
 ```{r, fig.width = 12, fig.height= 6}
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/NGA_mean.pdf"), width = 7, height = 5)
+pdf(paste0("figures/NGA_mean.pdf"), width = 7, height = 5)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2868,12 +2747,12 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-#dev.off()
+dev.off()
 ```
 
 #### NPFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_np <- compute_np(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -2902,7 +2781,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_np$vec))
@@ -2942,7 +2821,7 @@ cat("p-value:  0.001")
 
 #### PFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_p <- compute_p(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -2970,7 +2849,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_p$vec))
@@ -3008,7 +2887,7 @@ cat("p-value:  0.001")
 
 #### DFFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_dffss <- compute_dffss(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -3035,7 +2914,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_dffss$vec))
@@ -3077,20 +2956,20 @@ cat("p-value:  0.001")
 
 #### HFSS Method 
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
-We first determine the value of $d$:
+First, we determine the value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$:
+We select $K=6$:
 ```{r}
-res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), d = 6)
+res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 6)
 res_h
 ```
 
@@ -3100,7 +2979,7 @@ c2 <- pairs_geo[[2]]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h$stat <x))) /  (1 + B))
@@ -3112,7 +2991,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_h$vec))
@@ -3122,25 +3001,25 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 ```
 
 
-We look for an optimal value of $d$:
+We seek the optimal value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$.
+We choose $K=6$.
 
 ```{r}
 res_h_2 <- compute_h(cluster_g1_temp[-id_pos], 
-                     cluster_g2_temp[-id_pos], t(MatX), d = 6)
+                     cluster_g2_temp[-id_pos], t(MatX), 6)
 res_h_2
 ```
 
 
-**Significance of the secondary cluster 1**
+**Significance of the 2MLC**
 
 ```{r, eval = F}
 c1 <- cluster_g1_temp[-id_pos]
@@ -3148,7 +3027,7 @@ c2 <- cluster_g2_temp[-id_pos]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1 + B))
@@ -3186,7 +3065,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3258,7 +3137,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   
     mtext(my_var, side = 4, line = -3.5, las = 0, cex = 0.8)
     
-  legend("topleft", legend = c("Most likely cluster", "Secondary cluster 1"),
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
       
   ##### Functional data
@@ -3287,7 +3166,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
        ylab = title_var, xaxt = "n", 
        col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
         type = "l")
-  legend("topleft", legend = c("Secondary cluster 1"),
+  legend("topleft", legend = c("Secondary cluster"),
          lty = 1, col = c(cols[2]), cex = 0.9)
   abline(v = seq(1980, 2025, by = 5), lty = 2, 
              col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
@@ -3307,12 +3186,12 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 }
 ```
 
 
-We present in the following table the results obtained by the different methods. 
+The following table presents the results obtained from the various methods.
 
 ```{r}
 res_NGA <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -3333,7 +3212,7 @@ knitr::kable(res_NGA)
 
 ### Pakistan
 
-We select the ISO3 for Pakistan:
+We select the ISO3 code for Pakistan:
 
 ```{r}
 my_country <- "PAK"
@@ -3386,7 +3265,7 @@ coord_temp <- st_transform(poly_cell, my_proj)
 poly_cell <- st_intersection(poly_cell, my_contours)
 ```
 
-We compute all the potential clusters:
+We compute all possible clusters:
 
 ```{r, warning = F}
   coord_proj <- st_coordinates(st_centroid(coord_temp))
@@ -3405,12 +3284,12 @@ We compute all the potential clusters:
 
 #### Descriptive Analysis
 
-We first plot the data:
+First, we plot the data:
 
 ```{r, fig.width = 10, height = 4}
 y_lim <- range(MatX)
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
-#pdf(file = "figures/PAK_data.pdf", width = 10, height = 4.5)
+pdf(file = "figures/PAK_data.pdf", width = 10, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.8, 0))
 # map
@@ -3433,16 +3312,16 @@ abline(h = seq(0, 800, by = 200),
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-#dev.off()
+dev.off()
 ```
 
-We map the average of the variable over a 3-year window Before the last period, the Southeaster and the North were a little bit more impacted by heavy precipitations. However, during the last period, heavy rainfall affected the whole country.
+We map the average of the variable over a three-year window
 
 ```{r, fig.width = 12, fig.height= 6}
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/PAK_evol.pdf"), width = 12, height = 8)
+pdf(paste0("figures/PAK_evol.pdf"), width = 12, height = 8)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -3471,15 +3350,16 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-#dev.off()
+dev.off()
 ```
 
 Average mean:
+
 ```{r, fig.width = 12, fig.height= 6}
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/PAK_mean.pdf"), width = 8, height = 8)
+pdf(paste0("figures/PAK_mean.pdf"), width = 8, height = 8)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -3508,11 +3388,12 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-#dev.off()
+dev.off()
 ```
+
 #### NPFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_np <- compute_np(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -3540,7 +3421,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_np$vec))
@@ -3578,7 +3459,7 @@ cat("p-value:  0.001")
 
 #### PFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_p <- compute_p(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -3606,7 +3487,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_p$vec))
@@ -3645,7 +3526,7 @@ cat("p-value:  0.001")
 
 #### DFFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_dffss <- compute_dffss(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -3672,7 +3553,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_dffss$vec))
@@ -3713,24 +3594,25 @@ cat("p-value:  0.001")
 
 ### HFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
-We first determine the value of $d$:
+First, we determine the value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$:
+We choose $K=6$:
+
 ```{r}
-res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), d = 6)
+res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 6)
 res_h
 ```
 
-To compute the significance, we make $B$ permutations on the data and compute the number of times the scan statistic is lower than the observed one: 
+**Significance**
 
 ```{r, eval = F}
 c1 <- pairs_geo[[1]]
@@ -3738,7 +3620,7 @@ c2 <- pairs_geo[[2]]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h$stat <x))) /  (1 + B))
@@ -3750,7 +3632,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_h$vec))
@@ -3760,25 +3642,25 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 ```
 
 
-We look for an optimal value of $d$:
+We seek the optimal value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$.
+We choose $K=6$.
 
 ```{r}
 res_h_2 <- compute_h(cluster_g1_temp[-id_pos], 
-                     cluster_g2_temp[-id_pos], t(MatX), d = 6)
+                     cluster_g2_temp[-id_pos], t(MatX), 6)
 res_h_2
 ```
 
 
-**Significance of the secondary cluster 1**
+**Significance of the 2MLC**
 
 ```{r, eval = F}
 c1 <- cluster_g1_temp[-id_pos]
@@ -3786,7 +3668,7 @@ c2 <- cluster_g2_temp[-id_pos]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1 + B))
@@ -3824,7 +3706,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3896,7 +3778,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   
     mtext(my_var, side = 4, line = -3.5, las = 0, cex = 0.8)
     
-  legend("topleft", legend = c("Most likely cluster", "Secondary cluster 1"),
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
       
   ##### Functional data
@@ -3925,7 +3807,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
        ylab = title_var, xaxt = "n", 
        col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
         type = "l")
-  legend("topleft", legend = c("Secondary cluster 1"),
+  legend("topleft", legend = c("Secondary cluster"),
          lty = 1, col = c(cols[2]), cex = 0.9)
   abline(v = seq(1980, 2025, by = 5), lty = 2, 
              col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
@@ -3945,11 +3827,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 }
 ```
 
-We present in the following table the results obtained by the different methods. 
+The following table presents the results obtained from the various methods.
 
 ```{r}
 res_PAK <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -3971,7 +3853,7 @@ knitr::kable(res_PAK)
 
 ### Venezuela
 
-We select the ISO3 for Venezuela:
+We select the ISO3 code for Venezuela:
 
 ```{r}
 my_country <- "VEN"
@@ -4024,7 +3906,7 @@ coord_temp <- st_transform(poly_cell, my_proj)
 poly_cell <- st_intersection(poly_cell, my_contours)
 ```
 
-We compute all the potential clusters:
+We compute all possible clusters:
 
 ```{r, warning = F}
   coord_proj <- st_coordinates(st_centroid(coord_temp))
@@ -4043,12 +3925,12 @@ We compute all the potential clusters:
 
 #### Descriptive Analysis
 
-We first plot the data:
+First, we plot the data:
 
 ```{r, fig.width = 10, height = 4}
 y_lim <- range(MatX)
 title_var <- 'Heat wave duration (in days)'
-#pdf(file = "figures/VEN_data.pdf", width = 11, height = 4.5)
+pdf(file = "figures/VEN_data.pdf", width = 11, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.8, 0))
 # map
@@ -4071,7 +3953,7 @@ abline(h = seq(0, 250, by = 50),
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-#dev.off()
+dev.off()
 ```
 
 We map the average of the variable over a 3-year window. 
@@ -4080,7 +3962,7 @@ We map the average of the variable over a 3-year window.
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/VEN_evol.pdf"), width = 12, height = 5)
+pdf(paste0("figures/VEN_evol.pdf"), width = 12, height = 5)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -4109,7 +3991,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Heatwave days")
     }
-#dev.off()
+dev.off()
 ```
 
 Average:
@@ -4118,7 +4000,7 @@ Average:
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-#pdf(paste0("figures/VEN_mean.pdf"), width = 7, height = 5)
+pdf(paste0("figures/VEN_mean.pdf"), width = 7, height = 5)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -4147,12 +4029,12 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Heatwave days")
     }
-#dev.off()
+dev.off()
 ```
 
 #### NPFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_np <- compute_np(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -4179,7 +4061,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_np$vec))
@@ -4217,7 +4099,7 @@ cat("p-value:  0.001")
 
 #### PFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_p <- compute_p(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -4245,7 +4127,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_p$vec))
@@ -4284,7 +4166,7 @@ cat("p-value:  0.001")
 
 #### DFFSS method
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
 ```{r}
 res_dffss <- compute_dffss(pairs_geo[[1]], pairs_geo[[2]], t(MatX))
@@ -4311,7 +4193,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_dffss$vec))
@@ -4349,24 +4231,24 @@ cat("p-value:  0.001")
 
 ### HFSS method 
 
-**Most likely cluster**
+**Most Likely Cluster (MLC)**
 
-We first determine the value of $d$:
+First, we determine the value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$:
+We choose $K=6$:
 ```{r}
-res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), d = 6)
+res_h <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 6)
 res_h
 ```
 
-To compute the significance, we make $B$ permutations on the data and compute the number of times the scan statistic is lower than the observed one: 
+**Significance**
 
 ```{r, eval = F}
 c1 <- pairs_geo[[1]]
@@ -4374,7 +4256,7 @@ c2 <- pairs_geo[[2]]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h$stat <x))) /  (1 + B))
@@ -4386,7 +4268,7 @@ cat("p-value:  0.001")
 ```
 
 
-**Secondary cluster 1**
+**Secondary cluster (2MLC)**
 
 ```{r}
 cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_h$vec))
@@ -4396,25 +4278,25 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 ```
 
 
-We look for an optimal value of $d$:
+We seek the optimal value of $K$:
 
 ```{r, fig.width = 6, fig.height = 3}
-#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
-                           d = ncol(MatX), plot_eigen = T)
-#dev.off()
+                           ncol(MatX), plot_eigen = T)
+dev.off()
 ```
 
-We choose $d=6$.
+We choose $K=6$.
 
 ```{r}
 res_h_2 <- compute_h(cluster_g1_temp[-id_pos], 
-                     cluster_g2_temp[-id_pos], t(MatX), d = 6)
+                     cluster_g2_temp[-id_pos], t(MatX), 6)
 res_h_2
 ```
 
 
-**Significance of the secondary cluster 1**
+**Significance of the 2MLC**
 
 ```{r, eval = F}
 c1 <- cluster_g1_temp[-id_pos]
@@ -4422,7 +4304,7 @@ c2 <- cluster_g2_temp[-id_pos]
 
 cl <- makeCluster(10)
 clusterExport(cl, c("c1", "c2", "MatX", "norm"))
-res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, d = 6)
+res_par_h <- clusterApplyLB(cl, 1:B, compute_fun_par, compute_h, 6)
 stopCluster(cl)
 
 cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1 + B))
@@ -4462,7 +4344,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -4534,7 +4416,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   
     mtext(my_var, side = 4, line = -3.5, las = 0, cex = 0.8)
     
-  legend("topleft", legend = c("Most likely cluster", "Secondary cluster 1"),
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
       
   ##### Functional data
@@ -4563,7 +4445,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
        ylab = my_var, xaxt = "n", 
        col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
         type = "l")
-  legend("topleft", legend = c("Secondary cluster 1"),
+  legend("topleft", legend = c("Secondary cluster"),
          lty = 1, col = c(cols[2]), cex = 0.9)
   abline(v = seq(1980, 2025, by = 5), lty = 2, 
              col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
@@ -4583,11 +4465,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 }
 ```
 
-We present in the following table the results obtained by the different methods. 
+The following table presents the results obtained from the various methods.
 
 
 ```{r}

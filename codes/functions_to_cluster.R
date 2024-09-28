@@ -580,11 +580,11 @@ compute_h <- function(c1, c2, my_mat, d = 5,
   
   if(plot_eigen) {
     
-    par(oma = c(0, 0, 0, 0), mar = c(3.5, 3, 1, 1), 
-        mgp = c(2, 1, 0), las = 1)
+    #par(oma = c(0, 0, 0, 0), mar = c(3.5, 3, 1, 1), 
+    #    mgp = c(2, 1, 0), las = 1)
     plot(1:length(cpv), cpv / nb_combi, type = "o",
-         xlab = "Number of eigen values", 
-         ylab = "CPV", ylim = c(0, 1), cex = 0.5)
+         xlab = "k", 
+         ylab = TeX("$\\bar{CPV}$"), ylim = c(0, 1), cex = 0.5)
     cat("Variance explained in % by the 10 first components: ", 
         round(cpv[1:10] / nb_combi * 100, 2), "\n")
     
@@ -840,6 +840,8 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
     hotelling_5 <- numeric(nb_combi)
     hotelling_10 <- numeric(nb_combi)
     hotelling_15 <- numeric(nb_combi)
+    
+    cpv <- numeric(npoints)
     
     for (i in (1:nb_combi)) {
       
