@@ -571,21 +571,23 @@ col_geo[vecclus] <- alpha(cols[1], 0.8)
 ```
 
 ``` r
-pdf("figures/french_cluster.pdf", width = 7, height = 7)
+#pdf("figures/french_cluster.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 plot_tiles(nc_osm, adjust = T)
 mf_shadow(st_geometry(st_union(dep[vecclus, ])), add = T, cex = 0.5)
 plot(st_geometry(dep), border = "white", col = col_geo,  
      add = T, lwd = 0.1)
 plot(st_geometry(my_region), add = T, lwd = 0.5)
+```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-31-1.png" style="display: block; margin: auto;" />
+
+``` r
 #text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "A)", pos = 4, cex = 2)
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 ## 2.2 The different shifts/probabilistic models
 
@@ -694,7 +696,7 @@ X_aggregated %>%
 <img src="supplementary_files/figure-gfm/unnamed-chunk-34-1.png" style="display: block; margin: auto;" />
 
 ``` r
-ggsave("figures/simu.pdf", width = 10, height = 8)
+#ggsave("figures/simu.pdf", width = 10, height = 8)
 ```
 
 ## 2.3 Results
@@ -925,7 +927,7 @@ cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[3]], nrow 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-37-1.png" style="display: block; margin: auto;" />
 
 ``` r
-ggsave("figures/choice_K.pdf", width = 12, height = 12)
+#ggsave("figures/choice_K.pdf", width = 12, height = 12)
 ```
 
 - We plot the theoretical CPV for the Gaussian case:
@@ -1077,7 +1079,7 @@ to_plot2 %>%
 <img src="supplementary_files/figure-gfm/unnamed-chunk-41-1.png" style="display: block; margin: auto;" />
 
 ``` r
-# ggsave("figures/simu_8_delta_1.pdf", width = 8, height = 6.5)
+#ggsave("figures/simu_8_delta_1.pdf", width = 8, height = 6.5)
 ```
 
 ### 2.3.4 Delta 2
@@ -1124,7 +1126,7 @@ to_plot2 %>%
 <img src="supplementary_files/figure-gfm/unnamed-chunk-42-1.png" style="display: block; margin: auto;" />
 
 ``` r
-# ggsave("figures/simu_8_delta_2.pdf", width = 8, height = 6.5)
+#ggsave("figures/simu_8_delta_2.pdf", width = 8, height = 6.5)
 ```
 
 ### 2.3.5 Delta 3
@@ -1171,7 +1173,7 @@ to_plot2 %>%
 <img src="supplementary_files/figure-gfm/unnamed-chunk-43-1.png" style="display: block; margin: auto;" />
 
 ``` r
-# ggsave("figures/simu_8_delta_3.pdf", width = 8, height = 6.5)
+#ggsave("figures/simu_8_delta_3.pdf", width = 8, height = 6.5)
 ```
 
 ## 2.4 Checking Robustess
@@ -1189,21 +1191,23 @@ col_geo[vecclus] <- alpha("#D35C79", 0.8)
 ```
 
 ``` r
-pdf("figures/french_cluster_10.pdf", width = 7, height = 7)
+#pdf("figures/french_cluster_10.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 plot_tiles(nc_osm, adjust = T)
 mf_shadow(st_geometry(st_union(dep[vecclus, ])), add = T, cex = 0.5)
 plot(st_geometry(dep), border = "white", col = col_geo,  
      add = T, lwd = 0.1)
 plot(st_geometry(my_region), add = T, lwd = 0.5)
+```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-45-1.png" style="display: block; margin: auto;" />
+
+``` r
 #text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "B)", pos = 4, cex = 2)
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 The interpretations are the same as in the previous section.
 
@@ -1459,7 +1463,7 @@ spain <- st_union(region_spain)
 First, we plot the data:
 
 ``` r
-pdf(file = "figures/spain_data.pdf", width = 10, height = 4.5)
+#pdf(file = "figures/spain_data.pdf", width = 10, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.15, 0.75, 0))
 # map
@@ -1485,11 +1489,13 @@ text(x = seq(2002, 2022, by = 1), y = par()$usr[3] - 0.03 * (par()$usr[4] - par(
 for(j in 2:47)
   lines(dates, MatX[,j], ylim = y_lim, lwd = 1.3, 
         col = rgb(0.4, 0.4, 0.4, alpha = 0.3)) 
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-52-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 #### 3.1.0.1 Descriptive Analysis
 
@@ -1500,7 +1506,7 @@ We represent the variable “Unemployment” aggregated over different
 nb_split <- 10
 step_years <- split(1:80, 
            sort(rep_len(1:nb_split, length.out = length(dates))))
-pdf(paste0("figures/Spain_evol.pdf"), width = 10, height = 7)
+#pdf(paste0("figures/Spain_evol.pdf"), width = 10, height = 7)
 par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -1531,11 +1537,10 @@ par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "bottomright", 
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
-dev.off()
+#dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-53-1.png" style="display: block; margin: auto;" />
 
 Average over all the years:
 
@@ -1543,7 +1548,7 @@ Average over all the years:
 nb_split <- 1
 step_years <- split(1:80, 
            sort(rep_len(1:nb_split, length.out = length(dates))))
-pdf(paste0("figures/Spain_mean.pdf"), width = 8, height = 7)
+#pdf(paste0("figures/Spain_mean.pdf"), width = 8, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -1574,11 +1579,13 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "bottomright", 
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-54-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 We calculate all possible clusters:
 
@@ -1820,19 +1827,18 @@ cat("p-value: ", (1 + p_value_dffss_2) /  (1 + B))
 We first determine the optimal $K$:
 
 ``` r
-pdf("figures/spain_h_CPV.pdf", width = 6, height = 4)
+#pdf("figures/spain_h_CPV.pdf", width = 6, height = 4)
 temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX, 
                            nrow(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-77-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  83.23 89.16 91.08 92.38 93.32 94.06 94.73 95.3 95.83 96.23
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We select $K=2$, which explains approximately $90\%$ of the variance.
 Note that using $K=10$, which accounts for $95\%$ of the variance, leads
@@ -1877,19 +1883,18 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 We aim to find the optimal value of $K$:
 
 ``` r
-pdf("figures/spain_h_CPV_2.pdf", width = 6, height = 4)
+#pdf("figures/spain_h_CPV_2.pdf", width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], MatX, 
                            nrow(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-82-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  69.49 80.38 84.3 86.13 87.64 88.97 90.24 91.41 92.4 93.32
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=2$.
 
@@ -1952,7 +1957,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.9) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.9) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -2059,9 +2064,11 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
   lines(dates, rowMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 }
 ```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-87-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-87-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-87-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-87-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the different
 methods.
@@ -2224,7 +2231,7 @@ First, we plot the data:
 ``` r
 y_lim <- range(MatX)
 dates <- unique_year[chosen_years]
-pdf(file = "figures/GBR_data.pdf", width = 10, height = 4.5)
+#pdf(file = "figures/GBR_data.pdf", width = 10, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.8, 0))
 # map
@@ -2247,11 +2254,13 @@ plot_tiles(nc_osm)
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-96-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 We map the variable “Difference from average temperatures” aggregated
 over different four-year periods.
@@ -2260,7 +2269,7 @@ over different four-year periods.
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/GB_evol.pdf"), width = 12, height = 8)
+#pdf(paste0("figures/GB_evol.pdf"), width = 12, height = 8)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2289,11 +2298,13 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Diff Temp")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-97-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 Average mean of difference temperatures:
 
@@ -2301,7 +2312,7 @@ Average mean of difference temperatures:
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/GBR_mean.pdf"), width = 7, height = 8)
+#pdf(paste0("figures/GBR_mean.pdf"), width = 7, height = 8)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2329,11 +2340,13 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Diff Temp")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-98-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 #### 3.2.2.2 NPFSS method
 
@@ -2571,19 +2584,18 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 First, we determine the value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-120-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  48.2 67.5 79.88 87.21 91.05 93.79 95.39 96.54 97.12 97.63
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We select $K=6$:
 
@@ -2628,19 +2640,18 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 We seek the optimal value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-125-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  45.12 72.27 85.58 90.74 93.01 94.91 96.16 97 97.73 98.25
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=6$.
 
@@ -2698,7 +2709,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.8) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 11.5, height = 3.8) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -2820,9 +2831,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 }
 ```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-130-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-130-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-130-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-130-4.png" style="display: block; margin: auto;" />
 
 ``` r
 res_GB <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -2930,7 +2943,7 @@ First, we plot the data:
 ``` r
 y_lim <- range(MatX)
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
-pdf(file = "figures/NGA_data.pdf", width = 12, height = 4.5)
+#pdf(file = "figures/NGA_data.pdf", width = 12, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.5, 0))
 # map
@@ -2953,11 +2966,13 @@ abline(h = seq(0, 2500, by = 500),
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-136-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 We map the average of the variable over a 3-year window.
 
@@ -2965,7 +2980,7 @@ We map the average of the variable over a 3-year window.
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/NGA_evol.pdf"), width = 12, height = 5)
+#pdf(paste0("figures/NGA_evol.pdf"), width = 12, height = 5)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -2994,11 +3009,13 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-137-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 Average mean:
 
@@ -3006,7 +3023,7 @@ Average mean:
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/NGA_mean.pdf"), width = 7, height = 5)
+#pdf(paste0("figures/NGA_mean.pdf"), width = 7, height = 5)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -3035,11 +3052,13 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-138-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 #### 3.2.3.2 NPFSS method
 
@@ -3269,19 +3288,18 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 First, we determine the value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-160-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  62.51 79.72 85.9 89.73 92.04 93.67 94.99 95.94 96.68 97.28
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We select $K=6$:
 
@@ -3322,19 +3340,18 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 We seek the optimal value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-165-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  42.01 66.88 76.29 80.84 85.13 87.91 90.44 92.18 93.61 94.71
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=6$.
 
@@ -3392,7 +3409,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3513,9 +3530,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 }
 ```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-170-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-170-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-170-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-170-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods.
@@ -3626,7 +3645,7 @@ First, we plot the data:
 ``` r
 y_lim <- range(MatX)
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
-pdf(file = "figures/PAK_data.pdf", width = 10, height = 4.5)
+#pdf(file = "figures/PAK_data.pdf", width = 10, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.8, 0))
 # map
@@ -3649,11 +3668,13 @@ abline(h = seq(0, 800, by = 200),
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-176-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 We map the average of the variable over a three-year window
 
@@ -3661,7 +3682,7 @@ We map the average of the variable over a three-year window
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/PAK_evol.pdf"), width = 12, height = 8)
+#pdf(paste0("figures/PAK_evol.pdf"), width = 12, height = 8)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -3690,11 +3711,13 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-177-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 Average mean:
 
@@ -3702,7 +3725,7 @@ Average mean:
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/PAK_mean.pdf"), width = 8, height = 8)
+#pdf(paste0("figures/PAK_mean.pdf"), width = 8, height = 8)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -3731,11 +3754,13 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-178-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 #### 3.2.4.2 NPFSS method
 
@@ -3974,19 +3999,18 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 First, we determine the value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-200-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  30.03 53.64 68.29 77.6 84.99 89.76 91.91 93.52 94.87 95.91
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=6$:
 
@@ -4029,19 +4053,18 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 We seek the optimal value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-205-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  33.05 56.84 68.03 77.17 83.4 88.36 90.77 92.61 94.14 95.35
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=6$.
 
@@ -4099,7 +4122,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -4220,9 +4243,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 }
 ```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-210-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-210-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-210-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-210-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods.
@@ -4333,7 +4358,7 @@ First, we plot the data:
 ``` r
 y_lim <- range(MatX)
 title_var <- 'Heat wave duration (in days)'
-pdf(file = "figures/VEN_data.pdf", width = 11, height = 4.5)
+#pdf(file = "figures/VEN_data.pdf", width = 11, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
     las = 1, mgp = c(2.2, 0.8, 0))
 # map
@@ -4356,11 +4381,13 @@ abline(h = seq(0, 250, by = 50),
   for (j in 2:nrow(MatX))
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-216-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 We map the average of the variable over a 3-year window.
 
@@ -4368,7 +4395,7 @@ We map the average of the variable over a 3-year window.
 nb_split <- 8
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/VEN_evol.pdf"), width = 12, height = 5)
+#pdf(paste0("figures/VEN_evol.pdf"), width = 12, height = 5)
 par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -4397,11 +4424,13 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Heatwave days")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-217-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 Average:
 
@@ -4409,7 +4438,7 @@ Average:
 nb_split <- 1
 step_years <- split(chosen_years, 
            sort(rep_len(1:nb_split, length.out = length(chosen_years))))
-pdf(paste0("figures/VEN_mean.pdf"), width = 7, height = 5)
+#pdf(paste0("figures/VEN_mean.pdf"), width = 7, height = 5)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
   my_vec <- NULL
     for (j in 1:nb_split) {
@@ -4438,11 +4467,13 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
        maplegend::leg(type = "choro", val = my_interval, pos = "topleft", 
                  pal = my_pal, val_rnd = 3, title = "Heatwave days")
     }
-dev.off()
 ```
 
-    ## quartz_off_screen 
-    ##                 2
+<img src="supplementary_files/figure-gfm/unnamed-chunk-218-1.png" style="display: block; margin: auto;" />
+
+``` r
+#dev.off()
+```
 
 #### 3.2.7.2 NPFSS method
 
@@ -4670,19 +4701,18 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 First, we determine the value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
 temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-240-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  52.58 72.55 82.14 89.04 91.83 93.95 95.22 96.19 97.09 97.73
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=6$:
 
@@ -4726,19 +4756,18 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
 We seek the optimal value of $K$:
 
 ``` r
-pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
+#pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX), 
                            ncol(MatX), plot_eigen = T)
 ```
 
+<img src="supplementary_files/figure-gfm/unnamed-chunk-245-1.png" style="display: block; margin: auto;" />
+
     ## Variance explained in % by the 10 first components:  62.47 79.57 87.5 90.63 93.12 94.77 96.08 97.03 97.7 98.16
 
 ``` r
-dev.off()
+#dev.off()
 ```
-
-    ## quartz_off_screen 
-    ##                 2
 
 We choose $K=6$.
 
@@ -4798,7 +4827,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -4919,9 +4948,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 }
 ```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-250-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-250-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-250-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-250-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods.
