@@ -1,18 +1,18 @@
-Supplementary material of the paper: \`\`A new parametric spatial scan
-statistic for functional data: application to climate change data’’
+Supplementary material: Codes and Data for the paper \`\`A new
+parametric spatial scan statistic for functional data: application to
+climate change data’’
 ================
 Zaineb Smida, Thibault Laurent, Lionel Cucala
-Last update: 2024-09-28
+Last update: 2025-01-17
 
 
 
 
 
-- [1 Functions created](#1-functions-created)
-  - [1.1 Simulation of functional
-    data](#11-simulation-of-functional-data)
-  - [1.2 Detect all potential
-    clusters](#12-detect-all-potential-clusters)
+- [1 Developed Functions](#1-developed-functions)
+  - [1.1 Functional Data Simulation](#11-functional-data-simulation)
+  - [1.2 Identify All Potential
+    Clusters](#12-identify-all-potential-clusters)
   - [1.3 Representation of a circle in a
     map](#13-representation-of-a-circle-in-a-map)
   - [1.4 Package HDSpatialScan](#14-package-hdspatialscan)
@@ -27,14 +27,14 @@ Last update: 2024-09-28
   - [3.1 Spanish region](#31-spanish-region)
   - [3.2 Climate Data](#32-climate-data)
 
-This document presents the **R** codes used to obtain the computational
-results included in the paper “A new parametric spatial scan statistic
-for functional data: application to climate change data”. To cite this
-work, please use:
+This document provides the R code and data used to generate the
+computational results featured in the paper “A New Parametric Spatial
+Scan Statistic for Functional Data: Application to Climate Change Data.”
+To reference this work, please use the following citation:
 
 Zaineb Smida, Thibault Laurent and Lionel Cucala (2024). [A Hotelling
 spatial scan statistic for functional data: application to economic and
-climate data](), *WP*.
+climate data](), *TSE WP*.
 
 Packages needed:
 
@@ -50,27 +50,25 @@ library(rARPACK) # compute only the d first eigen values/eigen vectors
 library(parallel) # parallel computing
 ```
 
-The document is divided into three sections:
+The document is organized into three parts:
 
-- the first part presents the functions created for this work,
-- the second part allows to reproduce results presented in the section
-  `Simulations Study`,
-- the last part allows to reproduce the results presented in the section
-  `Application to real data`.
+- Part 1: Details the functions developed specifically for this work.
+- Part 2: Provides the code necessary to reproduce the results presented
+  in the Simulation Study section.
+- Part 3: Contains the code to replicate the results from the
+  Application to Real Data section.
 
-Data can be provided upon request.
+# 1 Developed Functions
 
-# 1 Functions created
+## 1.1 Functional Data Simulation
 
-## 1.1 Simulation of functional data
+The function `simulvec()` is used to simulate functional data as
+described in the Simulation Study section of the article. It accepts the
+following arguments:
 
-The function `simulvec()` allows to simulate functional data as
-presented in section `Simulation Study` in the article. It takes two
-arguments:
-
-- `npoints` the number of measurement,
-- `shape`: the law of the random variable $Z$ (`"gauss"`, `"student"`,
-  `"chisq"` or `"exp"`).
+- `npoints`: The number of measurements.
+- `shape`: The distribution of the random variable $Z$, which can be one
+  of the following: `"gauss"`, `"student"`, `"chisq"`, or `"exp"`.
 
 ``` r
 simulvec <- function(npoints, shape = "gauss") {
@@ -127,7 +125,7 @@ simulvec <- function(npoints, shape = "gauss") {
 }
 ```
 
-**Example**: we simulate a sample of 50 functions measured at 100
+**Example**: Simulating a sample of 50 functions, each measured at 100
 equidistant points.
 
 ``` r
@@ -140,9 +138,9 @@ for (k in 1:nobs) {
 }
 ```
 
-**Remark:** it is usual to leave aside the first simulated data. Here,
-we plot the functional data (figure on the left) and we only keep the
-last 75 values (figure on the right)
+**Note:** It is common to discard the initial simulated data. In this
+example, we plot the full set of functional data (figure on the left)
+and retain only the last 75 values (figure on the right).
 
 ``` r
 par(oma = c(0, 0, 0, 0), mar = c(3, 3, 1, 1), las = 1, mfrow = c(1, 2))
@@ -154,18 +152,18 @@ matplot(X, type = "l", lty = 1, col ="grey")
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
-## 1.2 Detect all potential clusters
+## 1.2 Identify All Potential Clusters
 
-The `find_all_cluster()` function takes as argument the matrix of
-Cartesian coordinates and returns all potential clusters. The output is
-a list of two elements: the first element contains a list of all
-potential clusters, while the second element contains a list of their
+The `find_all_cluster()` function accepts a matrix of Cartesian
+coordinates as input and returns all potential clusters. The output
+consists of two elements: the first element contains a list of all
+potential clusters, and the second element contains a list of their
 corresponding complements.
 
 If the geographical coordinates are provided in Longitude/Latitude
-format, we recommend converting them to an appropriate Coordinate
-Reference System (CRS). For guidance, you can refer to <https://epsg.io>
-and use the `sf` package for the transformation.
+format, it is recommended to convert them to an appropriate Coordinate
+Reference System (CRS). For assistance, you can refer to
+<https://epsg.io> and use the **sf** package for the transformation.
 
 ``` r
 find_all_cluster <- function (Matcoord) {
@@ -212,13 +210,14 @@ find_all_cluster <- function (Matcoord) {
 }
 ```
 
-**Example:** we consider a random spatial point process with 50
+**Example:** We consider a random spatial point process with 50
 observations.
 
 ``` r
 set.seed(1)
 matCoord <- cbind(runif(nobs), runif(nobs))
-plot(matCoord, xlab = "x", ylab = "y", asp = 1)
+par(las = 1, mar = c(4, 4, 0.5, 0.5), mgp = c(2.2, 0.7, 0))
+plot(matCoord, xlab = "Longitude", ylab = "Latitude", asp = 1)
 ```
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
@@ -231,7 +230,7 @@ my_pairs_ex <- find_all_cluster(matCoord)
 
     ## Number of unique combination:  1644
 
-**Remark**: Once the potential clusters are identified, this reduces the
+**Note**: Once the potential clusters are identified, this reduces the
 number of combinations to test from 2450 ($50 \times 49$) to 1644.
 
 ## 1.3 Representation of a circle in a map
@@ -362,6 +361,7 @@ p_value_np <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
 
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
@@ -372,7 +372,7 @@ for(b in 1:B) {
 cat("p-value: ", p_value_np / 100)
 ```
 
-    ## p-value:  0.33
+    ## p-value:  0.31
 
 In this example, the cluster detected by the NPFSS method is not
 significant.
@@ -401,7 +401,7 @@ scan statistic is less than the observed value.
 p_value_p <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
-
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
@@ -412,7 +412,7 @@ for(b in 1:B) {
 p_value_p / 100
 ```
 
-    ## p-value:  0.03
+    ## p-value:  0.04
 
 The detected cluster is significant. Among the 2 observations, 2 belong
 to the real cluster.
@@ -441,7 +441,7 @@ statistic is less than the observed value.
 p_value_dffss <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
-
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
@@ -470,22 +470,12 @@ this example, we recommend choosing $K=5$.
 
 ``` r
 res_h <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], X, npoints,
-                           plot_eigen = T)
+                   plot_eigen = T)
 ```
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-24-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  92.7 98.02 99.14 99.62 99.87 99.93 99.97 99.99 100 100
-
-``` r
-res_h
-```
-
-    ## $stat
-    ## [1] 3.021964e+12
-    ## 
-    ## $vec
-    ## [1] 20
 
 **Example** when $K=5$:
 
@@ -507,13 +497,12 @@ count how many times the scan statistic is less than the observed value.
 p_value_h <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
-
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
   MatXsim <- X[, perm]
-  temp <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], MatXsim,
-                               k = 5)
+  temp <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], MatXsim, 5)
   p_value_h <- p_value_h + (res_h$stat < temp$stat)
 }
 p_value_h / 100
@@ -570,6 +559,8 @@ col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(Matcoord))
 col_geo[vecclus] <- alpha(cols[1], 0.8)
 ```
 
+We represent Figure S1 on the left:
+
 ``` r
 #pdf("figures/french_cluster.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
@@ -587,6 +578,7 @@ plot(st_geometry(my_region), add = T, lwd = 0.5)
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "A)", pos = 4, cex = 2)
 #dev.off()
+#R.utils::compressPDF("figures/french_cluster.pdf")
 ```
 
 ## 2.2 The different shifts/probabilistic models
@@ -677,6 +669,8 @@ levels(X_aggregated$proba) <- c(`gauss` = TeX("$N(0,1)$"),
                                 `chisq` = TeX("$\\chi^2(4)$"))
 ```
 
+We represent Figure S2:
+
 ``` r
 temp <- X_aggregated[order(as.numeric(X_aggregated$Cluster), X_aggregated$id),]
 X_aggregated %>%
@@ -696,7 +690,8 @@ X_aggregated %>%
 <img src="supplementary_files/figure-gfm/unnamed-chunk-34-1.png" style="display: block; margin: auto;" />
 
 ``` r
-#ggsave("figures/simu.pdf", width = 10, height = 8)
+# ggsave("figures/simu.pdf", width = 7, height = 6)
+#R.utils::compressPDF("figures/simu.pdf")
 ```
 
 ## 2.3 Results
@@ -763,6 +758,8 @@ Empirically, we generate CPV curves for several simulations across
 different values of $\alpha$, the three shifts, and the four
 probabilistic models.
 
+We represent Figure S3:
+
 ``` r
 # parameters of simulation 
 nobs <- nrow(Matcoord)
@@ -774,6 +771,9 @@ vecclus <- c(74, 92, 91, 93, 77, 90, 94, 76)
 nclus <- length(vecclus)
 veccluster <- numeric(nobs)
 veccluster[vecclus] <- 1
+
+# the possible clusters
+my_pairs <- find_all_cluster(Matcoord)
 
 # restriction on the size of the cluster 
 mini <- 2 
@@ -804,7 +804,6 @@ for(alpha in c(1, 3, 5, 10)) {
       cpv <- numeric(npoints)
       # simulations 
       i_simu <- 1
-      res_k <- numeric(nsimu)
       while (i_simu <= nsimu) {
         X <- matrix(0, npoints+ndrop, nobs)
         for (k in 1:nobs) {
@@ -860,7 +859,6 @@ for(alpha in c(1, 3, 5, 10)) {
           tau_k <- temp_svd$values
           cpv <- cpv + cumsum(tau_k) / sum(tau_k)
         }
-        res_k[i_simu] <- which(cpv / nb_combi > seuil)[1]
         i_simu <- i_simu + 1
       } 
       K_choice <- rbind(K_choice,
@@ -898,7 +896,7 @@ levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
                             `student` = TeX("$t(4)$"),
                             `exp` = TeX("$Exp(4)$"),
                             `chisq` = TeX("$\\chi^2(4)$"))
-save(K_choice, file = "results/K_choice.RData")
+# save(K_choice, file = "results/K_choice.RData")
 ```
 
 ``` r
@@ -911,6 +909,8 @@ for(k in 1:4) {
     ggplot(aes(x = x, y = y)) +
     geom_line() +
     geom_point(size = 0.5) +
+    geom_vline(xintercept = 5, linetype="dotted", 
+                color = "blue", size=.6) +
     theme_bw() +
     theme(strip.background = element_rect(color = "black", fill = alpha("#EE9E94", 0.1))) +
     facet_grid(rows=vars(proba),
@@ -920,14 +920,24 @@ for(k in 1:4) {
     xlab("k") +
     ylab(TeX("Mean function of $\\bar{CPV}(k)$ curves for 10 simulations"))
 }
-cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[3]], nrow = 2,
+```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+``` r
+cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[4]], nrow = 2,
           labels =   c("a)", "b)", "c)", "d)")) # c(TeX("$\\alpha$"), TeX("$\\alpha$"), TeX("$\\alpha$")))
 ```
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-37-1.png" style="display: block; margin: auto;" />
 
 ``` r
-#ggsave("figures/choice_K.pdf", width = 12, height = 12)
+# ggsave("figures/choice_K.pdf", width = 10, height = 10)
+# R.utils::compressPDF("figures/choice_K.pdf")
 ```
 
 - We plot the theoretical CPV for the Gaussian case:
@@ -967,14 +977,6 @@ for(k in 1:nrow(parms_df)) {
 power_to_plot$method <- c("DFFSS", "PFSS", "NPFSS", "hotelling_1", "hotelling_2", 
                           "hotelling_3", "hotelling_4", "HFSS", "hotelling_10", 
                           "hotelling_15")
-
-# Alternatives: change K = 5 by K = 3 for Exp
-#power_to_plot$method <- ifelse(power_to_plot$method == "hotelling_3" & 
-#                               power_to_plot$shape == "exp", "HFSS", 
-#                               power_to_plot$method)
-#power_to_plot$method <- ifelse(power_to_plot$method == "hotelling_5" & 
-#                               power_to_plot$shape != "exp", "HFSS", 
-#                               power_to_plot$method)
 
 FP_to_plot <- TP_to_plot <- power_to_plot
 
@@ -1048,7 +1050,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_1 <- to_plot2 %>%
   filter(type_shift == "Delta[1](t)") %>%
   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
   ggplot(aes(x = alpha, y = value, color = method)) +
@@ -1074,12 +1076,14 @@ to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
+delta_1
 ```
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-41-1.png" style="display: block; margin: auto;" />
 
 ``` r
-#ggsave("figures/simu_8_delta_1.pdf", width = 8, height = 6.5)
+# ggsave("figures/simu_8_delta_1.pdf", width = 8, height = 6)
+# R.utils::compressPDF("figures/simu_8_delta_1.pdf")
 ```
 
 ### 2.3.4 Delta 2
@@ -1091,7 +1095,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_2 <- to_plot2 %>%
   filter(type_shift == "Delta[2](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1117,10 +1121,11 @@ to_plot2 %>%
   ylab("") +
   ggtitle(TeX("$\\Delta_2$")) +
   theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom") +
+        legend.position = "none") +
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
+delta_2
 ```
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-42-1.png" style="display: block; margin: auto;" />
@@ -1138,7 +1143,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_3 <- to_plot2 %>%
   filter(type_shift == "Delta[3](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1168,12 +1173,24 @@ to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
+delta_3
 ```
 
 <img src="supplementary_files/figure-gfm/unnamed-chunk-43-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #ggsave("figures/simu_8_delta_3.pdf", width = 8, height = 6.5)
+```
+
+``` r
+cowplot::plot_grid(delta_2, delta_3, nrow = 2, rel_heights = c(1,1.1))
+```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-44-1.png" style="display: block; margin: auto;" />
+
+``` r
+#ggsave("figures/simu_8_delta_23.pdf", width = 8, height = 11)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
 ## 2.4 Checking Robustess
@@ -1200,13 +1217,14 @@ plot(st_geometry(dep), border = "white", col = col_geo,
 plot(st_geometry(my_region), add = T, lwd = 0.5)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-45-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-46-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "B)", pos = 4, cex = 2)
 #dev.off()
+#R.utils::compressPDF("figures/french_cluster_10.pdf")
 ```
 
 The interpretations are the same as in the previous section.
@@ -1301,7 +1319,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_1 <- to_plot2 %>%
   filter(type_shift == "Delta[1](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1327,16 +1345,12 @@ to_plot2 %>%
   ylab("") +
   ggtitle(TeX("$\\Delta_1$")) +
   theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom") +
+        legend.position = "none") +
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
-```
-
-<img src="supplementary_files/figure-gfm/unnamed-chunk-48-1.png" style="display: block; margin: auto;" />
-
-``` r
 #ggsave("figures/simu_10_delta_1.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
 ### 2.4.2 Delta 2
@@ -1348,7 +1362,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_2 <- to_plot2 %>%
   filter(type_shift == "Delta[2](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1378,12 +1392,19 @@ to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
+#ggsave("figures/simu_10_delta_2.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_2.pdf")
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-49-1.png" style="display: block; margin: auto;" />
+``` r
+cowplot::plot_grid(delta_1, delta_2, nrow = 2, rel_heights = c(1,1.1))
+```
+
+<img src="supplementary_files/figure-gfm/unnamed-chunk-51-1.png" style="display: block; margin: auto;" />
 
 ``` r
-#ggsave("figures/simu_10_delta_2.pdf", width = 8, height = 6.5)
+ggsave("figures/simu_10_delta_12.pdf", width = 8, height = 11)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
 ### 2.4.3 Delta 3
@@ -1427,10 +1448,11 @@ to_plot2 %>%
         fill = alpha("#EE9E94", 0.1)))
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-50-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-52-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #ggsave("figures/simu_10_delta_3.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_3.pdf")
 ```
 
 # 3 Empirical part
@@ -1491,11 +1513,15 @@ for(j in 2:47)
         col = rgb(0.4, 0.4, 0.4, alpha = 0.3)) 
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-52-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-54-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#R.utils::compressPDF("figures/spain_data.pdf")
+qpdf::pdf_compress("compressedPDFs/spain_data.pdf")
 ```
+
+    ## [1] "/Users/thibaultlaurent/Documents/scan_functional_hotelling/compressedPDFs/spain_data_output.pdf"
 
 #### 3.1.0.1 Descriptive Analysis
 
@@ -1538,9 +1564,10 @@ par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
 #dev.off()
+#R.utils::compressPDF("figures/Spain_evol.pdf")
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-53-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-55-1.png" style="display: block; margin: auto;" />
 
 Average over all the years:
 
@@ -1581,10 +1608,11 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-54-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-56-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+# R.utils::compressPDF("figures/Spain_mean.pdf")
 ```
 
 We calculate all possible clusters:
@@ -1832,12 +1860,13 @@ temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX,
                            nrow(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-77-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-79-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  83.23 89.16 91.08 92.38 93.32 94.06 94.73 95.3 95.83 96.23
 
 ``` r
 #dev.off()
+# R.utils::compressPDF("figures/spain_h_CPV.pdf")
 ```
 
 We select $K=2$, which explains approximately $90\%$ of the variance.
@@ -1888,12 +1917,13 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], MatX,
                            nrow(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-82-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-84-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  69.49 80.38 84.3 86.13 87.64 88.97 90.24 91.41 92.4 93.32
 
 ``` r
 #dev.off()
+# R.utils::compressPDF("figures/spain_h_CPV_2.pdf")
 ```
 
 We choose $K=2$.
@@ -2065,10 +2095,11 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-87-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-87-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-87-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-87-4.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-89-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-89-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-89-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-89-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the different
 methods.
@@ -2109,7 +2140,7 @@ countries_regions <- st_read("data/world-administrative-boundaries.geojson")
 ```
 
     ## Reading layer `world-administrative-boundaries' from data source 
-    ##   `/Users/thibaultlaurent/Documents/map_spain/scan_functional_hotelling/data/world-administrative-boundaries.geojson' 
+    ##   `/Users/thibaultlaurent/Documents/scan_functional_hotelling/data/world-administrative-boundaries.geojson' 
     ##   using driver `GeoJSON'
     ## Simple feature collection with 256 features and 9 fields
     ## Geometry type: MULTIPOLYGON
@@ -2256,10 +2287,11 @@ plot_tiles(nc_osm)
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-96-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-98-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#  R.utils::compressPDF("figures/GBR_data.pdf")
 ```
 
 We map the variable “Difference from average temperatures” aggregated
@@ -2300,10 +2332,11 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-97-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-99-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+ #    R.utils::compressPDF("figures/GB_evol.pdf")
 ```
 
 Average mean of difference temperatures:
@@ -2342,10 +2375,11 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-98-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-100-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#     R.utils::compressPDF("figures/GBR_mean.pdf")
 ```
 
 #### 3.2.2.2 NPFSS method
@@ -2589,7 +2623,7 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-120-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-122-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  48.2 67.5 79.88 87.21 91.05 93.79 95.39 96.54 97.12 97.63
 
@@ -2645,7 +2679,7 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-125-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-127-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  45.12 72.27 85.58 90.74 93.01 94.91 96.16 97 97.73 98.25
 
@@ -2832,10 +2866,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-130-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-130-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-130-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-130-4.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-132-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-132-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-132-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-132-4.png" style="display: block; margin: auto;" />
 
 ``` r
 res_GB <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -2968,10 +3003,11 @@ abline(h = seq(0, 2500, by = 500),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-136-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-138-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#  R.utils::compressPDF("figures/NGA_data.pdf")
 ```
 
 We map the average of the variable over a 3-year window.
@@ -3011,10 +3047,11 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-137-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-139-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#      R.utils::compressPDF("figures/NGA_evol.pdf")
 ```
 
 Average mean:
@@ -3054,10 +3091,11 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-138-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-140-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+ #   R.utils::compressPDF("figures/NGA_mean.pdf")
 ```
 
 #### 3.2.3.2 NPFSS method
@@ -3293,7 +3331,7 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-160-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-162-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  62.51 79.72 85.9 89.73 92.04 93.67 94.99 95.94 96.68 97.28
 
@@ -3345,7 +3383,7 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-165-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-167-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  42.01 66.88 76.29 80.84 85.13 87.91 90.44 92.18 93.61 94.71
 
@@ -3410,6 +3448,7 @@ for(k in 1:4) {
   my_cluster_2 <- res[[k]][[2]]$vec
 
 #pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
+
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3531,10 +3570,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-170-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-170-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-170-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-170-4.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-172-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-172-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-172-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-172-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods.
@@ -3670,10 +3710,11 @@ abline(h = seq(0, 800, by = 200),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-176-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-178-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+# R.utils::compressPDF(paste0("figures/PAK_data.pdf"))
 ```
 
 We map the average of the variable over a three-year window
@@ -3713,10 +3754,11 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-177-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-179-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+# R.utils::compressPDF(paste0("figures/PAK_evol.pdf"))
 ```
 
 Average mean:
@@ -3756,10 +3798,11 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-178-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-180-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+ #   R.utils::compressPDF(paste0("figures/PAK_mean.pdf"))
 ```
 
 #### 3.2.4.2 NPFSS method
@@ -4004,7 +4047,7 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-200-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-202-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  30.03 53.64 68.29 77.6 84.99 89.76 91.91 93.52 94.87 95.91
 
@@ -4058,7 +4101,7 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-205-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-207-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  33.05 56.84 68.03 77.17 83.4 88.36 90.77 92.61 94.14 95.35
 
@@ -4123,7 +4166,7 @@ for(k in 1:4) {
   my_cluster_2 <- res[[k]][[2]]$vec
 
 #pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
-sf_use_s2(F)
+  sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
       oma = c(0.5, 0, 2.4, 0), mgp = c(2.4, 0.6, 0), las = 1)
@@ -4244,10 +4287,11 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-210-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-210-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-210-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-210-4.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-212-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-212-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-212-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-212-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods.
@@ -4383,10 +4427,11 @@ abline(h = seq(0, 250, by = 50),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-216-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-218-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#  R.utils::compressPDF("figures/VEN_data.pdf")
 ```
 
 We map the average of the variable over a 3-year window.
@@ -4426,10 +4471,11 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-217-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-219-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+# R.utils::compressPDF("figures/VEN_evol.pdf")    
 ```
 
 Average:
@@ -4469,10 +4515,11 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-218-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-220-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
+#    R.utils::compressPDF("figures/VEN_mean.pdf")
 ```
 
 #### 3.2.7.2 NPFSS method
@@ -4706,7 +4753,7 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-240-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-242-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  52.58 72.55 82.14 89.04 91.83 93.95 95.22 96.19 97.09 97.73
 
@@ -4761,7 +4808,7 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-245-1.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-247-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  62.47 79.57 87.5 90.63 93.12 94.77 96.08 97.03 97.7 98.16
 
@@ -4949,10 +4996,12 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
+
 }
 ```
 
-<img src="supplementary_files/figure-gfm/unnamed-chunk-250-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-250-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-250-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-250-4.png" style="display: block; margin: auto;" />
+<img src="supplementary_files/figure-gfm/unnamed-chunk-252-1.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-252-2.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-252-3.png" style="display: block; margin: auto;" /><img src="supplementary_files/figure-gfm/unnamed-chunk-252-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods.

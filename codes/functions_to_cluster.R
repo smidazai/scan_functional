@@ -57,8 +57,6 @@ simulvec <- function(npoints, shape = "gauss") {
 norm <- function(x) sqrt(sum(x^2))
 
 ###########################################
-# install.packages("progress")
-require("progress")
 
 compute_all <- function(c1, c2, my_mat, my_thresolhd, plot_res = T) {
   # number of combinaison
@@ -66,7 +64,7 @@ compute_all <- function(c1, c2, my_mat, my_thresolhd, plot_res = T) {
   my_dist <- as(dist(t(my_mat)), "matrix")
   npoints <- nrow(my_mat)
   
-  camille <- numeric(nb_combi)
+  dffss <- numeric(nb_combi)
   # dm <- numeric(nb_combi)
   stat_p <- numeric(nb_combi) 
   stat_np <- numeric(nb_combi)
@@ -157,11 +155,11 @@ compute_all <- function(c1, c2, my_mat, my_thresolhd, plot_res = T) {
     #horvath_stat_5[i] <- nx * ny / (nx + ny) * sum((a_k^2 / tau_k))
     #horvath_stat_6[i] <- nx * ny / (nx + ny) * sum(a_k^2)
     
-    # camille
+    # dffss
     sd_x <- rowSums((myX - Xn_bar_matrix)^2)
     sd_y <- rowSums((myY - Xm_bar_matrix)^2)
     sd_den <- (sd_x + sd_y) / (nx + ny - 2) * (1/nx + 1/ny)
-    camille[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den), na.rm = T) 
+    dffss[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den), na.rm = T) 
     
     # Hotelling
     temp_svd <- eigen(D_hotelling, symmetric = T)
@@ -264,8 +262,8 @@ compute_all <- function(c1, c2, my_mat, my_thresolhd, plot_res = T) {
   # my_max_6 <- max(horvath_stat_6)
   # vecclus_6 <-  cluster_g1[[which(horvath_stat_6 == my_max_6)]]
   
-  my_max_camille <- max(camille)
-  vecclus_camille <-  c1[[which.max(camille)]]
+  my_max_dffss <- max(dffss)
+  vecclus_dffss <-  c1[[which.max(dffss)]]
   
   # my_max_dm <- max(dm)
   # vecclus_dm <-  cluster_g1[[which(dm == my_max_dm)]]
@@ -303,7 +301,7 @@ compute_all <- function(c1, c2, my_mat, my_thresolhd, plot_res = T) {
   if(plot_res) {
     par(mfrow = c(4, 3), oma = c(0, 0, 0, 0),
         mar = c(3, 3, 1, 1))
-    plot(camille, type = "h", main = "camille")
+    plot(dffss, type = "h", main = "dffss")
     plot(stat_p, type = "h", main = "p")
     plot(stat_np, type = "h", main = "np")
     plot(hotelling_1, type = "h", main = paste0("hotelling_1: \n",
@@ -326,7 +324,7 @@ compute_all <- function(c1, c2, my_mat, my_thresolhd, plot_res = T) {
   }
   
   list(
-    camille = list(stat=my_max_camille, vec=vecclus_camille),
+    dffss = list(stat=my_max_dffss, vec=vecclus_dffss),
     #       dm = list(stat=my_max_dm, vec=vecclus_dm),
     stat_p = list(stat=my_max_p, vec=vecclus_p),
     stat_np = list(stat=my_max_np, vec=vecclus_np),
@@ -348,7 +346,7 @@ compute_dffss <- function(c1, c2, my_mat) {
   
   # number of combinaison
   nb_combi <- length(c1)
-  camille <- numeric(nb_combi)
+  dffss <- numeric(nb_combi)
   npoints <- nrow(my_mat)
   
   for (i in (1:nb_combi)) {
@@ -380,15 +378,15 @@ compute_dffss <- function(c1, c2, my_mat) {
     sd_x <- rowSums((myX - Xn_bar_matrix)^2)
     sd_y <- rowSums((myY - Xm_bar_matrix)^2)
     sd_den <- (sd_x + sd_y) / (nx + ny - 2) * (1/nx + 1/ny)
-    camille[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den), na.rm = T) 
+    dffss[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den), na.rm = T) 
   }
   
-  my_max_camille <- max(camille)
-  vecclus_camille <-  c1[[which.max(camille)]]
+  my_max_dffss <- max(dffss)
+  vecclus_dffss <-  c1[[which.max(dffss)]]
   
   list(
-    stat=my_max_camille, 
-    vec=vecclus_camille
+    stat=my_max_dffss, 
+    vec=vecclus_dffss
   )
 }
 
@@ -616,7 +614,7 @@ statscan_all_tibo <- function(X, my_pairs, mini = 2,
   # First Clusters
   res_1 <- compute_all(cluster_g1, cluster_g2, X, my_thresolhd)
   
-  vecclus_camille <-  res_1$camille$vec
+  vecclus_dffss <-  res_1$dffss$vec
   vecclus_p <-  res_1$stat_p$vec
   vecclus_np <- res_1$stat_np$vec
   vecclus_h_1 <- res_1$hotelling_1$vec  
@@ -629,15 +627,15 @@ statscan_all_tibo <- function(X, my_pairs, mini = 2,
   vecclus_h_all <- res_1$hotelling_all$vec   
     
   if(second_cluster) {
-    # camille 
-    cluster_g1_temp <- sapply(cluster_g1, function(x) setdiff(x, vecclus_camille))
-    cluster_g2_temp <- sapply(cluster_g2, function(x) setdiff(x, vecclus_camille))
+    # dffss 
+    cluster_g1_temp <- sapply(cluster_g1, function(x) setdiff(x, vecclus_dffss))
+    cluster_g2_temp <- sapply(cluster_g2, function(x) setdiff(x, vecclus_dffss))
     id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
-    temp <- compute_camille(cluster_g1_temp[-id_pos], 
+    temp <- compute_dffss(cluster_g1_temp[-id_pos], 
                            cluster_g2_temp[-id_pos], X)
-    vecclus_camille_2 <- temp$vec 
-    stat_camille_2 <- temp$stat 
+    vecclus_dffss_2 <- temp$vec 
+    stat_dffss_2 <- temp$stat 
     
     # p
     cluster_g1_temp <- sapply(cluster_g1, function(x) setdiff(x, vecclus_p))
@@ -670,20 +668,20 @@ statscan_all_tibo <- function(X, my_pairs, mini = 2,
     vecclus_h_threshold_2 <- temp$vec
     stat_h_threshold_2 <- temp$stat
   } else {
-    stat_camille_2 <- NULL
+    stat_dffss_2 <- NULL
     stat_p_2 <- NULL
     stat_np_2 <- NULL
     stat_h_threshold_2 <- NULL
     
-    vecclus_camille_2 <- NULL
+    vecclus_dffss_2 <- NULL
     vecclus_p_2 <- NULL
     vecclus_np_2 <- NULL
     vecclus_h_threshold_2 <- NULL
   }
   
   list(
-    camille = list(stat=res_1$camille$stat, vec=vecclus_camille, 
-                   stat2 = stat_camille_2, vec2 = vecclus_camille_2),
+    dffss = list(stat=res_1$dffss$stat, vec=vecclus_dffss, 
+                   stat2 = stat_dffss_2, vec2 = vecclus_dffss_2),
     #       dm = list(stat=my_max_dm, vec=vecclus_dm),
     stat_p = list(stat=res_1$stat_p$stat, vec=vecclus_p, 
                   stat2 = stat_p_2, vec2 = vecclus_p_2),
@@ -764,7 +762,7 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
   
   nb_est <- 10
   power <- nTP <- nFP <- c(
-    camille = 0,
+    dffss = 0,
     p = 0,
     np = 0,
     hotelling_1 = 0,
@@ -830,7 +828,7 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
     my_dist <- as(dist(t(X)), "matrix")
   
     # observed stat
-    camille <- numeric(nb_combi)
+    dffss <- numeric(nb_combi)
     stat_p <- numeric(nb_combi) 
     stat_np <- numeric(nb_combi)
     hotelling_1 <- numeric(nb_combi)
@@ -875,11 +873,11 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
       D <- 1 / (nx + ny - 2) * ((nx - 1) * cov_1  +  (ny - 1) * cov_2)
       D_hotelling <- (nx + ny) / (nx * ny) * D
     
-      # camille
+      # dffss
       sd_x <- rowSums((myX - Xn_bar_matrix)^2)
       sd_y <- rowSums((myY - Xm_bar_matrix)^2)
       sd_den <- (sd_x + sd_y) / (nx + ny - 2) * (1/nx + 1/ny)
-      camille[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den)) 
+      dffss[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den)) 
     
       # Hotelling
       #temp_svd <- eigen(D_hotelling, symmetric = T)
@@ -933,7 +931,7 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
     }
     
     my_stat <- c(
-      camille = max(camille),
+      dffss = max(dffss),
       p = max(stat_p),
       np = max(stat_np),
       hotelling_1 = max(hotelling_1),
@@ -947,7 +945,7 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
     
     
     clus_found <- list(
-      camille =  cluster_g1[[which.max(camille)]],
+      dffss =  cluster_g1[[which.max(dffss)]],
       p = cluster_g1[[which.max(stat_p)]],
       np = cluster_g1[[which.max(stat_np)]],
       hotelling_1 = cluster_g1[[which.max(hotelling_1)]],
@@ -975,7 +973,7 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
       X_sim <- X[, perm]
       my_dist_sim <- my_dist[perm, perm]
 
-      camille <- numeric(nb_combi)
+      dffss <- numeric(nb_combi)
       stat_p <- numeric(nb_combi) 
       stat_np <- numeric(nb_combi)
       hotelling_1 <- numeric(nb_combi)
@@ -1018,11 +1016,11 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
         D <- 1 / (nx + ny - 2) * ((nx - 1) * cov_1  +  (ny - 1) * cov_2)
         D_hotelling <- (nx + ny) / (nx * ny) * D
   
-        # camille
+        # dffss
         sd_x <- rowSums((myX - Xn_bar_matrix)^2)
         sd_y <- rowSums((myY - Xm_bar_matrix)^2)
         sd_den <- (sd_x + sd_y) / (nx + ny - 2) * (1/nx + 1/ny)
-        camille[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den)) 
+        dffss[i] <- max(abs(X_bar - Y_bar) / sqrt(sd_den)) 
       
         # Hotelling
         #temp_svd <- eigen(D_hotelling, symmetric = T)
@@ -1078,7 +1076,7 @@ power_simu <- function(input, niter = 99, nsimu = 100) {
       }
       
       my_stat_perm <- c(
-        camille = max(camille),
+        dffss = max(dffss),
         p = max(stat_p),
         np = max(stat_np),
         hotelling_1 = max(hotelling_1),

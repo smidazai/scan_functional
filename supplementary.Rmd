@@ -1,5 +1,5 @@
 ---
-title: "Supplementary material of the paper: ``A new parametric spatial scan statistic for functional data: application to climate change data''"
+title: "Supplementary material: Codes and Data for the paper ``A new parametric spatial scan statistic for functional data: application to climate change data''"
 author: "Zaineb Smida, Thibault Laurent, Lionel Cucala"
 date: "Last update: `r Sys.Date()`"
 header-includes:
@@ -22,9 +22,10 @@ opts_chunk$set(fig.align = "center",
 options(kableExtra.latex.load_packages = FALSE)
 ```
 
-This document presents the **R** codes used to obtain the computational results included in the paper "A new parametric spatial scan statistic for functional data: application to climate change data". To cite this work, please use:
 
-Zaineb Smida, Thibault Laurent and Lionel Cucala (2024). [A Hotelling spatial scan statistic for functional data: application to economic and climate data](), *WP*.
+This document provides the R code and data used to generate the computational results featured in the paper "A New Parametric Spatial Scan Statistic for Functional Data: Application to Climate Change Data." To reference this work, please use the following citation:
+
+Zaineb Smida, Thibault Laurent and Lionel Cucala (2024). [A Hotelling spatial scan statistic for functional data: application to economic and climate data](), *TSE WP*.
 
 Packages needed:
 
@@ -40,23 +41,21 @@ library(rARPACK) # compute only the d first eigen values/eigen vectors
 library(parallel) # parallel computing
 ```
 
-The document is divided into three sections:
+The document is organized into three parts:
 
--   the first part presents the functions created for this work,
--   the second part allows to reproduce results presented in the section `Simulations Study`, 
--   the last part allows to reproduce the results presented in the section `Application to real data`.
+* Part 1: Details the functions developed specifically for this work.
+* Part 2: Provides the code necessary to reproduce the results presented in the Simulation Study section.
+* Part 3: Contains the code to replicate the results from the Application to Real Data section.
 
 
-Data can be provided upon request.
+# Developed Functions
 
-# Functions created
+## Functional Data Simulation
 
-## Simulation of functional data
+The function `simulvec()` is used to simulate functional data as described in the Simulation Study section of the article. It accepts the following arguments:
 
-The function `simulvec()` allows to simulate functional data as presented in section `Simulation Study` in the article. It takes two arguments:
-
--   `npoints` the number of measurement,
--   `shape`: the law of the random variable $Z$ (`"gauss"`, `"student"`, `"chisq"` or `"exp"`).
+* `npoints`: The number of measurements.
+* `shape`: The distribution of the random variable $Z$, which can be one of the following: `"gauss"`, `"student"`, `"chisq"`, or `"exp"`.
 
 ```{r class.source = 'fold-hide'}
 simulvec <- function(npoints, shape = "gauss") {
@@ -113,7 +112,7 @@ simulvec <- function(npoints, shape = "gauss") {
 }
 ```
 
-**Example**: we simulate a sample of 50 functions measured at 100 equidistant points. 
+**Example**: Simulating a sample of 50 functions, each measured at 100 equidistant points.
 
 ```{r}
 nobs <- 50
@@ -125,7 +124,7 @@ for (k in 1:nobs) {
 }
 ```
 
-**Remark:** it is usual to leave aside the first simulated data. Here, we plot the functional data (figure on the left) and we only keep the last 75 values (figure on the right)
+**Note:** It is common to discard the initial simulated data. In this example, we plot the full set of functional data (figure on the left) and retain only the last 75 values (figure on the right).
 
 ```{r, fig.width = 10, fig.height = 4.5}
 par(oma = c(0, 0, 0, 0), mar = c(3, 3, 1, 1), las = 1, mfrow = c(1, 2))
@@ -137,11 +136,11 @@ matplot(X, type = "l", lty = 1, col ="grey")
 
 
 
-## Detect all potential clusters
+## Identify All Potential Clusters
 
-The `find_all_cluster()` function takes as argument the matrix of Cartesian coordinates and returns all potential clusters. The output is a list of two elements: the first element contains a list of all potential clusters, while the second element contains a list of their corresponding complements.
+The `find_all_cluster()` function accepts a matrix of Cartesian coordinates as input and returns all potential clusters. The output consists of two elements: the first element contains a list of all potential clusters, and the second element contains a list of their corresponding complements.
 
-If the geographical coordinates are provided in Longitude/Latitude format, we recommend converting them to an appropriate Coordinate Reference System (CRS). For guidance, you can refer to https://epsg.io and use the `sf` package for the transformation.
+If the geographical coordinates are provided in Longitude/Latitude format, it is recommended to convert them to an appropriate Coordinate Reference System (CRS). For assistance, you can refer to https://epsg.io and use the **sf** package for the transformation.
 
 ```{r}
 find_all_cluster <- function (Matcoord) {
@@ -188,12 +187,13 @@ find_all_cluster <- function (Matcoord) {
 }
 ```
 
-**Example:** we consider a random spatial point process with 50 observations.
+**Example:** We consider a random spatial point process with 50 observations.
 
 ```{r, fig.width = 5, fig.height = 5}
 set.seed(1)
 matCoord <- cbind(runif(nobs), runif(nobs))
-plot(matCoord, xlab = "x", ylab = "y", asp = 1)
+par(las = 1, mar = c(4, 4, 0.5, 0.5), mgp = c(2.2, 0.7, 0))
+plot(matCoord, xlab = "Longitude", ylab = "Latitude", asp = 1)
 ```
 
 We identify all potential spatial clusters.
@@ -202,7 +202,7 @@ We identify all potential spatial clusters.
 my_pairs_ex <- find_all_cluster(matCoord)
 ```
 
-**Remark**: Once the potential clusters are identified, this reduces the number of combinations to test from 2450 ($50 \times 49$) to 1644.
+**Note**: Once the potential clusters are identified, this reduces the number of combinations to test from 2450 ($50 \times 49$) to 1644.
 
 
 ## Representation of a circle in a map
@@ -298,6 +298,7 @@ p_value_np <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
 
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
@@ -309,7 +310,7 @@ cat("p-value: ", p_value_np / 100)
 ```
 
 ```{r, echo = F}
-cat("p-value:  0.33")
+cat("p-value:  0.31")
 ```
 
 
@@ -330,7 +331,7 @@ The detected cluster contains `r length(res_p$vec)` observations. To assess sign
 p_value_p <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
-
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
@@ -342,7 +343,7 @@ p_value_p / 100
 ```
 
 ```{r, echo = F}
-cat("p-value:  0.03")
+cat("p-value:  0.04")
 ```
 
 The detected cluster is significant. Among the `r length(res_p$vec)` observations, `r length(intersect(res_p$vec, my_cluster))` belong to the real cluster. 
@@ -362,7 +363,7 @@ The detected cluster contains `r length(res_dffss$vec)` observations. To assess 
 p_value_dffss <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
-
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
@@ -392,8 +393,7 @@ $K=5$.
 **Example**:
 ```{r, fig.width = 6, fig.height = 3}
 res_h <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], X, npoints,
-                           plot_eigen = T)
-res_h
+                   plot_eigen = T)
 ```
 
 **Example** when $K=5$:
@@ -408,13 +408,12 @@ To assess significance, we perform $B$ permutations on the data and count how ma
 p_value_h <- 0
 B <- 99
 pb <- progress_bar$new(total = B)
-
+set.seed(123)
 for(b in 1:B) {
   pb$tick()
   perm <- sample(ncol(X))
   MatXsim <- X[, perm]
-  temp <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], MatXsim,
-                               k = 5)
+  temp <- compute_h(my_pairs_ex[[1]], my_pairs_ex[[2]], MatXsim, 5)
   p_value_h <- p_value_h + (res_h$stat < temp$stat)
 }
 p_value_h / 100
@@ -464,6 +463,8 @@ col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(Matcoord))
 col_geo[vecclus] <- alpha(cols[1], 0.8)
 ```
 
+We represent Figure S1 on the left:
+
 ```{r, warning = F, message = F}
 #pdf("figures/french_cluster.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
@@ -476,6 +477,7 @@ plot(st_geometry(my_region), add = T, lwd = 0.5)
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "A)", pos = 4, cex = 2)
 #dev.off()
+#R.utils::compressPDF("figures/french_cluster.pdf")
 ```
 
 ## The different shifts/probabilistic models
@@ -563,6 +565,7 @@ levels(X_aggregated$proba) <- c(`gauss` = TeX("$N(0,1)$"),
                                 `chisq` = TeX("$\\chi^2(4)$"))
 ```
 
+We represent Figure S2:
 
 ```{r}
 temp <- X_aggregated[order(as.numeric(X_aggregated$Cluster), X_aggregated$id),]
@@ -578,7 +581,8 @@ X_aggregated %>%
       scale_colour_manual(values = c("grey", "tomato2")) +
   xlab(TeX("$t$")) +
   ylab(TeX("$X_i(t)$"))
-#ggsave("figures/simu.pdf", width = 10, height = 8)
+# ggsave("figures/simu.pdf", width = 7, height = 6)
+#R.utils::compressPDF("figures/simu.pdf")
 ```
 
 ## Results
@@ -636,6 +640,8 @@ For the HDFS method, we use the Cumulative Proportion of Variance (CPV) criterio
 
 Empirically, we generate CPV curves for several simulations across different values of $\alpha$, the three shifts, and the four probabilistic models.
 
+We represent Figure S3:
+
 ```{r, eval = F}
 # parameters of simulation 
 nobs <- nrow(Matcoord)
@@ -647,6 +653,9 @@ vecclus <- c(74, 92, 91, 93, 77, 90, 94, 76)
 nclus <- length(vecclus)
 veccluster <- numeric(nobs)
 veccluster[vecclus] <- 1
+
+# the possible clusters
+my_pairs <- find_all_cluster(Matcoord)
 
 # restriction on the size of the cluster 
 mini <- 2 
@@ -677,7 +686,6 @@ for(alpha in c(1, 3, 5, 10)) {
       cpv <- numeric(npoints)
       # simulations 
       i_simu <- 1
-      res_k <- numeric(nsimu)
       while (i_simu <= nsimu) {
         X <- matrix(0, npoints+ndrop, nobs)
         for (k in 1:nobs) {
@@ -733,7 +741,6 @@ for(alpha in c(1, 3, 5, 10)) {
           tau_k <- temp_svd$values
           cpv <- cpv + cumsum(tau_k) / sum(tau_k)
         }
-        res_k[i_simu] <- which(cpv / nb_combi > seuil)[1]
         i_simu <- i_simu + 1
       } 
       K_choice <- rbind(K_choice,
@@ -771,7 +778,7 @@ levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
                             `student` = TeX("$t(4)$"),
                             `exp` = TeX("$Exp(4)$"),
                             `chisq` = TeX("$\\chi^2(4)$"))
-save(K_choice, file = "results/K_choice.RData")
+# save(K_choice, file = "results/K_choice.RData")
 ```
 
 
@@ -785,6 +792,8 @@ for(k in 1:4) {
     ggplot(aes(x = x, y = y)) +
     geom_line() +
     geom_point(size = 0.5) +
+    geom_vline(xintercept = 5, linetype="dotted", 
+                color = "blue", size=.6) +
     theme_bw() +
     theme(strip.background = element_rect(color = "black", fill = alpha("#EE9E94", 0.1))) +
     facet_grid(rows=vars(proba),
@@ -794,9 +803,10 @@ for(k in 1:4) {
     xlab("k") +
     ylab(TeX("Mean function of $\\bar{CPV}(k)$ curves for 10 simulations"))
 }
-cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[3]], nrow = 2,
+cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[4]], nrow = 2,
           labels =   c("a)", "b)", "c)", "d)")) # c(TeX("$\\alpha$"), TeX("$\\alpha$"), TeX("$\\alpha$")))
-#ggsave("figures/choice_K.pdf", width = 12, height = 12)
+# ggsave("figures/choice_K.pdf", width = 10, height = 10)
+# R.utils::compressPDF("figures/choice_K.pdf")
 ```
 
 * We plot the theoretical CPV for the Gaussian case:
@@ -840,14 +850,6 @@ for(k in 1:nrow(parms_df)) {
 power_to_plot$method <- c("DFFSS", "PFSS", "NPFSS", "hotelling_1", "hotelling_2", 
                           "hotelling_3", "hotelling_4", "HFSS", "hotelling_10", 
                           "hotelling_15")
-
-# Alternatives: change K = 5 by K = 3 for Exp
-#power_to_plot$method <- ifelse(power_to_plot$method == "hotelling_3" & 
-#                               power_to_plot$shape == "exp", "HFSS", 
-#                               power_to_plot$method)
-#power_to_plot$method <- ifelse(power_to_plot$method == "hotelling_5" & 
-#                               power_to_plot$shape != "exp", "HFSS", 
-#                               power_to_plot$method)
 
 FP_to_plot <- TP_to_plot <- power_to_plot
 
@@ -923,7 +925,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_1 <- to_plot2 %>%
   filter(type_shift == "Delta[1](t)") %>%
   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
   ggplot(aes(x = alpha, y = value, color = method)) +
@@ -949,7 +951,9 @@ to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
-#ggsave("figures/simu_8_delta_1.pdf", width = 8, height = 6.5)
+delta_1
+# ggsave("figures/simu_8_delta_1.pdf", width = 8, height = 6)
+# R.utils::compressPDF("figures/simu_8_delta_1.pdf")
 ```
 
 
@@ -962,7 +966,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_2 <- to_plot2 %>%
   filter(type_shift == "Delta[2](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -988,10 +992,11 @@ to_plot2 %>%
   ylab("") +
   ggtitle(TeX("$\\Delta_2$")) +
   theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom") +
+        legend.position = "none") +
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
+delta_2
 #ggsave("figures/simu_8_delta_2.pdf", width = 8, height = 6.5)
 ```
 
@@ -1005,7 +1010,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_3 <- to_plot2 %>%
   filter(type_shift == "Delta[3](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1035,7 +1040,15 @@ to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
+delta_3
 #ggsave("figures/simu_8_delta_3.pdf", width = 8, height = 6.5)
+```
+
+
+```{r}
+cowplot::plot_grid(delta_2, delta_3, nrow = 2, rel_heights = c(1,1.1))
+#ggsave("figures/simu_8_delta_23.pdf", width = 8, height = 11)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
 
@@ -1064,6 +1077,7 @@ plot(st_geometry(my_region), add = T, lwd = 0.5)
 #     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
 #     labels = "B)", pos = 4, cex = 2)
 #dev.off()
+#R.utils::compressPDF("figures/french_cluster_10.pdf")
 ```
 
 The interpretations are the same as in the previous section.
@@ -1167,7 +1181,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_1 <- to_plot2 %>%
   filter(type_shift == "Delta[1](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1193,11 +1207,12 @@ to_plot2 %>%
   ylab("") +
   ggtitle(TeX("$\\Delta_1$")) +
   theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "bottom") +
+        legend.position = "none") +
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
 #ggsave("figures/simu_10_delta_1.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
 
@@ -1210,7 +1225,7 @@ threshold <- data.frame(
 to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
 to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
 to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
-to_plot2 %>%
+delta_2 <- to_plot2 %>%
   filter(type_shift == "Delta[2](t)") %>%
    # filter(alpha != 0 & criteria == "TP") %>%
    filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
@@ -1241,8 +1256,15 @@ to_plot2 %>%
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
 #ggsave("figures/simu_10_delta_2.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_2.pdf")
 ```
 
+
+```{r}
+cowplot::plot_grid(delta_1, delta_2, nrow = 2, rel_heights = c(1,1.1))
+ggsave("figures/simu_10_delta_12.pdf", width = 8, height = 11)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
+```
 
 ### Delta 3
 
@@ -1284,6 +1306,7 @@ to_plot2 %>%
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
 #ggsave("figures/simu_10_delta_3.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_3.pdf")
 ```
 
 
@@ -1342,6 +1365,8 @@ for(j in 2:47)
   lines(dates, MatX[,j], ylim = y_lim, lwd = 1.3, 
         col = rgb(0.4, 0.4, 0.4, alpha = 0.3)) 
 #dev.off()
+#R.utils::compressPDF("figures/spain_data.pdf")
+qpdf::pdf_compress("compressedPDFs/spain_data.pdf")
 ```
 
 #### Descriptive Analysis
@@ -1384,6 +1409,7 @@ par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
 #dev.off()
+#R.utils::compressPDF("figures/Spain_evol.pdf")
 ```
 
 Average over all the years:
@@ -1424,6 +1450,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Unemp")
     }
 #dev.off()
+# R.utils::compressPDF("figures/Spain_mean.pdf")
 ```
 
 We calculate all possible clusters:
@@ -1652,6 +1679,7 @@ We first determine the optimal $K$:
 temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX, 
                            nrow(MatX), plot_eigen = T)
 #dev.off()
+# R.utils::compressPDF("figures/spain_h_CPV.pdf")
 ```
 
 We select $K=2$, which explains approximately $90\%$ of the variance. Note that using $K=10$, which accounts for $95\%$ of the variance, leads to the same identified clusters.
@@ -1698,6 +1726,7 @@ We aim to find the optimal value of $K$:
 temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], MatX, 
                            nrow(MatX), plot_eigen = T)
 #dev.off()
+# R.utils::compressPDF("figures/spain_h_CPV_2.pdf")
 ```
 
 We choose $K=2$.
@@ -1869,6 +1898,7 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
@@ -2029,6 +2059,7 @@ plot_tiles(nc_osm)
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 #dev.off()
+#  R.utils::compressPDF("figures/GBR_data.pdf")
 ```
 
 We map the variable "Difference from average temperatures" aggregated over different four-year periods. 
@@ -2067,6 +2098,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Diff Temp")
     }
 #dev.off()
+ #    R.utils::compressPDF("figures/GB_evol.pdf")
 ```
 
 Average mean of difference temperatures:
@@ -2104,6 +2136,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Diff Temp")
     }
 #dev.off()
+#     R.utils::compressPDF("figures/GBR_mean.pdf")
 ```
 
 #### NPFSS method
@@ -2549,6 +2582,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
@@ -2672,6 +2706,7 @@ abline(h = seq(0, 2500, by = 500),
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 #dev.off()
+#  R.utils::compressPDF("figures/NGA_data.pdf")
 ```
 
 We map the average of the variable over a 3-year window. 
@@ -2710,6 +2745,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
 #dev.off()
+#      R.utils::compressPDF("figures/NGA_evol.pdf")
 ```
 
 Average mean:
@@ -2748,6 +2784,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
 #dev.off()
+ #   R.utils::compressPDF("figures/NGA_mean.pdf")
 ```
 
 #### NPFSS method
@@ -3066,6 +3103,7 @@ for(k in 1:4) {
   my_cluster_2 <- res[[k]][[2]]$vec
 
 #pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
+
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3187,6 +3225,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
@@ -3313,6 +3352,7 @@ abline(h = seq(0, 800, by = 200),
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 #dev.off()
+# R.utils::compressPDF(paste0("figures/PAK_data.pdf"))
 ```
 
 We map the average of the variable over a three-year window
@@ -3351,6 +3391,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
 #dev.off()
+# R.utils::compressPDF(paste0("figures/PAK_evol.pdf"))
 ```
 
 Average mean:
@@ -3389,6 +3430,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Prec 5-days")
     }
 #dev.off()
+ #   R.utils::compressPDF(paste0("figures/PAK_mean.pdf"))
 ```
 
 #### NPFSS method
@@ -3707,7 +3749,7 @@ for(k in 1:4) {
   my_cluster_2 <- res[[k]][[2]]$vec
 
 #pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
-sf_use_s2(F)
+  sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
       oma = c(0.5, 0, 2.4, 0), mgp = c(2.4, 0.6, 0), las = 1)
@@ -3828,6 +3870,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
 
@@ -3954,6 +3997,7 @@ abline(h = seq(0, 250, by = 50),
         lines(dates, MatX[j, ], lwd = 1.3, 
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 #dev.off()
+#  R.utils::compressPDF("figures/VEN_data.pdf")
 ```
 
 We map the average of the variable over a 3-year window. 
@@ -3992,6 +4036,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Heatwave days")
     }
 #dev.off()
+# R.utils::compressPDF("figures/VEN_evol.pdf")    
 ```
 
 Average:
@@ -4030,6 +4075,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
                  pal = my_pal, val_rnd = 3, title = "Heatwave days")
     }
 #dev.off()
+#    R.utils::compressPDF("figures/VEN_mean.pdf")
 ```
 
 #### NPFSS method
@@ -4466,6 +4512,8 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
 #dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
+
 }
 ```
 
