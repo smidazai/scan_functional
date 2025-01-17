@@ -291,7 +291,7 @@ res_np <- compute_np(my_pairs_ex[[1]], my_pairs_ex[[2]], X)
 res_np
 ```
 
-The detected cluster contains `r length(res_np$vec)` observations. To assess significance, we perform $B$ permutations on the data and count how many times the scan statistic is less than the observed value.
+The detected cluster contains `r length(res_np$vec)` observations. To assess significance, we perform $B$ permutations on the data and count how many times the scan statistic is less than the observed value. nhh
 
 ```{r, eval = F}
 p_value_np <- 0

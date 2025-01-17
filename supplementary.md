@@ -354,7 +354,7 @@ res_np
 
 The detected cluster contains 45 observations. To assess significance,
 we perform $B$ permutations on the data and count how many times the
-scan statistic is less than the observed value.
+scan statistic is less than the observed value. nhh
 
 ``` r
 p_value_np <- 0
