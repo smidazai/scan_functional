@@ -453,6 +453,20 @@ compute_p <- function(c1, c2, my_mat) {
   my_max_p <- max(stat_p)
   vecclus_p <-  c1[[which.max(stat_p)]]
   
+  # secondary cluster 
+  order_stat <- order(stat_p, decreasing = T)
+  c1_order <- c1[order_stat]
+  c2_order <- c2[order_stat]
+  
+#  for(i in 1:10) {
+#    cat(c1_order[[i]], "\n \n")
+#  }
+#  for(i in 2:nb_combi) {
+#    if(length(intersect(vecclus_p, c1[[i]])) == 0 & length(c1[[i]]) > 5) {
+#      break
+#    }
+#  }
+  # 
   list(
     stat=my_max_p, vec=vecclus_p
   )

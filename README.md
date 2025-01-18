@@ -3,7 +3,7 @@ parametric spatial scan statistic for functional data: application to
 climate change data’’
 ================
 Zaineb Smida, Thibault Laurent, Lionel Cucala
-Last update: 2025-01-17
+(Last update: 2025-01-18)
 
 
 
@@ -34,7 +34,7 @@ To reference this work, please use the following citation:
 
 Zaineb Smida, Thibault Laurent and Lionel Cucala (2024). [A Hotelling
 spatial scan statistic for functional data: application to economic and
-climate data](), *TSE WP*.
+climate data](), *Submitted in Spatial Statistics*.
 
 Packages needed:
 
@@ -758,7 +758,7 @@ Empirically, we generate CPV curves for several simulations across
 different values of $\alpha$, the three shifts, and the four
 probabilistic models.
 
-We represent Figure S3:
+We represent Figure S3 from the supplementary material:
 
 ``` r
 # parameters of simulation 
@@ -1043,6 +1043,8 @@ to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS",
 
 ### 2.3.3 Delta 1
 
+We present Figure 1 from the article:
+
 ``` r
 threshold <- data.frame(
   yintercept = c(0.05, NA, NA), 
@@ -1087,6 +1089,8 @@ delta_1
 ```
 
 ### 2.3.4 Delta 2
+
+We present Figure 2 from the article:
 
 ``` r
 threshold <- data.frame(
@@ -1207,6 +1211,8 @@ col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(Matcoord))
 col_geo[vecclus] <- alpha("#D35C79", 0.8)
 ```
 
+We present Figure S1 on the right from the supplementary material.
+
 ``` r
 #pdf("figures/french_cluster_10.pdf", width = 7, height = 7)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
@@ -1312,6 +1318,8 @@ to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS"))
 
 ### 2.4.1 Delta 1
 
+We present Figure S4 from the supplementary material.
+
 ``` r
 threshold <- data.frame(
   yintercept = c(0.05, NA, NA), 
@@ -1403,11 +1411,13 @@ cowplot::plot_grid(delta_1, delta_2, nrow = 2, rel_heights = c(1,1.1))
 <img src="README_files/figure-gfm/unnamed-chunk-51-1.png" style="display: block; margin: auto;" />
 
 ``` r
-ggsave("figures/simu_10_delta_12.pdf", width = 8, height = 11)
+#ggsave("figures/simu_10_delta_12.pdf", width = 8, height = 11)
 #R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
 ### 2.4.3 Delta 3
+
+We present Figure S5 from the supplementary material.
 
 ``` r
 threshold <- data.frame(
@@ -1482,7 +1492,7 @@ my_proj <- st_crs(region_spain)
 spain <- st_union(region_spain)
 ```
 
-First, we plot the data:
+First, we plot the data (Figure S6):
 
 ``` r
 #pdf(file = "figures/spain_data.pdf", width = 10, height = 4.5)
@@ -1526,7 +1536,7 @@ qpdf::pdf_compress("compressedPDFs/spain_data.pdf")
 #### 3.1.0.1 Descriptive Analysis
 
 We represent the variable “Unemployment” aggregated over different
-2-year periods (i.e., eight quarters).
+2-year periods (Figure S7).
 
 ``` r
 nb_split <- 10
@@ -1569,7 +1579,7 @@ par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 
 <img src="README_files/figure-gfm/unnamed-chunk-55-1.png" style="display: block; margin: auto;" />
 
-Average over all the years:
+Average over all the years (Figure S8):
 
 ``` r
 nb_split <- 1
@@ -1977,6 +1987,8 @@ names_method <- c("HFSS", "DFFSS", "NPFSS", "PFSS")
 cols = c("#D35C79", "#009593")
 ```
 
+We present Figure 3 from the article.
+
 ``` r
 my_var <- 'Unemployment rate (in %)'
 my_country <- "ESP" 
@@ -2102,7 +2114,7 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
 <img src="README_files/figure-gfm/unnamed-chunk-89-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-89-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-89-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-89-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the different
-methods.
+methods (Table 1 in the supplementary material).
 
 ``` r
 res_spain <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -2128,136 +2140,51 @@ knitr::kable(res_spain)
 
 ## 3.2 Climate Data
 
-### 3.2.1 Preparation of the data
-
-Import the data:
+### 3.2.1 Great-Britain
 
 ``` r
-load("data/my_grid.RData")
-coord_region <- st_as_sf(my_grid, coords = c("long", "lat"),
-                         crs = 4326)
-countries_regions <- st_read("data/world-administrative-boundaries.geojson")
-```
-
-    ## Reading layer `world-administrative-boundaries' from data source 
-    ##   `/Users/thibaultlaurent/Documents/scan_functional_hotelling/data/world-administrative-boundaries.geojson' 
-    ##   using driver `GeoJSON'
-    ## Simple feature collection with 256 features and 9 fields
-    ## Geometry type: MULTIPOLYGON
-    ## Dimension:     XY
-    ## Bounding box:  xmin: -180 ymin: -58.49861 xmax: 180 ymax: 83.6236
-    ## Geodetic CRS:  WGS 84
-
-Preparation of the data:
-
-``` r
-# transforn the points into grid
-long_lat_temp <- my_grid[, c("long", "lat")] %>%
-  filter(lat > -90, lat < 90, long > -180, long < 180) %>%
-  arrange(lat, long)   %>%
-  dplyr::select(long, lat)
-df_sf_temp <- st_as_sf(long_lat_temp, coords = c("long", "lat"))
-st_crs(df_sf_temp) <- 4326
-all_cells <- df_sf_temp %>% 
-  st_make_grid(cellsize = c(0.625, 0.5), 
-               offset = c(-179.375 - 0.3125, -89.5 -0.25)) %>% # c(-180 - 0.3125, -90 - 0.25))
-  st_as_sf() %>% 
-  st_join(df_sf_temp) 
-```
-
-    ## although coordinates are longitude/latitude, st_intersects assumes that they
-    ## are planar
-
-``` r
-all_cells$long <- long_lat_temp$long
-all_cells$lat <- long_lat_temp$lat
 # Initialisation
 unique_year <- 1981:2023
 chosen_years <- 20:43
-```
-
-### 3.2.2 Great-Britain
-
-We select the ISO3 code corresponding to Great-Britain.
-
-``` r
+my_var <- "t2m_diff_" 
 my_country <- "GBR"
 my_proj <- 3035 
 ```
 
+Import the data:
+
 ``` r
-select_countries <- countries_regions[countries_regions$color_code %in% my_country, ]
-# drop the islands
-sf_obj <- select_countries %>%
-    filter(iso3 == my_country[1]) %>%
-    mutate(area = st_area(geometry)) %>%
-    top_n(1, area) %>%
-    rowid_to_column() %>%
-    st_cast("POLYGON")  %>% 
-    mutate(area = st_area(geometry)) %>%
-    group_by(rowid) %>%
-    top_n(1, area)
+load("data/GB.RData")
 ```
 
-``` r
-if(length(my_country) > 1) {
-  for(i in 2:length(my_country)) {
-    sf_obj <- rbind(sf_obj, select_countries %>%
-      filter(iso3 == my_country[i]) %>%
-      mutate(area = st_area(geometry)) %>%
-      top_n(1, area) %>%
-      rowid_to_column() %>%
-      st_cast("POLYGON")  %>% 
-      mutate(area = st_area(geometry)) %>%
-      group_by(rowid) %>%
-      top_n(1, area)
-    )
-  }
-  }
-is_intersect <- st_intersects(all_cells, sf_obj)
-is_intersect <- which(sapply(is_intersect, function(x) length(x) != 0))
-lldata_poly <- all_cells[is_intersect, ]
-  
-my_contours <- st_intersection(countries_regions, 
-                               st_union(lldata_poly, is_coverage = T))
+Download tiles and compose raster (SpatRaster)
 
-# dowload tiles and compose raster (SpatRaster)
+``` r
 nc_osm <- get_tiles(my_contours, 
                       provider = "Esri.WorldShadedRelief", 
                       zoom = 7, crop = F)
-poly_cell <- merge(lldata_poly, my_grid, by = c("long", "lat"))
-# coordinates of the centroid
-coord_temp <- st_transform(poly_cell, my_proj)
-# simplify the geometry
-poly_cell <- st_intersection(poly_cell, my_contours)
-poly_cell <- poly_cell[!duplicated(cbind(poly_cell$long, poly_cell$lat)), ]
 ```
 
 We compute all possible clusters:
 
 ``` r
-  coord_proj <- st_coordinates(st_centroid(coord_temp))
-  pairs_geo <- find_all_cluster(coord_proj)
+coord_proj <- st_coordinates(st_centroid(coord_temp))
+pairs_geo <- find_all_cluster(coord_proj)
 ```
 
     ## Number of possible combinaison:  13644
 
 ``` r
-  dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
-
-  dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
-  coord_4326 <- st_transform(poly_cell, 4326) 
+# restrict the size of the cluster
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
+dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
 ```
 
-``` r
-  my_var <- "t2m_diff_" 
-  temp_var <- poly_cell[, paste0(my_var, unique_year)[chosen_years]]
-  MatX <- as.matrix(st_drop_geometry(temp_var))
-```
+#### 3.2.1.1 Descriptive Analysis
 
-#### 3.2.2.1 Descriptive Analysis
-
-First, we plot the data:
+First, we plot the data (Figure S10 from the supplementary material) :
 
 ``` r
 y_lim <- range(MatX)
@@ -2287,7 +2214,7 @@ plot_tiles(nc_osm)
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-98-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-97-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -2295,7 +2222,8 @@ plot_tiles(nc_osm)
 ```
 
 We map the variable “Difference from average temperatures” aggregated
-over different four-year periods.
+over different four-year periods (Figure S11 from the supplementary
+material).
 
 ``` r
 nb_split <- 8
@@ -2332,14 +2260,15 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-99-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-98-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
  #    R.utils::compressPDF("figures/GB_evol.pdf")
 ```
 
-Average mean of difference temperatures:
+Average mean of difference temperatures (Figure S12 from the
+supplementary material):
 
 ``` r
 nb_split <- 1
@@ -2375,14 +2304,14 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-100-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-99-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
 #     R.utils::compressPDF("figures/GBR_mean.pdf")
 ```
 
-#### 3.2.2.2 NPFSS method
+#### 3.2.1.2 NPFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -2392,13 +2321,13 @@ res_np
 ```
 
     ## $stat
-    ## [1] 4.56314
+    ## [1] 4.552714
     ## 
     ## $vec
-    ##  [1] 126   3 133 125 127 134   4   2 132  12 139 140  13  11 138 124 128 135   5
-    ## [20]   1  23 141  14  24 143  10  22 129 144  25  21 136   6  37  38  36 142  15
-    ## [39]  39  35 145  26  52  53 130  51 137   7  16  40  54  50  27  70  71  69  55
-    ## [58] 131  41  72   8  68  17  86  73  28  87  56  85  67  88  42  84
+    ##  [1]   3  12 126   2   4 127  13  11 125  23 133 134  24  22 132   1   5 128  14
+    ## [20]  10 124  37 139 135  25  38 140  21  36 138   6 141  39  35 129  15  52  53
+    ## [39] 143  51 136  26  54 144  50 142  40  70  71   7  69 130  16 137  27  55 145
+    ## [58]  72  68  41  86  87  85  73  67   8  56  88 131  17  84  28
 
 **Significance (using parallel computing)**
 
@@ -2429,8 +2358,11 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np$stat <x))) /  (1
 **Secondary cluster (2MLC)**
 
 ``` r
-cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_np$vec))
-cluster_g2_temp <- sapply(pairs_geo[[2]], function(x) setdiff(x, res_np$vec))
+# We exclude cells that are not contiguous.
+temp_cl <- c(res_np$vec, 55, 56, 73, 74, 84, 85, 86, 87, 88, 89, 99, 100, 
+             101, 102, 103, 113, 114) 
+cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, temp_cl))
+cluster_g2_temp <- sapply(pairs_geo[[2]], function(x) setdiff(x, temp_cl))
 id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
@@ -2442,11 +2374,12 @@ res_np_2
 ```
 
     ## $stat
-    ## [1] 2.655224
+    ## [1] 2.566295
     ## 
     ## $vec
-    ##  [1]  89 103 102  74 101  57  75  90  58 104  43 100  29 114  18  76  91  59 105
-    ## [20]  44  99   9  30 113  19  77  92  60 106  45
+    ##  [1]  91 105  76  92  90 106  77  75 104  59 115  60  58  93 107  78  44  45  43
+    ## [20] 116  61  57  30  46  42  94  31  29 108  79 117  62  32  19 122  47  20  18
+    ## [39]  95 109  80 118  63   9
 
 **Significance**
 
@@ -2464,7 +2397,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np_2$stat <x))) /  
 
     ## p-value:  0.001
 
-#### 3.2.2.3 PFSS method
+#### 3.2.1.3 PFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -2474,13 +2407,13 @@ res_p
 ```
 
     ## $stat
-    ## [1] 89.93453
+    ## [1] 89.3536
     ## 
     ## $vec
-    ##  [1] 126   3 133 125 127 134   4   2 132  12 139 140  13  11 138 124 128 135   5
-    ## [20]   1  23 141  14  24 143  10  22 129 144  25  21 136   6  37  38  36 142  15
-    ## [39]  39  35 145  26  52  53 130  51 137   7  16  40  54  50  27  70  71  69  55
-    ## [58] 131  41  72   8  68  17  86  73  28  87  56  85  67  88  42  84
+    ##  [1]   3  12 126   2   4 127  13  11 125  23 133 134  24  22 132   1   5 128  14
+    ## [20]  10 124  37 139 135  25  38 140  21  36 138   6 141  39  35 129  15  52  53
+    ## [39] 143  51 136  26  54 144  50 142  40  70  71   7  69 130  16 137  27  55 145
+    ## [58]  72  68  41  86  87  85  73  67   8  56  88 131  17  84  28
 
 **Significance**
 
@@ -2501,8 +2434,11 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p$stat <x))) /  (1 +
 **Secondary cluster (2MLC)**
 
 ``` r
-cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, res_p$vec))
-cluster_g2_temp <- sapply(pairs_geo[[2]], function(x) setdiff(x, res_p$vec))
+# We exclude cells that are not contiguous.
+temp_cl <- c(res_p$vec, 55, 56, 73, 74, 84, 85, 86, 87, 88, 89, 99, 100, 
+             101, 102, 103, 113, 114) 
+cluster_g1_temp <- sapply(pairs_geo[[1]], function(x) setdiff(x, temp_cl))
+cluster_g2_temp <- sapply(pairs_geo[[2]], function(x) setdiff(x, temp_cl))
 id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
@@ -2514,12 +2450,12 @@ res_p_2
 ```
 
     ## $stat
-    ## [1] 20.95592
+    ## [1] 27.55677
     ## 
     ## $vec
-    ##  [1] 100  99 114 113 101 102  89 103  74  57  90  75 104  58  43  29  18  91  76
-    ## [20] 105  59   9  44  30  19  92  77 106  60 115  45  31  20  93  78 107  61 116
-    ## [39]  46  32  94  79 108  62 117  47 122  95  80 109  63 118
+    ##  [1] 105  91 106 104 115  92  90  76  77  75 107 116  93  59  60  58  78  44  61
+    ## [20]  57 108  45  43 117  94 122  79  46  42  30  62  31  29 109 118  32  95  47
+    ## [39] 123  80  19  20  18  63  48 110 119  96   9  81
 
 **Significance**
 
@@ -2537,7 +2473,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-#### 3.2.2.4 DFFSS method
+#### 3.2.1.4 DFFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -2547,15 +2483,12 @@ res_dffss
 ```
 
     ## $stat
-    ## [1] 20.21928
+    ## [1] 18.71398
     ## 
     ## $vec
-    ##   [1]  70  86  52  69  71  53  87  85  51 101  37  38 102  36  68  72  54  88
-    ##  [19]  84  50  23  39  24 100  35  22  67  73  25 114  21  55  89  12  13  11
-    ##  [37]  40 103  99  14  10  26 113   3   4  74   2  56  41  15   5   1  27 126
-    ##  [55] 127 125   6  16 128  57 124  42 133 129  28 134   7 132 135  17  75  58
-    ##  [73]  90 130 136  43 104 139 140   8 138  29 141 137  18 131 142  76 143  59
-    ##  [91]  91   9  44 105 144  30 145  19  77  60  92  45 106 115
+    ##  [1]   5  14 128   4   6  15 129 127  13  25 135  26 136  24 134   3   7  16 130
+    ## [20]  12 126  39 141  40 142  27  38 140 137  23 133   2   8  41  54 144  37 139
+    ## [39]  17 131  11 125  55 145  53 143  28  22 132  56  52  42  36 138  72  73  71
 
 **Significance**
 
@@ -2589,11 +2522,13 @@ res_dffss_2
 ```
 
     ## $stat
-    ## [1] 12.10897
+    ## [1] 20.14197
     ## 
     ## $vec
-    ##  [1] 116 107 117 122 108  93  94 118  78 123 109  79  95  61  80  62 119 110  96
-    ## [20]  63
+    ##  [1] 107 116  93 108 106 117  92  94 115  78 122  79  77 109 105  61 118  95  91
+    ## [20]  62  60 123  80  76  46  63  59  47  45 110 104 119  96  90  81  75  48  44
+    ## [39]  32  64  31  58  33 111  30 120  97  49  43  82  20  65  57  34  29  19 112
+    ## [58] 121  98  83  74  18  66   9
 
 **Significance**
 
@@ -2611,11 +2546,12 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 
     ## p-value:  0.001
 
-#### 3.2.2.5 HFSS method
+#### 3.2.1.5 HFSS method
 
 **Most Likely Cluster (MLC)**
 
-First, we determine the value of $K$:
+First, we determine the value of $K$ (Figure S13 on the left from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
@@ -2623,9 +2559,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-122-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-121-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  48.2 67.5 79.88 87.21 91.05 93.79 95.39 96.54 97.12 97.63
+    ## Variance explained in % by the 10 first components:  48.9 67.94 80.25 87.43 91.3 93.96 95.52 96.62 97.19 97.69
 
 ``` r
 #dev.off()
@@ -2671,7 +2607,8 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
 
-We seek the optimal value of $K$:
+We seek the optimal value of $K$ (Figure S13 on the right from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
@@ -2679,9 +2616,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-127-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-126-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  45.12 72.27 85.58 90.74 93.01 94.91 96.16 97 97.73 98.25
+    ## Variance explained in % by the 10 first components:  44.39 71.83 85.81 90.86 93.11 94.96 96.19 97.02 97.74 98.26
 
 ``` r
 #dev.off()
@@ -2718,7 +2655,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-#### 3.2.2.6 Summary of the results
+#### 3.2.1.6 Summary of the results
 
 **Visualization of the result**
 
@@ -2733,6 +2670,8 @@ res[[3]][[2]] <- res_np_2
 res[[4]][[1]] <- res_p
 res[[4]][[2]] <- res_p_2
 ```
+
+We represent Figure 4 from the article:
 
 ``` r
 my_var <- 'Difference with the normal temperature (in C)'
@@ -2870,7 +2809,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
 }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-132-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-132-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-132-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-132-4.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-131-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-131-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-131-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-131-4.png" style="display: block; margin: auto;" />
 
 ``` r
 res_GB <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -2889,64 +2828,33 @@ knitr::kable(res_GB)
 
 |       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
 |-------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |           73 |          0.001 |           30 |          0.001 |
-| PFSS  |           73 |          0.001 |           52 |          0.001 |
-| DFFSS |          104 |          0.001 |           20 |          0.001 |
+| NPFSS |           72 |          0.001 |           44 |          0.001 |
+| PFSS  |           72 |          0.001 |           50 |          0.001 |
+| DFFSS |           57 |          0.001 |           64 |          0.001 |
 | HFSS  |           50 |          0.001 |           31 |          0.001 |
 
-### 3.2.3 Nigeria
+### 3.2.2 Nigeria
 
-We select the ISO3 code of Nigeria:
+Initialization:
 
 ``` r
 my_country <- "NGA"
 my_proj <- 32629 
+my_var <- "prec_5days_" 
 ```
 
-``` r
-select_countries <- countries_regions[countries_regions$color_code %in% my_country, ]
-  
-# drop the islands
-sf_obj <- select_countries %>%
-    filter(iso3 == my_country[1]) %>%
-    mutate(area = st_area(geometry)) %>%
-    top_n(1, area) %>%
-    rowid_to_column() %>%
-    st_cast("POLYGON")  %>% 
-    mutate(area = st_area(geometry)) %>%
-    group_by(rowid) %>%
-    top_n(1, area)
-  
-if(length(my_country) > 1) {
-  for(i in 2:length(my_country)) {
-    sf_obj <- rbind(sf_obj, select_countries %>%
-      filter(iso3 == my_country[i]) %>%
-      mutate(area = st_area(geometry)) %>%
-      top_n(1, area) %>%
-      rowid_to_column() %>%
-      st_cast("POLYGON")  %>% 
-      mutate(area = st_area(geometry)) %>%
-      group_by(rowid) %>%
-      top_n(1, area)
-    )
-  }
-  }
-is_intersect <- st_intersects(all_cells, sf_obj)
-is_intersect <- which(sapply(is_intersect, function(x) length(x) != 0))
-lldata_poly <- all_cells[is_intersect, ]
-  
-my_contours <- st_intersection(select_countries, 
-                               st_union(lldata_poly, is_coverage = T))
+Import the data:
 
-# dowload tiles and compose raster (SpatRaster)
+``` r
+load("data/nigeria.RData")
+```
+
+Download tiles and compose raster (SpatRaster)
+
+``` r
 nc_osm <- get_tiles(my_contours, 
                       provider = "Esri.WorldShadedRelief", 
                       zoom = 7, crop = F)
-poly_cell <- merge(lldata_poly, my_grid, by = c("long", "lat"))
-# coordinates of the centroid
-coord_temp <- st_transform(poly_cell, my_proj)
-# simplify the geometry
-poly_cell <- st_intersection(poly_cell, my_contours)
 ```
 
 We compute all possible clusters:
@@ -2959,24 +2867,23 @@ We compute all possible clusters:
     ## Number of possible combinaison:  70172
 
 ``` r
+  # restrict the size of the cluster
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
   dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
 
   dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
   coord_4326 <- st_transform(poly_cell, 4326) 
 ```
 
-``` r
-  my_var <- "prec_5days_" 
-  temp_var <- poly_cell[, paste0(my_var, unique_year)[chosen_years]]
-  MatX <- as.matrix(st_drop_geometry(temp_var))
-```
+#### 3.2.2.1 Descriptive Analysis
 
-#### 3.2.3.1 Descriptive Analysis
-
-First, we plot the data:
+First, we plot the data (Figure S14 from the supplementary material):
 
 ``` r
 y_lim <- range(MatX)
+dates <- unique_year[chosen_years]
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
 #pdf(file = "figures/NGA_data.pdf", width = 12, height = 4.5)
 par(mfrow = c(1, 2), mar = c(3.7, 3, 1, 1), oma = c(0, 0, 0, 0),
@@ -3010,7 +2917,8 @@ abline(h = seq(0, 2500, by = 500),
 #  R.utils::compressPDF("figures/NGA_data.pdf")
 ```
 
-We map the average of the variable over a 3-year window.
+We map the average of the variable over a 3-year window (Figure S15 from
+the supplementary material):
 
 ``` r
 nb_split <- 8
@@ -3054,7 +2962,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 #      R.utils::compressPDF("figures/NGA_evol.pdf")
 ```
 
-Average mean:
+Average mean (Figure S16 from the supplementary material):
 
 ``` r
 nb_split <- 1
@@ -3098,7 +3006,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
  #   R.utils::compressPDF("figures/NGA_mean.pdf")
 ```
 
-#### 3.2.3.2 NPFSS method
+#### 3.2.2.2 NPFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -3108,21 +3016,12 @@ res_np
 ```
 
     ## $stat
-    ## [1] 4.492757
+    ## [1] 4.441852
     ## 
     ## $vec
-    ##   [1] 241 240 222 221 259 239 220 258 203 202 277 238 201 276 219 257 184   8
-    ##  [19] 183   7 200 275 237 182 218 256   6 199 274 181   5 164  23 165 163 236
-    ##  [37]  22 217 255 162  21 180   4 198 273 161  20 235 146 216 254 147 145  37
-    ##  [55] 179   3  36 160  19 144 197  35 272 143  34 159 234 178  18   2 215 253
-    ##  [73] 130 142 129  33 196  52 271  51 128  50 158  17 141 127 177   1  32 252
-    ##  [91]  49 233 270 126 214 285  48 157 140 115  16  67  31 114  66 195 125  15
-    ## [109]  65 251 113  47 232 269  64 139 213 176 284 112  30 124  29  63  46 194
-    ## [127]  14 111  79  78 250 156 231  62 123 268  77  44 175 212  45  28 283 110
-    ## [145]  76 193  61  13  75 138 155 109 249  43  59 230 174 267  89  74  27 211
-    ## [163]  88  60 282  87 137 192  86 122 154  12  73  58  42  71 101  85 173 248
-    ## [181] 229 266  26 210  72 281 136  84 121 191  94 153 108  57  11  70  93  41
-    ## [199]  83  92
+    ##  [1] 166 167 185 186 168 148 187 204 205 169 206 149 188 223 131 224 207 170 150
+    ## [20] 189 225 132 208 226 171 242 243 151 190 244 116 227 133 209 245 172 152 191
+    ## [39] 117 228 260 102 261 246 134 210 262 173 263 103 118
 
 **Significance (using parallel computing)**
 
@@ -3158,12 +3057,15 @@ res_np_2
 ```
 
     ## $stat
-    ## [1] 3.094837
+    ## [1] 4.001795
     ## 
     ## $vec
-    ##  [1] 166 167 185 186 168 148 187 204 205 169 206 149 188 223 131 224 207 170 150
-    ## [20] 189 225 132 208 226 171 242 243 151 190 244 116 227 133 209 245 172 152 117
-    ## [39] 228 260 102 261 246 134 262 263 103 118
+    ##   [1] 259 258 240 277 241 239 276 257 238 275 221   7 222 220   8   6 256 219
+    ##  [19]   5 237 274 202  22 203 201  23  21 218   4 255 200 236 273  20 217   3
+    ##  [37] 199  19 183  36 184 182 254  37  35 235 272 181  34 198  18 216   2 180
+    ##  [55]  33 253 163 234 271 164 162  51 197  17  52  50 179 165  32 161 215   1
+    ##  [73]  49 160  48 178 270 196  31  16 252 285 159 145 146 144 233  47  66  15
+    ##  [91]  67  65 147 143 177  64  30 158 214 142
 
 **Significance**
 
@@ -3181,7 +3083,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np_2$stat < x))) / 
 
     ## p-value:  0.001
 
-#### 3.2.3.3 PFSS method
+#### 3.2.2.3 PFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -3250,7 +3152,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-#### 3.2.3.4 DFFSS method
+#### 3.2.2.4 DFFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -3319,11 +3221,12 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 
     ## p-value:  0.001
 
-#### 3.2.3.5 HFSS Method
+#### 3.2.2.5 HFSS Method
 
 **Most Likely Cluster (MLC)**
 
-First, we determine the value of $K$:
+First, we determine the value of $K$ (Figure S17 on the left from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
@@ -3333,7 +3236,7 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
 
 <img src="README_files/figure-gfm/unnamed-chunk-162-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  62.51 79.72 85.9 89.73 92.04 93.67 94.99 95.94 96.68 97.28
+    ## Variance explained in % by the 10 first components:  62.23 79.77 85.92 89.75 92.05 93.68 95 95.95 96.69 97.29
 
 ``` r
 #dev.off()
@@ -3375,7 +3278,8 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
 
-We seek the optimal value of $K$:
+We seek the optimal value of $K$ (Figure S17 on the right from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
@@ -3385,7 +3289,7 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
 
 <img src="README_files/figure-gfm/unnamed-chunk-167-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  42.01 66.88 76.29 80.84 85.13 87.91 90.44 92.18 93.61 94.71
+    ## Variance explained in % by the 10 first components:  42.4 67.18 76.48 80.99 85.24 88 90.51 92.24 93.67 94.76
 
 ``` r
 #dev.off()
@@ -3422,7 +3326,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-#### 3.2.3.6 Summary of the results
+#### 3.2.2.6 Summary of the results
 
 **Visualization of the result**
 
@@ -3437,6 +3341,8 @@ res[[3]][[2]] <- res_np_2
 res[[4]][[1]] <- res_p
 res[[4]][[2]] <- res_p_2
 ```
+
+We plot Figure 5 from the article:
 
 ``` r
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
@@ -3577,7 +3483,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
 <img src="README_files/figure-gfm/unnamed-chunk-172-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-172-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-172-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-172-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
-methods.
+methods (Table 2 in the supplementary material).
 
 ``` r
 res_NGA <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -3596,64 +3502,33 @@ knitr::kable(res_NGA)
 
 |       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
 |-------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |          200 |          0.001 |           48 |          0.001 |
+| NPFSS |           51 |          0.001 |          100 |          0.001 |
 | PFSS  |            9 |          0.001 |           35 |          0.001 |
 | DFFSS |           35 |          0.001 |            9 |          0.001 |
 | HFSS  |            9 |          0.001 |           36 |          0.001 |
 
-### 3.2.4 Pakistan
+### 3.2.3 Pakistan
 
 We select the ISO3 code for Pakistan:
 
 ``` r
 my_country <- "PAK"
 my_proj <- 9678 
+my_var <- "prec_5days_" 
 ```
 
-``` r
-select_countries <- countries_regions[countries_regions$color_code %in% my_country, ]
-  
-# drop the islands
-sf_obj <- select_countries %>%
-    filter(iso3 == my_country[1]) %>%
-    mutate(area = st_area(geometry)) %>%
-    top_n(1, area) %>%
-    rowid_to_column() %>%
-    st_cast("POLYGON")  %>% 
-    mutate(area = st_area(geometry)) %>%
-    group_by(rowid) %>%
-    top_n(1, area)
-  
-if(length(my_country) > 1) {
-  for(i in 2:length(my_country)) {
-    sf_obj <- rbind(sf_obj, select_countries %>%
-      filter(iso3 == my_country[i]) %>%
-      mutate(area = st_area(geometry)) %>%
-      top_n(1, area) %>%
-      rowid_to_column() %>%
-      st_cast("POLYGON")  %>% 
-      mutate(area = st_area(geometry)) %>%
-      group_by(rowid) %>%
-      top_n(1, area)
-    )
-  }
-  }
-is_intersect <- st_intersects(all_cells, sf_obj)
-is_intersect <- which(sapply(is_intersect, function(x) length(x) != 0))
-lldata_poly <- all_cells[is_intersect, ]
-  
-my_contours <- st_intersection(select_countries, 
-                               st_union(lldata_poly, is_coverage = T))
+Import the data:
 
-# dowload tiles and compose raster (SpatRaster)
+``` r
+load("data/pakistan.RData")
+```
+
+Download tiles and compose raster (SpatRaster)
+
+``` r
 nc_osm <- get_tiles(my_contours, 
                       provider = "Esri.WorldShadedRelief", 
                       zoom = 7, crop = F)
-poly_cell <- merge(lldata_poly, my_grid, by = c("long", "lat"))
-# coordinates of the centroid
-coord_temp <- st_transform(poly_cell, my_proj)
-# simplify the geometry
-poly_cell <- st_intersection(poly_cell, my_contours)
 ```
 
 We compute all possible clusters:
@@ -3666,21 +3541,19 @@ We compute all possible clusters:
     ## Number of possible combinaison:  71053
 
 ``` r
+  # restrict the size of the cluster
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
   dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
 
   dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
   coord_4326 <- st_transform(poly_cell, 4326) 
 ```
 
-``` r
-  my_var <- "prec_5days_" 
-  temp_var <- poly_cell[, paste0(my_var, unique_year)[chosen_years]]
-  MatX <- as.matrix(st_drop_geometry(temp_var))
-```
+#### 3.2.3.1 Descriptive Analysis
 
-#### 3.2.4.1 Descriptive Analysis
-
-First, we plot the data:
+First, we plot the data (Figure S18 from the supplementary material):
 
 ``` r
 y_lim <- range(MatX)
@@ -3710,14 +3583,15 @@ abline(h = seq(0, 800, by = 200),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-178-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-179-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
 # R.utils::compressPDF(paste0("figures/PAK_data.pdf"))
 ```
 
-We map the average of the variable over a three-year window
+We map the average of the variable over a three-year window (Figure S19
+from the supplementary material)
 
 ``` r
 nb_split <- 8
@@ -3754,14 +3628,14 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-179-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-180-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
 # R.utils::compressPDF(paste0("figures/PAK_evol.pdf"))
 ```
 
-Average mean:
+Average mean (Figure S20 from the supplementary material):
 
 ``` r
 nb_split <- 1
@@ -3798,14 +3672,14 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-180-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-181-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
  #   R.utils::compressPDF(paste0("figures/PAK_mean.pdf"))
 ```
 
-#### 3.2.4.2 NPFSS method
+#### 3.2.3.2 NPFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -3815,22 +3689,13 @@ res_np
 ```
 
     ## $stat
-    ## [1] 4.568634
+    ## [1] 4.47674
     ## 
     ## $vec
-    ##   [1] 246 247 229 264 230 228 248 211 265 231 212 210 213 209 249 266 232 195
-    ##  [19] 196 194 281 214 197 193 250 267 233 177 198 178 282 176 215 179 175 251
-    ##  [37] 268 234 295 199 180 283 216 159 160 158 161 157 296 181 200 252 174 269
-    ##  [55] 235 162 284 156 217 302 182 142 143 173 141 297 163 201 192 155 144 253
-    ##  [73] 140 270 236 145 285 218 208 139 164 183 172 154 298 202 146 125 191 126
-    ##  [91] 138 124 254 127 271 237 123 165 303 286 184 153 147 219 128 207 171 122
-    ## [109] 137 299 203 129 190 305 121 166 148 108 109 255 107 272 304 152 238 136
-    ## [127] 110 185 130 106 287 170 220 111 120 105 300 204 306 149 189 167 112 131
-    ## [145] 135 151 104 119 256 186 273 239  92  93 169  91 113 288  94 221  90 103
-    ## [163] 132  95 205 168 134  89 118 114 150  96 102 187  88 257 274 240  97 289
-    ## [181]  78 222  79  77  80 117 133  87  76 206  81 101  98  75  82 188  86 258
-    ## [199] 275  74 241 116 290  83 223 100  68  69  67  73  70  85  66  71  65 115
-    ## [217]  72  99 259 276 242  84 291  64 224 301
+    ##  [1] 17 18 16 27 28 26 19 15 37 29 25  9  8 38 36 39 35 20 14 30 24 10  7 47 48
+    ## [26] 46 40 34  2 49 45 21 13 31 11 23  6 57 50 44 58 41 56 33  3 59 55 12 22  5
+    ## [51] 51 43 60 54 32  4 66 67 65 68 64 61 53 42  1 69 63 76 77 52 75 70 62 78 74
+    ## [76] 79
 
 **Significance (using parallel computing)**
 
@@ -3865,10 +3730,16 @@ res_np_2
 ```
 
     ## $stat
-    ## [1] 2.894225
+    ## [1] 3.719626
     ## 
     ## $vec
-    ##  [1] 50 51 49 60 40 61 59 41 39 48 30 58 38 31 29
+    ##   [1] 177 178 176 195 159 196 160 194 158 179 175 211 142 197 161 193 157 212
+    ##  [19] 210 143 141 213 144 209 140 180 198 162 156 229 125 230 228 126 124 214
+    ##  [37] 145 139 231 127 123 181 174 199 163 155 246 232 108 128 247 122 215 109
+    ##  [55] 146 107 138 248 110 106 182 173 200 164 154 233 129 121 249 111 105 216
+    ##  [73] 147 137 264  92  93  91 265 250  94 234  90 112 183 130 172 104 120 201
+    ##  [91] 165 192 153 266  95 217  89 148 136 251 113 267 103 235  96 131 119  88
+    ## [109]  80 184
 
 **Significance**
 
@@ -3886,7 +3757,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np_2$stat < x))) / 
 
     ## p-value:  0.001
 
-#### 3.2.4.3 PFSS method
+#### 3.2.3.3 PFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -3896,22 +3767,13 @@ res_p
 ```
 
     ## $stat
-    ## [1] 48.70816
+    ## [1] 46.04561
     ## 
     ## $vec
-    ##   [1] 246 247 229 264 230 228 248 211 265 231 212 210 213 209 249 266 232 195
-    ##  [19] 196 194 281 214 197 193 250 267 233 177 198 178 282 176 215 179 175 251
-    ##  [37] 268 234 295 199 180 283 216 159 160 158 161 157 296 181 200 252 174 269
-    ##  [55] 235 162 284 156 217 302 182 142 143 173 141 297 163 201 192 155 144 253
-    ##  [73] 140 270 236 145 285 218 208 139 164 183 172 154 298 202 146 125 191 126
-    ##  [91] 138 124 254 127 271 237 123 165 303 286 184 153 147 219 128 207 171 122
-    ## [109] 137 299 203 129 190 305 121 166 148 108 109 255 107 272 304 152 238 136
-    ## [127] 110 185 130 106 287 170 220 111 120 105 300 204 306 149 189 167 112 131
-    ## [145] 135 151 104 119 256 186 273 239  92  93 169  91 113 288  94 221  90 103
-    ## [163] 132  95 205 168 134  89 118 114 150  96 102 187  88 257 274 240  97 289
-    ## [181]  78 222  79  77  80 117 133  87  76 206  81 101  98  75  82 188  86 258
-    ## [199] 275  74 241 116 290  83 223 100  68  69  67  73  70  85  66  71  65 115
-    ## [217]  72  99 259 276 242  84 291  64 224 301
+    ##  [1] 17 18 16 27 28 26 19 15 37 29 25  9  8 38 36 39 35 20 14 30 24 10  7 47 48
+    ## [26] 46 40 34  2 49 45 21 13 31 11 23  6 57 50 44 58 41 56 33  3 59 55 12 22  5
+    ## [51] 51 43 60 54 32  4 66 67 65 68 64 61 53 42  1 69 63 76 77 52 75 70 62 78 74
+    ## [76] 79
 
 **Significance**
 
@@ -3945,10 +3807,10 @@ res_p_2
 ```
 
     ## $stat
-    ## [1] 47.41137
+    ## [1] 41.66656
     ## 
     ## $vec
-    ##  [1] 61 60 51 50 59 41 49 40 39 58 48 31 30 38
+    ##  [1]  83  82  97  98  96  81 113  95  71 114 112
 
 **Significance**
 
@@ -3966,7 +3828,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-#### 3.2.4.4 DFFSS method
+#### 3.2.3.4 DFFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -4035,11 +3897,12 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 
     ## p-value:  0.001
 
-### 3.2.5 HFSS method
+### 3.2.4 HFSS method
 
 **Most Likely Cluster (MLC)**
 
-First, we determine the value of $K$:
+First, we determine the value of $K$ (Figure S21 on the left from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
@@ -4047,9 +3910,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-202-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-203-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  30.03 53.64 68.29 77.6 84.99 89.76 91.91 93.52 94.87 95.91
+    ## Variance explained in % by the 10 first components:  30.04 53.68 68.33 77.64 84.9 89.79 91.95 93.55 94.88 95.91
 
 ``` r
 #dev.off()
@@ -4093,7 +3956,8 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
 
-We seek the optimal value of $K$:
+We seek the optimal value of $K$ (Figure S21 on the right from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
@@ -4101,9 +3965,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-207-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-208-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  33.05 56.84 68.03 77.17 83.4 88.36 90.77 92.61 94.14 95.35
+    ## Variance explained in % by the 10 first components:  33 56.99 68.16 77.13 83.42 88.41 90.83 92.65 94.16 95.35
 
 ``` r
 #dev.off()
@@ -4140,7 +4004,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-### 3.2.6 Summary of the results
+### 3.2.5 Summary of the results
 
 **Visualization of the result**
 
@@ -4155,6 +4019,8 @@ res[[3]][[2]] <- res_np_2
 res[[4]][[1]] <- res_p
 res[[4]][[2]] <- res_p_2
 ```
+
+We plot Figure 6 from the article:
 
 ``` r
 title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
@@ -4291,10 +4157,10 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
 }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-212-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-212-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-212-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-212-4.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-213-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-213-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-213-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-213-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
-methods.
+methods (Table 3 from the supplementary material).
 
 ``` r
 res_PAK <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -4313,64 +4179,33 @@ knitr::kable(res_PAK)
 
 |       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
 |-------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |          226 |          0.001 |           15 |          0.001 |
-| PFSS  |          226 |          0.001 |           14 |          0.001 |
+| NPFSS |           76 |          0.001 |          110 |          0.001 |
+| PFSS  |           76 |          0.001 |           11 |          0.001 |
 | DFFSS |           16 |          0.001 |           25 |          0.001 |
 | HFSS  |           11 |          0.001 |           31 |          0.001 |
 
-### 3.2.7 Venezuela
+### 3.2.6 Venezuela
 
 We select the ISO3 code for Venezuela:
 
 ``` r
 my_country <- "VEN"
-my_proj <- 4247 
+my_proj <- 4247
+ my_var <- "hwd_upp_" 
 ```
 
-``` r
-select_countries <- countries_regions[countries_regions$color_code %in% my_country, ]
-  
-# drop the islands
-sf_obj <- select_countries %>%
-    filter(iso3 == my_country[1]) %>%
-    mutate(area = st_area(geometry)) %>%
-    top_n(1, area) %>%
-    rowid_to_column() %>%
-    st_cast("POLYGON")  %>% 
-    mutate(area = st_area(geometry)) %>%
-    group_by(rowid) %>%
-    top_n(1, area)
-  
-if(length(my_country) > 1) {
-  for(i in 2:length(my_country)) {
-    sf_obj <- rbind(sf_obj, select_countries %>%
-      filter(iso3 == my_country[i]) %>%
-      mutate(area = st_area(geometry)) %>%
-      top_n(1, area) %>%
-      rowid_to_column() %>%
-      st_cast("POLYGON")  %>% 
-      mutate(area = st_area(geometry)) %>%
-      group_by(rowid) %>%
-      top_n(1, area)
-    )
-  }
-  }
-is_intersect <- st_intersects(all_cells, sf_obj)
-is_intersect <- which(sapply(is_intersect, function(x) length(x) != 0))
-lldata_poly <- all_cells[is_intersect, ]
-  
-my_contours <- st_intersection(select_countries, 
-                               st_union(lldata_poly, is_coverage = T))
+Import the data:
 
-# dowload tiles and compose raster (SpatRaster)
+``` r
+load("data/venezuela.RData")
+```
+
+Download tiles and compose raster (SpatRaster)
+
+``` r
 nc_osm <- get_tiles(my_contours, 
                       provider = "Esri.WorldShadedRelief", 
                       zoom = 7, crop = F)
-poly_cell <- merge(lldata_poly, my_grid, by = c("long", "lat"))
-# coordinates of the centroid
-coord_temp <- st_transform(poly_cell, my_proj)
-# simplify the geometry
-poly_cell <- st_intersection(poly_cell, my_contours)
 ```
 
 We compute all possible clusters:
@@ -4383,21 +4218,19 @@ We compute all possible clusters:
     ## Number of possible combinaison:  76138
 
 ``` r
+  # restrict the size of the cluster
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
   dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
 
   dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
   coord_4326 <- st_transform(poly_cell, 4326) 
 ```
 
-``` r
-  my_var <- "hwd_upp_" 
-  temp_var <- poly_cell[, paste0(my_var, unique_year)[chosen_years]]
-  MatX <- as.matrix(st_drop_geometry(temp_var))
-```
+#### 3.2.6.1 Descriptive Analysis
 
-#### 3.2.7.1 Descriptive Analysis
-
-First, we plot the data:
+First, we plot the data (Figure S22 from the supplementary material):
 
 ``` r
 y_lim <- range(MatX)
@@ -4427,14 +4260,15 @@ abline(h = seq(0, 250, by = 50),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-218-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-220-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
 #  R.utils::compressPDF("figures/VEN_data.pdf")
 ```
 
-We map the average of the variable over a 3-year window.
+We map the average of the variable over a 3-year window (Figure S23 from
+the supplementary material).
 
 ``` r
 nb_split <- 8
@@ -4471,14 +4305,14 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-219-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-221-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
 # R.utils::compressPDF("figures/VEN_evol.pdf")    
 ```
 
-Average:
+Average (Figure S24 from the supplementary material):
 
 ``` r
 nb_split <- 1
@@ -4515,14 +4349,14 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-220-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-222-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
 #    R.utils::compressPDF("figures/VEN_mean.pdf")
 ```
 
-#### 3.2.7.2 NPFSS method
+#### 3.2.6.2 NPFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -4597,7 +4431,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np_2$stat < x))) / 
 
     ## p-value:  0.001
 
-#### 3.2.7.3 PFSS method
+#### 3.2.6.3 PFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -4669,7 +4503,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-#### 3.2.7.4 DFFSS method
+#### 3.2.6.4 DFFSS method
 
 **Most Likely Cluster (MLC)**
 
@@ -4741,11 +4575,12 @@ cat("p-value: ", (1 + sum(sapply(res_par_dffss, function(x) res_dffss_2$stat <x)
 
     ## p-value:  0.001
 
-### 3.2.8 HFSS method
+### 3.2.7 HFSS method
 
 **Most Likely Cluster (MLC)**
 
-First, we determine the value of $K$:
+First, we determine the value of $K$ (Figure S25 on the left from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV.pdf"), width = 6, height = 4)
@@ -4753,9 +4588,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-242-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-244-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  52.58 72.55 82.14 89.04 91.83 93.95 95.22 96.19 97.09 97.73
+    ## Variance explained in % by the 10 first components:  52.66 72.58 82.05 88.92 91.75 93.89 95.17 96.16 97.06 97.7
 
 ``` r
 #dev.off()
@@ -4800,7 +4635,8 @@ id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
           which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
 ```
 
-We seek the optimal value of $K$:
+We seek the optimal value of $K$ (Figure S25 on the right from the
+supplementary material):
 
 ``` r
 #pdf(paste0("figures/", my_country, "_h_CPV_2.pdf"), width = 6, height = 4)
@@ -4808,9 +4644,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-247-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-249-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  62.47 79.57 87.5 90.63 93.12 94.77 96.08 97.03 97.7 98.16
+    ## Variance explained in % by the 10 first components:  62.69 79.51 87.4 90.58 93.06 94.72 96.04 97 97.67 98.14
 
 ``` r
 #dev.off()
@@ -4849,7 +4685,7 @@ cat("p-value: ", (1 + sum(sapply(res_par_h, function(x) res_h_2$stat <x))) /  (1
 
     ## p-value:  0.001
 
-### 3.2.9 Summary of the results
+### 3.2.8 Summary of the results
 
 **Visualization of the result**
 
@@ -4864,6 +4700,8 @@ res[[3]][[2]] <- res_np_2
 res[[4]][[1]] <- res_p
 res[[4]][[2]] <- res_p_2
 ```
+
+We represent Figure 6 from the article:
 
 ``` r
 my_var <- 'Heat wave duration (in days)'
@@ -5001,10 +4839,10 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
 }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-252-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-252-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-252-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-252-4.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-254-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-254-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-254-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-254-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
-methods.
+methods (Table 4 in the supplementary material).
 
 ``` r
 res_VEN <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
