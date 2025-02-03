@@ -3,7 +3,7 @@ parametric spatial scan statistic for functional data: application to
 climate change data’’
 ================
 Zaineb Smida, Thibault Laurent, Lionel Cucala
-(Last update: 2025-01-18)
+(Last update: 2025-02-03)
 
 
 
@@ -969,6 +969,7 @@ power_to_plot <- data.frame(
   alpha = numeric(0)
 )
 nb_est <- 10
+size_clust <- 8
 for(k in 1:nrow(parms_df)) {
   power_to_plot <- rbind(
     power_to_plot,
@@ -985,10 +986,10 @@ for(k in 1:length(res_par_1)) {
                                                      res_par_3[[k]]$power + res_par_4[[k]]$power) / 200 # res.final$power / 100 # 
   TP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (res_par_1[[k]]$nTP + res_par_2[[k]]$nTP + 
                                                   res_par_3[[k]]$nTP + res_par_4[[k]]$nTP) /  
-    (res_par_1[[k]]$power + res_par_2[[k]]$power + res_par_3[[k]]$power + res_par_4[[k]]$power) / 8 # res.final$nTP / res.final$power / 8 # 
+    (res_par_1[[k]]$power + res_par_2[[k]]$power + res_par_3[[k]]$power + res_par_4[[k]]$power) / size_clust # res.final$nTP / res.final$power / 8 # 
   FP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (res_par_1[[k]]$nFP + res_par_2[[k]]$nFP + 
                                                   res_par_3[[k]]$nFP + res_par_4[[k]]$nFP) /  
-    (res_par_1[[k]]$power + res_par_2[[k]]$power + res_par_3[[k]]$power + res_par_4[[k]]$power) / 86 #res.final$nFP / res.final$power / 8 # res_par[[k]]$nFP / res_par[[k]]$power / 8
+    (res_par_1[[k]]$power + res_par_2[[k]]$power + res_par_3[[k]]$power + res_par_4[[k]]$power) / (nobs - size_clust) #res.final$nFP / res.final$power / 8 # res_par[[k]]$nFP / res_par[[k]]$power / 8
 }
 power_to_plot$criteria <- "power"
 TP_to_plot$criteria <- "TP"
@@ -998,32 +999,32 @@ to_plot <- rbind(power_to_plot, TP_to_plot, FP_to_plot)
 parms_df_select <- rbind(
   # line 1 
   data.frame(
-    shape = "gauss", type_shift = 2, alpha = seq(0, 3, 0.5)[-2], sizeclust = 8),
+    shape = "gauss", type_shift = 2, alpha = seq(0, 3, 0.5)[-2], sizeclust = size_clust),
   data.frame(
-    shape = "gauss", type_shift = 3, alpha = seq(0, 10.5, 1.5)[-c(2, 8)], sizeclust = 8),
+    shape = "gauss", type_shift = 3, alpha = seq(0, 10.5, 1.5)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "gauss", type_shift = 4, alpha = seq(0, 12, 2)[-2], sizeclust = 8),  
+    shape = "gauss", type_shift = 4, alpha = seq(0, 12, 2)[-2], sizeclust = size_clust),  
   # line 2
   data.frame(
-    shape = "student", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = 8),
+    shape = "student", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "student", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8),
+    shape = "student", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "student", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8),  
+    shape = "student", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),  
   # line 3
   data.frame(
-    shape = "chisq", type_shift = 2, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8),
+    shape = "chisq", type_shift = 2, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "chisq", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8),
+    shape = "chisq", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "chisq", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8),  
+    shape = "chisq", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),  
   # line 4
   data.frame(
-    shape = "exp", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = 8),
+    shape = "exp", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "exp", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8),
+    shape = "exp", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "exp", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 8)
+    shape = "exp", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust)
 )
 to_plot <- merge(parms_df_select, to_plot, by = c("shape", "type_shift", "alpha"))
 # we give labels
@@ -1129,12 +1130,7 @@ delta_2 <- to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
-delta_2
-```
-
-<img src="README_files/figure-gfm/unnamed-chunk-42-1.png" style="display: block; margin: auto;" />
-
-``` r
+# delta_2
 #ggsave("figures/simu_8_delta_2.pdf", width = 8, height = 6.5)
 ```
 
@@ -1177,12 +1173,7 @@ delta_3 <- to_plot2 %>%
   scale_linetype_manual(name = "threshold", values = 2) +
   theme(strip.background = element_rect(colour = "black", 
         fill = alpha("#EE9E94", 0.1)))
-delta_3
-```
-
-<img src="README_files/figure-gfm/unnamed-chunk-43-1.png" style="display: block; margin: auto;" />
-
-``` r
+# delta_3
 #ggsave("figures/simu_8_delta_3.pdf", width = 8, height = 6.5)
 ```
 
@@ -1199,6 +1190,8 @@ cowplot::plot_grid(delta_2, delta_3, nrow = 2, rel_heights = c(1,1.1))
 
 ## 2.4 Checking Robustess
 
+### 2.4.1 Cluster of size 10
+
 We apply the same procedure while varying the size of the cluster. This
 time, we consider a cluster of size 10 and add two more departments to
 the previous list: 59 and 27.
@@ -1206,6 +1199,7 @@ the previous list: 59 and 27.
 ``` r
 # id of the cluster
 vecclus <- c(74, 92, 91, 93, 77, 90, 94, 76, 59, 27)
+size_clust <- length(vecclus)
 # graphical parameters
 col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(Matcoord))
 col_geo[vecclus] <- alpha("#D35C79", 0.8)
@@ -1260,12 +1254,12 @@ for(k in 1:length(res_par_1)) {
     res_par_1[[k]]$nTP + res_par_2[[k]]$nTP + 
       res_par_3[[k]]$nTP + res_par_4[[k]]$nTP) /  
     (res_par_1[[k]]$power + res_par_2[[k]]$power + 
-       res_par_3[[k]]$power + res_par_4[[k]]$power) / 8 
+       res_par_3[[k]]$power + res_par_4[[k]]$power) / size_clust 
   FP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
     res_par_1[[k]]$nFP + res_par_2[[k]]$nFP + 
       res_par_3[[k]]$nFP + res_par_4[[k]]$nFP) /  
     (res_par_1[[k]]$power + res_par_2[[k]]$power + 
-       res_par_3[[k]]$power + res_par_4[[k]]$power) / 86 
+       res_par_3[[k]]$power + res_par_4[[k]]$power) / (nobs - size_clust) 
 }
 power_to_plot$criteria <- "power"
 TP_to_plot$criteria <- "TP"
@@ -1275,32 +1269,32 @@ to_plot <- rbind(power_to_plot, TP_to_plot, FP_to_plot)
 parms_df_select <- rbind(
   # line 1
   data.frame(
-    shape = "gauss", type_shift = 2, alpha = seq(0, 3, 0.5)[-c(2)], sizeclust = 10),
+    shape = "gauss", type_shift = 2, alpha = seq(0, 3, 0.5)[-c(2)], sizeclust = size_clust),
   data.frame(
-    shape = "gauss", type_shift = 3, alpha = seq(0, 10.5, 1.5)[-c(2, 8)], sizeclust = 10),
+    shape = "gauss", type_shift = 3, alpha = seq(0, 10.5, 1.5)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "gauss", type_shift = 4, alpha = seq(0, 12, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "gauss", type_shift = 4, alpha = seq(0, 12, 2)[-c(2, 8)], sizeclust = size_clust),
   # line 2
   data.frame(
-    shape = "student", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = 10),
+    shape = "student", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "student", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "student", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "student", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "student", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   # line 3
   data.frame(
-    shape = "chisq", type_shift = 2, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "chisq", type_shift = 2, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "chisq", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "chisq", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "chisq", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "chisq", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   # line 4
   data.frame(
-    shape = "exp", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = 10),
+    shape = "exp", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "exp", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10),
+    shape = "exp", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
   data.frame(
-    shape = "exp", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = 10)
+    shape = "exp", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust)
 )
 to_plot <- merge(parms_df_select, to_plot, by = c("shape", "type_shift", "alpha"))
 # we give labels
@@ -1316,7 +1310,7 @@ levels(to_plot$shape) <- c(`gauss` = TeX("$N(0,1)$"),
 to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS"))
 ```
 
-### 2.4.1 Delta 1
+### 2.4.2 Delta 1
 
 We present Figure S4 from the supplementary material.
 
@@ -1361,7 +1355,7 @@ delta_1 <- to_plot2 %>%
 #R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
-### 2.4.2 Delta 2
+### 2.4.3 Delta 2
 
 ``` r
 threshold <- data.frame(
@@ -1415,7 +1409,7 @@ cowplot::plot_grid(delta_1, delta_2, nrow = 2, rel_heights = c(1,1.1))
 #R.utils::compressPDF("figures/simu_8_delta_23.pdf")
 ```
 
-### 2.4.3 Delta 3
+### 2.4.4 Delta 3
 
 We present Figure S5 from the supplementary material.
 
@@ -1462,6 +1456,881 @@ to_plot2 %>%
 
 ``` r
 #ggsave("figures/simu_10_delta_3.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_3.pdf")
+```
+
+### 2.4.5 Cluster of size 4
+
+We follow the same procedure while varying the cluster size. This time,
+we consider a cluster of size 4.
+
+First, we compute the mean of the $\bar{CPV}(k)$ curves, aggregated over
+10 simulations, to determine the appropriate number of eigenvalues for
+all simulations.
+
+``` r
+# parameters of simulation 
+nobs <- nrow(Matcoord)
+npoints <- 100
+ndrop <- 100
+t.disc <- (1:(npoints)) / (npoints) # (1:(npoints+ndrop)) / (npoints+ndrop)
+
+vecclus <- c(74, 92, 91, 93)
+nclus <- length(vecclus)
+veccluster <- numeric(nobs)
+veccluster[vecclus] <- 1
+
+# the possible clusters
+my_pairs <- find_all_cluster(Matcoord)
+
+# restriction on the size of the cluster 
+mini <- 2 
+maxi <- trunc(nobs / 2)
+cluster_g1 <- my_pairs[[1]] 
+cluster_g2 <- my_pairs[[2]] 
+size_group <- sapply(cluster_g1, length)
+ind_restriction <- size_group >= mini & size_group <= maxi
+cluster_g1 <- cluster_g1[ind_restriction]
+cluster_g2 <- cluster_g2[ind_restriction] 
+# number of combinaison
+nb_combi <- length(cluster_g1)
+K_choice <- data.frame(
+  x = numeric(),
+  y = numeric(),
+  shift = character(),
+  proba = character(),
+  alpha = integer()
+)
+shift_levels <- levels(X_aggregated$shift)
+proba_levels <- levels(X_aggregated$proba)
+nsimu <- 10
+
+for(alpha in c(1, 3, 5, 10)) {
+  print(alpha)
+  for (shape in c("gauss", "student", "chisq", "exp")) {
+    for (type_shift in 2:4) {
+      cpv <- numeric(npoints)
+      # simulations 
+      i_simu <- 1
+      while (i_simu <= nsimu) {
+        X <- matrix(0, npoints+ndrop, nobs)
+        for (k in 1:nobs) {
+          X[, k] <- simulvec(npoints+(ndrop-1), shape = shape) 
+          if(type_shift == 1) {
+            X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * (veccluster[k] == 1)
+            } else {
+              if (type_shift == 2) {
+                X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * t.disc * (veccluster[k] == 1)
+                } else {
+                  if (type_shift == 3) {
+                    X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * t.disc * (1 - t.disc) * (veccluster[k] == 1)
+                    } else {
+                      X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * exp(-100 * (t.disc - 0.5) ^ 2) / 3 * (veccluster[k] == 1)
+                    }
+                }
+            }
+        }
+        # drop first observation 
+        X <- X[-(1:ndrop), ]
+  
+        # initialization
+        npoints <- nrow(X)
+        my_dist <- as(dist(t(X)), "matrix")
+  
+        # observed stat
+        for (i in (1:nb_combi)) {
+          vecindin <- cluster_g1[[i]]
+          vecindout <- cluster_g2[[i]]
+    
+          nx <- length(vecindin)
+          ny <- length(vecindout)
+    
+          if(nx == 1) {
+            myX <- matrix(X[,vecindin], nrow(X), 1)
+            cov_1 <- matrix(0, npoints, npoints)
+            } else {
+              myX <- X[, vecindin]
+              cov_1 <- cov(t(myX)) 
+              }
+          if(ny == 1) {    
+            myY <- matrix(X[,vecindout], nrow(X), 1)
+            cov_2 <- matrix(0, npoints, npoints)
+            } else {
+              myY <- X[, vecindout]
+              cov_2 <- cov(t(myY)) # 
+            }
+          ##### Initi
+          D <- 1 / (nx + ny - 2) * ((nx - 1) * cov_1  +  (ny - 1) * cov_2)
+          D_hotelling <- (nx + ny) / (nx * ny) * D
+          
+          temp_svd <- eigen(D_hotelling)
+          tau_k <- temp_svd$values
+          cpv <- cpv + cumsum(tau_k) / sum(tau_k)
+        }
+        i_simu <- i_simu + 1
+      } 
+      K_choice <- rbind(K_choice,
+                        data.frame(
+                          x = 1:15,
+                          y = cpv[1:15] / (nsimu * nb_combi),
+                          shift = type_shift,
+                          proba = shape,
+                          alpha = alpha)
+                        )
+    }
+  }
+}
+K_choice$shift <- factor(K_choice$shift) 
+levels(K_choice$shift) = c(`2` = TeX("$\\Delta_1(t)$"), 
+                               `3` = TeX("$\\Delta_2(t)$"), 
+                               `4` = TeX("$\\Delta_3(t)$"))
+
+K_choice$proba <- factor(K_choice$proba, levels = c("gauss", "student", "exp", "chisq"))
+levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
+                            `student` = TeX("$t(4)$"),
+                            `exp` = TeX("$Exp(4)$"),
+                            `chisq` = TeX("$\\chi^2(4)$"))
+shift <- rep(rep(c("delta_1", "delta_2", "delta_3"), each = 15), times = 16)
+K_choice$shift <- shift
+proba <- rep(rep(c("gauss", "student", "chisq", "exp"), each = 45), times = 4)
+K_choice$proba <- proba
+
+K_choice$shift <- factor(K_choice$shift) 
+levels(K_choice$shift) = c(`delta_1` = TeX("$\\Delta_1(t)$"), 
+                               `delta_2` = TeX("$\\Delta_2(t)$"), 
+                               `delta_3` = TeX("$\\Delta_3(t)$"))
+K_choice$proba <- factor(K_choice$proba, levels = c("gauss", "student", "exp", "chisq"))
+levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
+                            `student` = TeX("$t(4)$"),
+                            `exp` = TeX("$Exp(4)$"),
+                            `chisq` = TeX("$\\chi^2(4)$"))
+save(K_choice, file = "results/K_choice_4.RData")
+```
+
+``` r
+load("results/K_choice_4.RData")
+my_plot <- vector("list", 4)
+my_alpha <- c(1, 3, 5, 10)
+for(k in 1:4) {
+  my_plot[[k]] <- K_choice %>%
+    filter(alpha == my_alpha[k]) %>%
+    ggplot(aes(x = x, y = y)) +
+    geom_line() +
+    geom_point(size = 0.5) +
+    geom_vline(xintercept = 5, linetype="dotted", 
+                color = "blue", size=.6) +
+    theme_bw() +
+    theme(strip.background = element_rect(color = "black", fill = alpha("#EE9E94", 0.1))) +
+    facet_grid(rows=vars(proba),
+               cols=vars(shift),
+               labeller=label_parsed,
+               scales = "free") +
+    xlab("k") +
+    ylab(TeX("Mean function of $\\bar{CPV}(k)$ curves for 10 simulations"))
+}
+cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[4]], nrow = 2,
+          labels =   c("a)", "b)", "c)", "d)")) # c(TeX("$\\alpha$"), TeX("$\\alpha$"), TeX("$\\alpha$")))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-54-1.png" style="display: block; margin: auto;" />
+
+``` r
+# ggsave("figures/choice_K.pdf", width = 10, height = 10)
+# R.utils::compressPDF("figures/choice_K.pdf")
+```
+
+``` r
+# id of the cluster
+vecclus <- c(74, 92, 91, 93)
+size_clust <- length(vecclus)
+# graphical parameters
+col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(Matcoord))
+col_geo[vecclus] <- alpha("#D35C79", 0.8)
+```
+
+``` r
+#pdf("figures/french_cluster_4.pdf", width = 7, height = 7)
+par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+plot_tiles(nc_osm, adjust = T)
+mf_shadow(st_geometry(st_union(dep[vecclus, ])), add = T, cex = 0.5)
+plot(st_geometry(dep), border = "white", col = col_geo,  
+     add = T, lwd = 0.1)
+plot(st_geometry(my_region), add = T, lwd = 0.5)
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-56-1.png" style="display: block; margin: auto;" />
+
+``` r
+#text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
+#     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
+#     labels = "B)", pos = 4, cex = 2)
+#dev.off()
+#R.utils::compressPDF("figures/french_cluster_10.pdf")
+```
+
+The interpretations are the same as in the previous section.
+
+``` r
+power_to_plot <- data.frame(
+  shape = character(0),
+  type_shift = integer(0),
+  alpha = numeric(0)
+)
+nb_est <- 10
+for(k in 1:nrow(parms_df)) {
+  power_to_plot <- rbind(
+    power_to_plot,
+    parms_df[rep(k, nb_est), 1:3])
+}
+power_to_plot$method <- c("DFFSS", "PFSS", "NPFSS", "hotelling_1", "hotelling_2", 
+                          "hotelling_3", "hotelling_4", "HFSS", "hotelling_10", 
+                          "hotelling_15")
+FP_to_plot <- TP_to_plot <- power_to_plot
+
+for(k in 1:length(res_par_1)) {
+  power_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
+    res_par_1[[k]]$power + res_par_2[[k]]$power +  
+    res_par_3[[k]]$power  + res_par_4[[k]]$power) / 200 
+  TP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
+    res_par_1[[k]]$nTP + res_par_2[[k]]$nTP + 
+      res_par_3[[k]]$nTP + res_par_4[[k]]$nTP) /  
+    (res_par_1[[k]]$power + res_par_2[[k]]$power + 
+       res_par_3[[k]]$power + res_par_4[[k]]$power) / size_clust 
+  FP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
+    res_par_1[[k]]$nFP + res_par_2[[k]]$nFP + 
+      res_par_3[[k]]$nFP + res_par_4[[k]]$nFP) /  
+    (res_par_1[[k]]$power + res_par_2[[k]]$power + 
+       res_par_3[[k]]$power + res_par_4[[k]]$power) / (nobs - size_clust) 
+}
+power_to_plot$criteria <- "power"
+TP_to_plot$criteria <- "TP"
+FP_to_plot$criteria <- "FP"
+to_plot <- rbind(power_to_plot, TP_to_plot, FP_to_plot)
+# we select the most interseting points
+parms_df_select <- rbind(
+  # line 1
+  data.frame(
+    shape = "gauss", type_shift = 2, alpha = seq(0, 3, 0.5)[-c(2)], sizeclust = size_clust),
+  data.frame(
+    shape = "gauss", type_shift = 3, alpha = seq(0, 10.5, 1.5)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "gauss", type_shift = 4, alpha = seq(0, 12, 2)[-c(2, 8)], sizeclust = size_clust),
+  # line 2
+  data.frame(
+    shape = "student", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "student", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "student", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  # line 3
+  data.frame(
+    shape = "chisq", type_shift = 2, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "chisq", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "chisq", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  # line 4
+  data.frame(
+    shape = "exp", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "exp", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "exp", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust)
+)
+to_plot <- merge(parms_df_select, to_plot, by = c("shape", "type_shift", "alpha"))
+# we give labels
+to_plot$type_shift <- factor(to_plot$type_shift) 
+levels(to_plot$type_shift) = c(`2` = TeX("$\\Delta_1(t)$"), # TeX("$\\Delta_1(t)=ct$"), 
+                         `3` = TeX("$\\Delta_2(t)$"),  # TeX("$\\Delta_2(t)=ct(1-t)$"), 
+                         `4` = TeX("$\\Delta_3(t)$")) #  TeX("$\\Delta_3(t)=\\frac{c}{3}\\exp(-100(t-0.5)^2)$"))
+to_plot$shape <- factor(to_plot$shape, levels = c("gauss", "student", "exp", "chisq"))
+levels(to_plot$shape) <- c(`gauss` = TeX("$N(0,1)$"), 
+                                `student` = TeX("$t(4)$"), 
+                                `exp` = TeX("$Exp(4)$"),
+                                `chisq` = TeX("$\\chi^2(4)$"))
+to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS"))
+```
+
+### 2.4.6 Delta 1
+
+``` r
+threshold <- data.frame(
+  yintercept = c(0.05, NA, NA), 
+  criteria = factor(c("power", "TP", "FP"), levels = c("power", "TP", "FP")))
+to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
+to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
+to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
+delta_1 <- to_plot2 %>%
+  filter(type_shift == "Delta[1](t)") %>%
+   # filter(alpha != 0 & criteria == "TP") %>%
+   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
+  ggplot(aes(x = alpha, y = value, color = method)) +
+  geom_line(data = to_plot2 %>% 
+              filter(type_shift == "Delta[1](t)") %>%
+              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
+            aes(group = method)) +
+  geom_point(size = 0.8, pch = 15) +
+#  geom_hline(aes(yintercept = yintercept, 
+#                 linetype = criteria), data = threshold,
+#             linetype = 2) +
+    geom_hline(data = to_plot2 %>% filter(criteria == "power"), 
+               aes(yintercept = 0.05, 
+                 linetype = "0.05")) +
+  ggh4x::facet_grid2(rows=vars(criteria),
+                     cols=vars(shape),
+                     labeller=label_parsed,
+                     scales = "free", 
+                     axes = "margins")  +
+  theme_bw() +
+  xlab(TeX("$\\alpha$")) +
+  ylab("") +
+  ggtitle(TeX("$\\Delta_1$")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none") +
+  scale_linetype_manual(name = "threshold", values = 2) +
+  theme(strip.background = element_rect(colour = "black", 
+        fill = alpha("#EE9E94", 0.1)))
+#ggsave("figures/simu_4_delta_1.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
+```
+
+### 2.4.7 Delta 2
+
+``` r
+threshold <- data.frame(
+  yintercept = c(0.05, NA, NA), 
+  criteria = factor(c("power", "TP", "FP"), levels = c("power", "TP", "FP")))
+to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
+to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
+to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
+delta_2 <- to_plot2 %>%
+  filter(type_shift == "Delta[2](t)") %>%
+   # filter(alpha != 0 & criteria == "TP") %>%
+   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
+  ggplot(aes(x = alpha, y = value, color = method)) +
+  geom_line(data = to_plot2 %>% 
+              filter(type_shift == "Delta[2](t)") %>%
+              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
+            aes(group = method)) +
+  geom_point(size = 0.8, pch = 15) +
+#  geom_hline(aes(yintercept = yintercept, 
+#                 linetype = criteria), data = threshold,
+#             linetype = 2) +
+    geom_hline(data = to_plot2 %>% filter(criteria == "power"), 
+               aes(yintercept = 0.05, 
+                 linetype = "0.05")) +
+  ggh4x::facet_grid2(rows=vars(criteria),
+                     cols=vars(shape),
+                     labeller=label_parsed,
+                     scales = "free", 
+                     axes = "margins")  +
+  theme_bw() +
+  xlab(TeX("$\\alpha$")) +
+  ylab("") +
+  ggtitle(TeX("$\\Delta_2$")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom") +
+  scale_linetype_manual(name = "threshold", values = 2) +
+  theme(strip.background = element_rect(colour = "black", 
+        fill = alpha("#EE9E94", 0.1)))
+#ggsave("figures/simu_10_delta_2.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_2.pdf")
+```
+
+``` r
+cowplot::plot_grid(delta_1, delta_2, nrow = 2, rel_heights = c(1,1.1))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-61-1.png" style="display: block; margin: auto;" />
+
+``` r
+# ggsave("figures/simu_4_delta_12.pdf", width = 8, height = 11)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
+```
+
+### 2.4.8 Delta 3
+
+``` r
+threshold <- data.frame(
+  yintercept = c(0.05, NA, NA), 
+  criteria = factor(c("power", "TP", "FP"), levels = c("power", "TP", "FP")))
+to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
+to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
+to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
+to_plot2 %>%
+  filter(type_shift == "Delta[3](t)") %>%
+   # filter(alpha != 0 & criteria == "TP") %>%
+   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
+  ggplot(aes(x = alpha, y = value, color = method)) +
+  geom_line(data = to_plot2 %>% 
+              filter(type_shift == "Delta[3](t)") %>%
+              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
+            aes(group = method)) +
+  geom_point(size = 0.8, pch = 15) +
+#  geom_hline(aes(yintercept = yintercept, 
+#                 linetype = criteria), data = threshold,
+#             linetype = 2) +
+    geom_hline(data = to_plot2 %>% filter(criteria == "power"), 
+               aes(yintercept = 0.05, 
+                 linetype = "0.05")) +
+  ggh4x::facet_grid2(rows=vars(criteria),
+                     cols=vars(shape),
+                     labeller=label_parsed,
+                     scales = "free", 
+                     axes = "margins")  +
+  theme_bw() +
+  xlab(TeX("$\\alpha$")) +
+  ylab("") +
+  ggtitle(TeX("$\\Delta_3$")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom") +
+  scale_linetype_manual(name = "threshold", values = 2) +
+  theme(strip.background = element_rect(colour = "black", 
+        fill = alpha("#EE9E94", 0.1)))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-62-1.png" style="display: block; margin: auto;" />
+
+``` r
+#ggsave("figures/simu_4_delta_3.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_3.pdf")
+```
+
+### 2.4.9 Cluster of size 16
+
+Representation of the mean of $\bar{CPV}(k)$ curves, aggregated for 10
+simulations.
+
+``` r
+# parameters of simulation 
+nobs <- nrow(Matcoord)
+npoints <- 100
+ndrop <- 100
+t.disc <- (1:(npoints)) / (npoints) # (1:(npoints+ndrop)) / (npoints+ndrop)
+
+vecclus <- c(74, 92, 91, 93, 77, 90, 94, 76, 59, 27, 79, 44, 26, 75, 2, 61)
+nclus <- length(vecclus)
+veccluster <- numeric(nobs)
+veccluster[vecclus] <- 1
+
+# the possible clusters
+my_pairs <- find_all_cluster(Matcoord)
+
+# restriction on the size of the cluster 
+mini <- 2 
+maxi <- trunc(nobs / 2)
+cluster_g1 <- my_pairs[[1]] 
+cluster_g2 <- my_pairs[[2]] 
+size_group <- sapply(cluster_g1, length)
+ind_restriction <- size_group >= mini & size_group <= maxi
+cluster_g1 <- cluster_g1[ind_restriction]
+cluster_g2 <- cluster_g2[ind_restriction] 
+# number of combinaison
+nb_combi <- length(cluster_g1)
+K_choice <- data.frame(
+  x = numeric(),
+  y = numeric(),
+  shift = character(),
+  proba = character(),
+  alpha = integer()
+)
+shift_levels <- levels(X_aggregated$shift)
+proba_levels <- levels(X_aggregated$proba)
+nsimu <- 10
+
+for(alpha in c(1, 3, 5, 10)) {
+  print(alpha)
+  for (shape in c("gauss", "student", "chisq", "exp")) {
+    for (type_shift in 2:4) {
+      cpv <- numeric(npoints)
+      # simulations 
+      i_simu <- 1
+      while (i_simu <= nsimu) {
+        X <- matrix(0, npoints+ndrop, nobs)
+        for (k in 1:nobs) {
+          X[, k] <- simulvec(npoints+(ndrop-1), shape = shape) 
+          if(type_shift == 1) {
+            X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * (veccluster[k] == 1)
+            } else {
+              if (type_shift == 2) {
+                X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * t.disc * (veccluster[k] == 1)
+                } else {
+                  if (type_shift == 3) {
+                    X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * t.disc * (1 - t.disc) * (veccluster[k] == 1)
+                    } else {
+                      X[(ndrop+1):nrow(X), k] <- X[(ndrop+1):nrow(X), k] + alpha * exp(-100 * (t.disc - 0.5) ^ 2) / 3 * (veccluster[k] == 1)
+                    }
+                }
+            }
+        }
+        # drop first observation 
+        X <- X[-(1:ndrop), ]
+  
+        # initialization
+        npoints <- nrow(X)
+        my_dist <- as(dist(t(X)), "matrix")
+  
+        # observed stat
+        for (i in (1:nb_combi)) {
+          vecindin <- cluster_g1[[i]]
+          vecindout <- cluster_g2[[i]]
+    
+          nx <- length(vecindin)
+          ny <- length(vecindout)
+    
+          if(nx == 1) {
+            myX <- matrix(X[,vecindin], nrow(X), 1)
+            cov_1 <- matrix(0, npoints, npoints)
+            } else {
+              myX <- X[, vecindin]
+              cov_1 <- cov(t(myX)) 
+              }
+          if(ny == 1) {    
+            myY <- matrix(X[,vecindout], nrow(X), 1)
+            cov_2 <- matrix(0, npoints, npoints)
+            } else {
+              myY <- X[, vecindout]
+              cov_2 <- cov(t(myY)) # 
+            }
+          ##### Initi
+          D <- 1 / (nx + ny - 2) * ((nx - 1) * cov_1  +  (ny - 1) * cov_2)
+          D_hotelling <- (nx + ny) / (nx * ny) * D
+          
+          temp_svd <- eigen(D_hotelling)
+          tau_k <- temp_svd$values
+          cpv <- cpv + cumsum(tau_k) / sum(tau_k)
+        }
+        i_simu <- i_simu + 1
+      } 
+      K_choice <- rbind(K_choice,
+                        data.frame(
+                          x = 1:15,
+                          y = cpv[1:15] / (nsimu * nb_combi),
+                          shift = type_shift,
+                          proba = shape,
+                          alpha = alpha)
+                        )
+    }
+  }
+}
+K_choice$shift <- factor(K_choice$shift) 
+levels(K_choice$shift) = c(`2` = TeX("$\\Delta_1(t)$"), 
+                               `3` = TeX("$\\Delta_2(t)$"), 
+                               `4` = TeX("$\\Delta_3(t)$"))
+
+K_choice$proba <- factor(K_choice$proba, levels = c("gauss", "student", "exp", "chisq"))
+levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
+                            `student` = TeX("$t(4)$"),
+                            `exp` = TeX("$Exp(4)$"),
+                            `chisq` = TeX("$\\chi^2(4)$"))
+shift <- rep(rep(c("delta_1", "delta_2", "delta_3"), each = 15), times = 16)
+K_choice$shift <- shift
+proba <- rep(rep(c("gauss", "student", "chisq", "exp"), each = 45), times = 4)
+K_choice$proba <- proba
+
+K_choice$shift <- factor(K_choice$shift) 
+levels(K_choice$shift) = c(`delta_1` = TeX("$\\Delta_1(t)$"), 
+                               `delta_2` = TeX("$\\Delta_2(t)$"), 
+                               `delta_3` = TeX("$\\Delta_3(t)$"))
+K_choice$proba <- factor(K_choice$proba, levels = c("gauss", "student", "exp", "chisq"))
+levels(K_choice$proba) <- c(`gauss` = TeX("$N(0,1)$"),
+                            `student` = TeX("$t(4)$"),
+                            `exp` = TeX("$Exp(4)$"),
+                            `chisq` = TeX("$\\chi^2(4)$"))
+save(K_choice, file = "results/K_choice_16.RData")
+```
+
+``` r
+load("results/K_choice_16.RData")
+my_plot <- vector("list", 4)
+my_alpha <- c(1, 3, 5, 10)
+for(k in 1:4) {
+  my_plot[[k]] <- K_choice %>%
+    filter(alpha == my_alpha[k]) %>%
+    ggplot(aes(x = x, y = y)) +
+    geom_line() +
+    geom_point(size = 0.5) +
+    geom_vline(xintercept = 5, linetype="dotted", 
+                color = "blue", size=.6) +
+    theme_bw() +
+    theme(strip.background = element_rect(color = "black", fill = alpha("#EE9E94", 0.1))) +
+    facet_grid(rows=vars(proba),
+               cols=vars(shift),
+               labeller=label_parsed,
+               scales = "free") +
+    xlab("k") +
+    ylab(TeX("Mean function of $\\bar{CPV}(k)$ curves for 10 simulations"))
+}
+cowplot::plot_grid(my_plot[[1]], my_plot[[2]], my_plot[[3]], my_plot[[4]], nrow = 2,
+          labels =   c("a)", "b)", "c)", "d)")) # c(TeX("$\\alpha$"), TeX("$\\alpha$"), TeX("$\\alpha$")))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-64-1.png" style="display: block; margin: auto;" />
+
+``` r
+# ggsave("figures/choice_K.pdf", width = 10, height = 10)
+# R.utils::compressPDF("figures/choice_K.pdf")
+```
+
+We apply the same procedure while varying the size of the cluster. This
+time, we consider a cluster of size 16.
+
+``` r
+# id of the cluster
+vecclus <- c(74, 92, 91, 93, 77, 90, 94, 76, 59, 27, 79, 44, 26, 75, 2, 61)
+size_clust <- length(vecclus)
+# graphical parameters
+col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(Matcoord))
+col_geo[vecclus] <- alpha("#D35C79", 0.8)
+```
+
+``` r
+#pdf("figures/french_cluster_16.pdf", width = 7, height = 7)
+par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+plot_tiles(nc_osm, adjust = T)
+mf_shadow(st_geometry(st_union(dep[vecclus, ])), add = T, cex = 0.5)
+plot(st_geometry(dep), border = "white", col = col_geo,  
+     add = T, lwd = 0.1)
+plot(st_geometry(my_region), add = T, lwd = 0.5)
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-66-1.png" style="display: block; margin: auto;" />
+
+``` r
+#text(par()$usr[1] + 0.03 * (par()$usr[2] - par()$usr[1]), 
+#     par()$usr[4] - 0.07 * (par()$usr[4] - par()$usr[3]), 
+#     labels = "B)", pos = 4, cex = 2)
+#dev.off()
+#R.utils::compressPDF("figures/french_cluster_10.pdf")
+```
+
+The interpretations are the same as in the previous section.
+
+``` r
+power_to_plot <- data.frame(
+  shape = character(0),
+  type_shift = integer(0),
+  alpha = numeric(0)
+)
+nb_est <- 10
+for(k in 1:nrow(parms_df)) {
+  power_to_plot <- rbind(
+    power_to_plot,
+    parms_df[rep(k, nb_est), 1:3])
+}
+power_to_plot$method <- c("DFFSS", "PFSS", "NPFSS", "hotelling_1", "hotelling_2", 
+                          "hotelling_3", "HFSS", "hotelling_5", "hotelling_10", 
+                          "hotelling_15")
+FP_to_plot <- TP_to_plot <- power_to_plot
+
+for(k in 1:length(res_par_1)) {
+  power_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
+    res_par_1[[k]]$power + res_par_2[[k]]$power +  
+    res_par_3[[k]]$power) / 150  #  + res_par_4[[k]]$power) / 200 
+  TP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
+    res_par_1[[k]]$nTP + res_par_2[[k]]$nTP + 
+      res_par_3[[k]]$nTP ) / # + res_par_4[[k]]$nTP) /  
+    (res_par_1[[k]]$power + res_par_2[[k]]$power + 
+       res_par_3[[k]]$power ) / #+ res_par_4[[k]]$power) / 
+    size_clust 
+  FP_to_plot$value[(1:nb_est)+(k-1)*nb_est] <- (
+    res_par_1[[k]]$nFP + res_par_2[[k]]$nFP + 
+      res_par_3[[k]]$nFP) / #  + res_par_4[[k]]$nFP) /  
+    (res_par_1[[k]]$power + res_par_2[[k]]$power + 
+       res_par_3[[k]]$power) / # + res_par_4[[k]]$power) / 
+    (nobs - size_clust) 
+}
+power_to_plot$criteria <- "power"
+TP_to_plot$criteria <- "TP"
+FP_to_plot$criteria <- "FP"
+to_plot <- rbind(power_to_plot, TP_to_plot, FP_to_plot)
+# we select the most interseting points
+parms_df_select <- rbind(
+  # line 1
+  data.frame(
+    shape = "gauss", type_shift = 2, alpha = seq(0, 3, 0.5)[-c(2)], sizeclust = size_clust),
+  data.frame(
+    shape = "gauss", type_shift = 3, alpha = seq(0, 10.5, 1.5)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "gauss", type_shift = 4, alpha = seq(0, 12, 2)[-c(2, 8)], sizeclust = size_clust),
+  # line 2
+  data.frame(
+    shape = "student", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "student", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "student", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  # line 3
+  data.frame(
+    shape = "chisq", type_shift = 2, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "chisq", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "chisq", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  # line 4
+  data.frame(
+    shape = "exp", type_shift = 2, alpha = seq(0, 7, 1)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "exp", type_shift = 3, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust),
+  data.frame(
+    shape = "exp", type_shift = 4, alpha = seq(0, 14, 2)[-c(2, 8)], sizeclust = size_clust)
+)
+to_plot <- merge(parms_df_select, to_plot, by = c("shape", "type_shift", "alpha"))
+# we give labels
+to_plot$type_shift <- factor(to_plot$type_shift) 
+levels(to_plot$type_shift) = c(`2` = TeX("$\\Delta_1(t)$"), # TeX("$\\Delta_1(t)=ct$"), 
+                         `3` = TeX("$\\Delta_2(t)$"),  # TeX("$\\Delta_2(t)=ct(1-t)$"), 
+                         `4` = TeX("$\\Delta_3(t)$")) #  TeX("$\\Delta_3(t)=\\frac{c}{3}\\exp(-100(t-0.5)^2)$"))
+to_plot$shape <- factor(to_plot$shape, levels = c("gauss", "student", "exp", "chisq"))
+levels(to_plot$shape) <- c(`gauss` = TeX("$N(0,1)$"), 
+                                `student` = TeX("$t(4)$"), 
+                                `exp` = TeX("$Exp(4)$"),
+                                `chisq` = TeX("$\\chi^2(4)$"))
+to_plot$method <- factor(to_plot$method, c("HFSS", "DFFSS", "PFSS", "NPFSS"))
+```
+
+### 2.4.10 Delta 1
+
+``` r
+threshold <- data.frame(
+  yintercept = c(0.05, NA, NA), 
+  criteria = factor(c("power", "TP", "FP"), levels = c("power", "TP", "FP")))
+to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
+to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
+to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
+delta_1 <- to_plot2 %>%
+  filter(type_shift == "Delta[1](t)") %>%
+   # filter(alpha != 0 & criteria == "TP") %>%
+   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
+  ggplot(aes(x = alpha, y = value, color = method)) +
+  geom_line(data = to_plot2 %>% 
+              filter(type_shift == "Delta[1](t)") %>%
+              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
+            aes(group = method)) +
+  geom_point(size = 0.8, pch = 15) +
+#  geom_hline(aes(yintercept = yintercept, 
+#                 linetype = criteria), data = threshold,
+#             linetype = 2) +
+    geom_hline(data = to_plot2 %>% filter(criteria == "power"), 
+               aes(yintercept = 0.05, 
+                 linetype = "0.05")) +
+  ggh4x::facet_grid2(rows=vars(criteria),
+                     cols=vars(shape),
+                     labeller=label_parsed,
+                     scales = "free", 
+                     axes = "margins")  +
+  theme_bw() +
+  xlab(TeX("$\\alpha$")) +
+  ylab("") +
+  ggtitle(TeX("$\\Delta_1$")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none") +
+  scale_linetype_manual(name = "threshold", values = 2) +
+  theme(strip.background = element_rect(colour = "black", 
+        fill = alpha("#EE9E94", 0.1)))
+#ggsave("figures/simu_4_delta_1.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
+```
+
+### 2.4.11 Delta 2
+
+``` r
+threshold <- data.frame(
+  yintercept = c(0.05, NA, NA), 
+  criteria = factor(c("power", "TP", "FP"), levels = c("power", "TP", "FP")))
+to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
+to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
+to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
+delta_2 <- to_plot2 %>%
+  filter(type_shift == "Delta[2](t)") %>%
+   # filter(alpha != 0 & criteria == "TP") %>%
+   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
+  ggplot(aes(x = alpha, y = value, color = method)) +
+  geom_line(data = to_plot2 %>% 
+              filter(type_shift == "Delta[2](t)") %>%
+              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
+            aes(group = method)) +
+  geom_point(size = 0.8, pch = 15) +
+#  geom_hline(aes(yintercept = yintercept, 
+#                 linetype = criteria), data = threshold,
+#             linetype = 2) +
+    geom_hline(data = to_plot2 %>% filter(criteria == "power"), 
+               aes(yintercept = 0.05, 
+                 linetype = "0.05")) +
+  ggh4x::facet_grid2(rows=vars(criteria),
+                     cols=vars(shape),
+                     labeller=label_parsed,
+                     scales = "free", 
+                     axes = "margins")  +
+  theme_bw() +
+  xlab(TeX("$\\alpha$")) +
+  ylab("") +
+  ggtitle(TeX("$\\Delta_2$")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom") +
+  scale_linetype_manual(name = "threshold", values = 2) +
+  theme(strip.background = element_rect(colour = "black", 
+        fill = alpha("#EE9E94", 0.1)))
+#ggsave("figures/simu_10_delta_2.pdf", width = 8, height = 6.5)
+#R.utils::compressPDF("figures/simu_10_delta_2.pdf")
+```
+
+``` r
+cowplot::plot_grid(delta_1, delta_2, nrow = 2, rel_heights = c(1,1.1))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-71-1.png" style="display: block; margin: auto;" />
+
+``` r
+# ggsave("figures/simu_4_delta_12.pdf", width = 8, height = 11)
+#R.utils::compressPDF("figures/simu_8_delta_23.pdf")
+```
+
+### 2.4.12 Delta 3
+
+``` r
+threshold <- data.frame(
+  yintercept = c(0.05, NA, NA), 
+  criteria = factor(c("power", "TP", "FP"), levels = c("power", "TP", "FP")))
+to_plot$criteria <- factor(to_plot$criteria, levels = c("power", "TP", "FP"))
+to_plot2 <- to_plot[-which(to_plot$alpha == 0 & to_plot$criteria == "TP"), ]
+to_plot2 <- to_plot2[-which(to_plot2$alpha == 0 & to_plot2$criteria == "FP"), ]
+to_plot2 %>%
+  filter(type_shift == "Delta[3](t)") %>%
+   # filter(alpha != 0 & criteria == "TP") %>%
+   filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")) %>%
+  ggplot(aes(x = alpha, y = value, color = method)) +
+  geom_line(data = to_plot2 %>% 
+              filter(type_shift == "Delta[3](t)") %>%
+              filter(method %in% c("DFFSS", "PFSS", "NPFSS", "HFSS")), 
+            aes(group = method)) +
+  geom_point(size = 0.8, pch = 15) +
+#  geom_hline(aes(yintercept = yintercept, 
+#                 linetype = criteria), data = threshold,
+#             linetype = 2) +
+    geom_hline(data = to_plot2 %>% filter(criteria == "power"), 
+               aes(yintercept = 0.05, 
+                 linetype = "0.05")) +
+  ggh4x::facet_grid2(rows=vars(criteria),
+                     cols=vars(shape),
+                     labeller=label_parsed,
+                     scales = "free", 
+                     axes = "margins")  +
+  theme_bw() +
+  xlab(TeX("$\\alpha$")) +
+  ylab("") +
+  ggtitle(TeX("$\\Delta_3$")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom") +
+  scale_linetype_manual(name = "threshold", values = 2) +
+  theme(strip.background = element_rect(colour = "black", 
+        fill = alpha("#EE9E94", 0.1)))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-72-1.png" style="display: block; margin: auto;" />
+
+``` r
+#ggsave("figures/simu_4_delta_3.pdf", width = 8, height = 6.5)
 #R.utils::compressPDF("figures/simu_10_delta_3.pdf")
 ```
 
@@ -1523,7 +2392,7 @@ for(j in 2:47)
         col = rgb(0.4, 0.4, 0.4, alpha = 0.3)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-54-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-74-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -1577,7 +2446,7 @@ par(mfrow = c(3, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 #R.utils::compressPDF("figures/Spain_evol.pdf")
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-55-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-75-1.png" style="display: block; margin: auto;" />
 
 Average over all the years (Figure S8):
 
@@ -1618,7 +2487,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-56-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-76-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -1870,7 +2739,7 @@ temp <- compute_h(my_pairs_sp[[1]], my_pairs_sp[[2]], MatX,
                            nrow(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-79-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-99-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  83.23 89.16 91.08 92.38 93.32 94.06 94.73 95.3 95.83 96.23
 
@@ -1927,7 +2796,7 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], MatX,
                            nrow(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-84-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-104-1.png" style="display: block; margin: auto;" />
 
     ## Variance explained in % by the 10 first components:  69.49 80.38 84.3 86.13 87.64 88.97 90.24 91.41 92.4 93.32
 
@@ -2111,7 +2980,7 @@ plot(dates, MatX[, 1], ylim = y_lim, xlab = 'Years',
 }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-89-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-89-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-89-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-89-4.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-109-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-109-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-109-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-109-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the different
 methods (Table 1 in the supplementary material).
@@ -2175,11 +3044,16 @@ pairs_geo <- find_all_cluster(coord_proj)
     ## Number of possible combinaison:  13644
 
 ``` r
-# restrict the size of the cluster
-size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
-pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
-                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
 dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
+```
+
+We can restrict the cluster size to half of the total population. To do
+so, simply run the following code:
+
+``` r
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo_restrict <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
 ```
 
 #### 3.2.1.1 Descriptive Analysis
@@ -2214,7 +3088,7 @@ plot_tiles(nc_osm)
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-97-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-118-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -2260,7 +3134,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-98-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-119-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -2304,7 +3178,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-99-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-120-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -2321,13 +3195,24 @@ res_np
 ```
 
     ## $stat
-    ## [1] 4.552714
+    ## [1] 4.56314
     ## 
     ## $vec
-    ##  [1]   3  12 126   2   4 127  13  11 125  23 133 134  24  22 132   1   5 128  14
-    ## [20]  10 124  37 139 135  25  38 140  21  36 138   6 141  39  35 129  15  52  53
-    ## [39] 143  51 136  26  54 144  50 142  40  70  71   7  69 130  16 137  27  55 145
-    ## [58]  72  68  41  86  87  85  73  67   8  56  88 131  17  84  28
+    ##  [1] 126   3 133 125 127 134   4   2 132  12 139 140  13  11 138 124 128 135   5
+    ## [20]   1  23 141  14  24 143  10  22 129 144  25  21 136   6  37  38  36 142  15
+    ## [39]  39  35 145  26  52  53 130  51 137   7  16  40  54  50  27  70  71  69  55
+    ## [58] 131  41  72   8  68  17  86  73  28  87  56  85  67  88  42  84
+
+As the cluster size is somewhat large, we can, if needed, restrict the
+size to $50\%$ of the number of observations.
+
+``` r
+if(length(res_np$vec) >= ceiling(nrow(MatX) / 2)) {
+  res_np_restrict <- compute_np(pairs_geo_restrict[[1]], pairs_geo_restrict[[2]], t(MatX))
+} else {
+    res_np_restrict <- res_np
+}
+```
 
 **Significance (using parallel computing)**
 
@@ -2374,12 +3259,32 @@ res_np_2
 ```
 
     ## $stat
-    ## [1] 2.566295
+    ## [1] 2.54732
     ## 
     ## $vec
-    ##  [1]  91 105  76  92  90 106  77  75 104  59 115  60  58  93 107  78  44  45  43
-    ## [20] 116  61  57  30  46  42  94  31  29 108  79 117  62  32  19 122  47  20  18
-    ## [39]  95 109  80 118  63   9
+    ##  [1] 104  90 105  91  75  76 106 115  92  58  59  57  77  43  60 107  44 116  93
+    ## [20]  78  45  29  61  30 108 117  94  31  46 122  79  18  19  62  32  20  47 109
+    ## [39] 118  95   9 123  80  63  48 110 119  96
+
+In the case where the size of the first cluster had been restricted to
+$50\%$ of the population, the second cluster must be calculated by
+removing the observations from the restricted cluster:
+
+``` r
+if(length(res_np$vec) >= ceiling(nrow(MatX) / 2)) {
+  # We exclude cells that are not contiguous.
+temp_cl <- c(res_np_restrict$vec, 55, 56, 73, 74, 84, 85, 86, 87, 88, 89, 99, 100, 
+             101, 102, 103, 113, 114) 
+cluster_g1_temp <- sapply(pairs_geo_restrict[[1]], function(x) setdiff(x, temp_cl))
+cluster_g2_temp <- sapply(pairs_geo_restrict[[2]], function(x) setdiff(x, temp_cl))
+id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
+          which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
+
+  res_np_restrict_2 <- compute_np(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX))
+} else {
+    res_np_restrict_2 <- res_np_2
+}
+```
 
 **Significance**
 
@@ -2407,13 +3312,24 @@ res_p
 ```
 
     ## $stat
-    ## [1] 89.3536
+    ## [1] 89.93453
     ## 
     ## $vec
-    ##  [1]   3  12 126   2   4 127  13  11 125  23 133 134  24  22 132   1   5 128  14
-    ## [20]  10 124  37 139 135  25  38 140  21  36 138   6 141  39  35 129  15  52  53
-    ## [39] 143  51 136  26  54 144  50 142  40  70  71   7  69 130  16 137  27  55 145
-    ## [58]  72  68  41  86  87  85  73  67   8  56  88 131  17  84  28
+    ##  [1] 126   3 133 125 127 134   4   2 132  12 139 140  13  11 138 124 128 135   5
+    ## [20]   1  23 141  14  24 143  10  22 129 144  25  21 136   6  37  38  36 142  15
+    ## [39]  39  35 145  26  52  53 130  51 137   7  16  40  54  50  27  70  71  69  55
+    ## [58] 131  41  72   8  68  17  86  73  28  87  56  85  67  88  42  84
+
+As the cluster size is somewhat large, we can, if needed, restrict the
+size to $50\%$ of the number of observations.
+
+``` r
+if(length(res_p$vec) >= ceiling(nrow(MatX) / 2)) {
+  res_p_restrict <- compute_p(pairs_geo_restrict[[1]], pairs_geo_restrict[[2]], t(MatX))
+} else {
+    res_p_restrict <- res_p
+}
+```
 
 **Significance**
 
@@ -2450,12 +3366,32 @@ res_p_2
 ```
 
     ## $stat
-    ## [1] 27.55677
+    ## [1] 27.29104
     ## 
     ## $vec
     ##  [1] 105  91 106 104 115  92  90  76  77  75 107 116  93  59  60  58  78  44  61
-    ## [20]  57 108  45  43 117  94 122  79  46  42  30  62  31  29 109 118  32  95  47
-    ## [39] 123  80  19  20  18  63  48 110 119  96   9  81
+    ## [20]  57 108  45  43 117  94 122  79  46  30  62  31  29 109 118  32  95  47 123
+    ## [39]  80  19  20  18  63  48 110 119  96   9  81
+
+In the case where the size of the first cluster had been restricted to
+$50\%$ of the population, the second cluster must be calculated by
+removing the observations from the restricted cluster:
+
+``` r
+if(length(res_p$vec) >= ceiling(nrow(MatX) / 2)) {
+  # We exclude cells that are not contiguous.
+temp_cl <- c(res_p_restrict$vec, 55, 56, 73, 74, 84, 85, 86, 87, 88, 89, 99, 100, 
+             101, 102, 103, 113, 114) 
+cluster_g1_temp <- sapply(pairs_geo_restrict[[1]], function(x) setdiff(x, temp_cl))
+cluster_g2_temp <- sapply(pairs_geo_restrict[[2]], function(x) setdiff(x, temp_cl))
+id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
+          which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
+
+  res_p_restrict_2 <- compute_p(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX))
+} else {
+    res_p_restrict_2 <- res_p_2
+}
+```
 
 **Significance**
 
@@ -2483,12 +3419,26 @@ res_dffss
 ```
 
     ## $stat
-    ## [1] 18.71398
+    ## [1] 20.21928
     ## 
     ## $vec
-    ##  [1]   5  14 128   4   6  15 129 127  13  25 135  26 136  24 134   3   7  16 130
-    ## [20]  12 126  39 141  40 142  27  38 140 137  23 133   2   8  41  54 144  37 139
-    ## [39]  17 131  11 125  55 145  53 143  28  22 132  56  52  42  36 138  72  73  71
+    ##   [1]  70  86  52  69  71  53  87  85  51 101  37  38 102  36  68  72  54  88
+    ##  [19]  84  50  23  39  24 100  35  22  67  73  25 114  21  55  89  12  13  11
+    ##  [37]  40 103  99  14  10  26 113   3   4  74   2  56  41  15   5   1  27 126
+    ##  [55] 127 125   6  16 128  57 124  42 133 129  28 134   7 132 135  17  75  58
+    ##  [73]  90 130 136  43 104 139 140   8 138  29 141 137  18 131 142  76 143  59
+    ##  [91]  91   9  44 105 144  30 145  19  77  60  92  45 106 115
+
+As the cluster size is somewhat large, we can, if needed, restrict the
+size to $50\%$ of the number of observations.
+
+``` r
+if(length(res_dffss$vec) >= ceiling(nrow(MatX) / 2)) {
+  res_dffss_restrict <- compute_dffss(pairs_geo_restrict[[1]], pairs_geo_restrict[[2]], t(MatX))
+} else {
+    res_dffss_restrict <- res_dffss
+}
+```
 
 **Significance**
 
@@ -2522,13 +3472,32 @@ res_dffss_2
 ```
 
     ## $stat
-    ## [1] 20.14197
+    ## [1] 12.10897
     ## 
     ## $vec
-    ##  [1] 107 116  93 108 106 117  92  94 115  78 122  79  77 109 105  61 118  95  91
-    ## [20]  62  60 123  80  76  46  63  59  47  45 110 104 119  96  90  81  75  48  44
-    ## [39]  32  64  31  58  33 111  30 120  97  49  43  82  20  65  57  34  29  19 112
-    ## [58] 121  98  83  74  18  66   9
+    ##  [1] 116 107 117 122 108  93  94 118  78 123 109  79  95  61  80  62 119 110  96
+    ## [20]  63
+
+In the case where the size of the first cluster had been restricted to
+$50\%$ of the population, the second cluster must be calculated by
+removing the observations from the restricted cluster:
+
+``` r
+if(length(res_dffss$vec) >= ceiling(nrow(MatX) / 2)) {
+  # We exclude cells that are not contiguous.
+temp_cl <- c(res_dffss_restrict$vec, 55, 56, 73, 74, 84, 85, 86, 87, 88, 89, 99, 100, 
+             101, 102, 103, 113, 114) 
+cluster_g1_temp <- sapply(pairs_geo_restrict[[1]], function(x) setdiff(x, temp_cl))
+cluster_g2_temp <- sapply(pairs_geo_restrict[[2]], function(x) setdiff(x, temp_cl))
+id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
+          which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
+
+  res_dffss_restrict_2 <- compute_dffss(cluster_g1_temp[-id_pos], 
+                                        cluster_g2_temp[-id_pos], t(MatX))
+} else {
+    res_dffss_restrict_2 <- res_dffss_2
+}
+```
 
 **Significance**
 
@@ -2559,9 +3528,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-121-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-148-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  48.9 67.94 80.25 87.43 91.3 93.96 95.52 96.62 97.19 97.69
+    ## Variance explained in % by the 10 first components:  48.2 67.5 79.88 87.21 91.05 93.79 95.39 96.54 97.12 97.63
 
 ``` r
 #dev.off()
@@ -2616,9 +3585,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-126-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-153-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  44.39 71.83 85.81 90.86 93.11 94.96 96.19 97.02 97.74 98.26
+    ## Variance explained in % by the 10 first components:  45.12 72.27 85.58 90.74 93.01 94.91 96.16 97 97.73 98.25
 
 ``` r
 #dev.off()
@@ -2809,7 +3778,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
 }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-131-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-131-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-131-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-131-4.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-158-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-158-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-158-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-158-4.png" style="display: block; margin: auto;" />
 
 ``` r
 res_GB <- data.frame(nb_cluster_1 = c(length(res_np$vec), 
@@ -2828,10 +3797,158 @@ knitr::kable(res_GB)
 
 |       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
 |-------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |           72 |          0.001 |           44 |          0.001 |
-| PFSS  |           72 |          0.001 |           50 |          0.001 |
-| DFFSS |           57 |          0.001 |           64 |          0.001 |
+| NPFSS |           73 |          0.001 |           48 |          0.001 |
+| PFSS  |           73 |          0.001 |           49 |          0.001 |
+| DFFSS |          104 |          0.001 |           20 |          0.001 |
 | HFSS  |           50 |          0.001 |           31 |          0.001 |
+
+In the case where the size of the first cluster had been restricted to
+50% of the population, we display the corresponding clusters. Since the
+Hotelling method has not changed, it is not shown here.
+
+``` r
+res[[2]][[1]] <- res_dffss_restrict
+res[[2]][[2]] <- res_dffss_restrict_2
+res[[3]][[1]] <- res_np_restrict
+res[[3]][[2]] <- res_np_restrict_2
+res[[4]][[1]] <- res_p_restrict
+res[[4]][[2]] <- res_p_restrict_2
+my_var <- 'Difference with the normal temperature (in C)'
+dates <- unique_year[chosen_years]
+y_lim <- range(MatX)
+
+for(k in 2:4) {
+  my_cluster_1 <- res[[k]][[1]]$vec
+  my_cluster_2 <- res[[k]][[2]]$vec
+
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 11.5, height = 3.8) 
+sf_use_s2(F)
+nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
+  par(mar = c(1.5, 0, 0, 0.2), 
+      oma = c(0.5, 0, 2.4, 0), mgp = c(2.4, 0.6, 0), las = 1)
+  ##### Map #########
+    # map
+  col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(poly_cell))
+  cex_geo <- rep(0.7, nrow(poly_cell))
+  col_geo[my_cluster_1] <- alpha(cols[1], 0.8)
+  cex_geo[my_cluster_1] <- 1
+
+  col_geo[my_cluster_2] <- alpha(cols[2], 0.5)
+  cex_geo[my_cluster_2] <- 1
+  
+  plot_tiles(nc_osm)
+  mf_shadow(my_contours, add = T, cex = 0.8)
+  mf_shadow(st_union(poly_cell[my_cluster_1, ]), 
+                add = T, cex = 0.8, col = cols[1])
+  mf_shadow(st_union(poly_cell[my_cluster_2, ]), 
+         add = T, col= cols[2], cex = 0.8)
+      
+  plot(st_geometry(poly_cell), border = rgb(0.5, 0.5, 0.5), 
+           lwd = 0.4, add = T, col = rgb(0.82, 0.82, 0.82))
+
+  
+  plot(st_geometry(poly_cell), 
+        border = "white",
+        col = col_geo, 
+        cex = cex_geo,
+        pch = 16, asp = 1, add = T, lwd = 0.1)
+
+  plot(st_geometry(st_union(poly_cell[my_cluster_1, ])), 
+         add = T, border= cols[1], col = NULL)
+  plot(st_geometry(st_union(poly_cell[my_cluster_2, ])), 
+         add = T, border= cols[2], col = NULL)
+      
+  temp_1 <- draw.circle(coord_proj[my_cluster_1[1], 1], 
+                           coord_proj[my_cluster_1[1], 2], 
+                  as.numeric(dist_proj[my_cluster_1[1], 
+                                       my_cluster_1[length(my_cluster_1)]]))
+
+    my_circle_1 <- st_transform(st_sfc(st_polygon(
+         list(
+           cbind(
+             c(temp_1$x, temp_1$x[1]), 
+             c(temp_1$y, temp_1$y[1]))
+         )), crs = my_proj
+       ), 4326)
+    
+  temp_2 <- draw.circle(coord_proj[my_cluster_2[1], 1], 
+                           coord_proj[my_cluster_2[1], 2], 
+                  as.numeric(dist_proj[my_cluster_2[1], 
+                                       my_cluster_2[length(my_cluster_2)]]))
+    
+  my_circle_2 <- st_transform(st_sfc(st_polygon(
+         list(
+           cbind(
+             c(temp_2$x, temp_2$x[1]), 
+             c(temp_2$y, temp_2$y[1]))
+         )), crs = my_proj
+       ), 4326)
+  
+  
+  ###############
+  plot(st_geometry(my_circle_2), add = T, border= cols[2],
+             col = alpha(cols[2], 0.4), lty=1, lwd=1)
+  plot(st_geometry(my_circle_1), add = T, border= cols[1],
+             col = alpha(cols[1], 0.4), lty=1, lwd=1)
+  
+    mtext(my_var,
+       side = 4, line = -3.5, las = 0)
+    
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
+         fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
+      
+  ##### Functional data
+  plot(dates, MatX[1, ], ylim = y_lim, xlab = '',
+       ylab = '', col = rgb(0.6, 0.6, 0.6, alpha = 0.5), xaxt = 'n', 
+        type = "l")
+  legend("topleft", legend = c("Most likely cluster"),
+         lty = 1, col = c(cols[1]), cex = 0.9)
+  abline(v = seq(1980, 2025, by = 5), lty = 2, 
+             col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  abline(h = seq(-4, 4, by = 0.5),
+             lty = 2, col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+
+  for (j in 2:nrow(MatX))
+        lines(dates, MatX[j, ], lwd = 1.3, 
+          col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
+    
+  for(i in my_cluster_1)
+        lines(dates, MatX[i, ], col = alpha(cols[1], 0.3),
+          lty = 1, lwd = 1.3)
+  
+  lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
+  
+
+plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
+       ylab = 'Difference from average temperatures (in C)', xaxt = "n", 
+       col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
+        type = "l")
+  legend("topleft", legend = c("Secondary cluster"),
+         lty = 1, col = c(cols[2]), cex = 0.9)
+  abline(v = seq(1980, 2025, by = 5), lty = 2, 
+             col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  abline(h = seq(-4, 4, by = 0.5),
+             lty = 2, col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  axis(1, at = seq(1980, 2025, by = 5), xlab = "years",
+           labels = as.character(seq(1980, 2025, by = 5)))
+  for (j in 2:nrow(MatX))
+        lines(dates, MatX[j, ], lwd = 1.3, 
+          col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
+      
+  for(i in my_cluster_2)
+        lines(dates, MatX[i, ], col = alpha(cols[2], 0.3),
+          lty = 1, lwd = 1.3)
+  
+    
+  lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
+  
+  mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
+#dev.off()
+#  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
+}
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-160-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-160-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-160-3.png" style="display: block; margin: auto;" />
 
 ### 3.2.2 Nigeria
 
@@ -2860,21 +3977,25 @@ nc_osm <- get_tiles(my_contours,
 We compute all possible clusters:
 
 ``` r
-  coord_proj <- st_coordinates(st_centroid(coord_temp))
+coord_proj <- st_coordinates(st_centroid(coord_temp))
   pairs_geo <- find_all_cluster(coord_proj)
 ```
 
     ## Number of possible combinaison:  70172
 
 ``` r
-  # restrict the size of the cluster
-size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
-pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
-                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
   dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
-
   dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
-  coord_4326 <- st_transform(poly_cell, 4326) 
+  coord_4326 <- st_transform(poly_cell, 4326)
+```
+
+We can restrict the cluster size to half of the total population. To do
+so, simply run the following code:
+
+``` r
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo_restrict <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
 ```
 
 #### 3.2.2.1 Descriptive Analysis
@@ -2910,7 +4031,7 @@ abline(h = seq(0, 2500, by = 500),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-138-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-167-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -2955,7 +4076,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-139-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-168-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -2999,7 +4120,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-140-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-169-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -3016,12 +4137,32 @@ res_np
 ```
 
     ## $stat
-    ## [1] 4.441852
+    ## [1] 4.492757
     ## 
     ## $vec
-    ##  [1] 166 167 185 186 168 148 187 204 205 169 206 149 188 223 131 224 207 170 150
-    ## [20] 189 225 132 208 226 171 242 243 151 190 244 116 227 133 209 245 172 152 191
-    ## [39] 117 228 260 102 261 246 134 210 262 173 263 103 118
+    ##   [1] 241 240 222 221 259 239 220 258 203 202 277 238 201 276 219 257 184   8
+    ##  [19] 183   7 200 275 237 182 218 256   6 199 274 181   5 164  23 165 163 236
+    ##  [37]  22 217 255 162  21 180   4 198 273 161  20 235 146 216 254 147 145  37
+    ##  [55] 179   3  36 160  19 144 197  35 272 143  34 159 234 178  18   2 215 253
+    ##  [73] 130 142 129  33 196  52 271  51 128  50 158  17 141 127 177   1  32 252
+    ##  [91]  49 233 270 126 214 285  48 157 140 115  16  67  31 114  66 195 125  15
+    ## [109]  65 251 113  47 232 269  64 139 213 176 284 112  30 124  29  63  46 194
+    ## [127]  14 111  79  78 250 156 231  62 123 268  77  44 175 212  45  28 283 110
+    ## [145]  76 193  61  13  75 138 155 109 249  43  59 230 174 267  89  74  27 211
+    ## [163]  88  60 282  87 137 192  86 122 154  12  73  58  42  71 101  85 173 248
+    ## [181] 229 266  26 210  72 281 136  84 121 191  94 153 108  57  11  70  93  41
+    ## [199]  83  92
+
+As the cluster size is somewhat large, we can, if needed, restrict the
+size to $50\%$ of the number of observations.
+
+``` r
+if(length(res_np$vec) >= ceiling(nrow(MatX) / 2)) {
+  res_np_restrict <- compute_np(pairs_geo_restrict[[1]], pairs_geo_restrict[[2]], t(MatX))
+} else {
+    res_np_restrict <- res_np
+}
+```
 
 **Significance (using parallel computing)**
 
@@ -3057,15 +4198,31 @@ res_np_2
 ```
 
     ## $stat
-    ## [1] 4.001795
+    ## [1] 3.094837
     ## 
     ## $vec
-    ##   [1] 259 258 240 277 241 239 276 257 238 275 221   7 222 220   8   6 256 219
-    ##  [19]   5 237 274 202  22 203 201  23  21 218   4 255 200 236 273  20 217   3
-    ##  [37] 199  19 183  36 184 182 254  37  35 235 272 181  34 198  18 216   2 180
-    ##  [55]  33 253 163 234 271 164 162  51 197  17  52  50 179 165  32 161 215   1
-    ##  [73]  49 160  48 178 270 196  31  16 252 285 159 145 146 144 233  47  66  15
-    ##  [91]  67  65 147 143 177  64  30 158 214 142
+    ##  [1] 166 167 185 186 168 148 187 204 205 169 206 149 188 223 131 224 207 170 150
+    ## [20] 189 225 132 208 226 171 242 243 151 190 244 116 227 133 209 245 172 152 117
+    ## [39] 228 260 102 261 246 134 262 263 103 118
+
+In the case where the size of the first cluster had been restricted to
+$50\%$ of the population, the second cluster must be calculated by
+removing the observations from the restricted cluster:
+
+``` r
+if(length(res_np$vec) >= ceiling(nrow(MatX) / 2)) {
+  cluster_g1_temp <- sapply(pairs_geo_restrict[[1]], function(x) 
+    setdiff(x, res_np_restrict$vec))
+  cluster_g2_temp <- sapply(pairs_geo_restrict[[2]], function(x) 
+    setdiff(x, res_np_restrict$vec))
+id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
+          which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
+
+  res_np_restrict_2 <- compute_np(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX))
+} else {
+    res_np_restrict_2 <- res_np_2
+}
+```
 
 **Significance**
 
@@ -3234,9 +4391,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-162-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-193-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  62.23 79.77 85.92 89.75 92.05 93.68 95 95.95 96.69 97.29
+    ## Variance explained in % by the 10 first components:  62.51 79.72 85.9 89.73 92.04 93.67 94.99 95.94 96.68 97.28
 
 ``` r
 #dev.off()
@@ -3287,9 +4444,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-167-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-198-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  42.4 67.18 76.48 80.99 85.24 88 90.51 92.24 93.67 94.76
+    ## Variance explained in % by the 10 first components:  42.01 66.88 76.29 80.84 85.13 87.91 90.44 92.18 93.61 94.71
 
 ``` r
 #dev.off()
@@ -3345,7 +4502,7 @@ res[[4]][[2]] <- res_p_2
 We plot Figure 5 from the article:
 
 ``` r
-title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
+title_var <- 'Max. consecutive 5-days precipitation (in mm)'
 dates <- unique_year[chosen_years]
 y_lim <- range(MatX)
 
@@ -3353,7 +4510,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
@@ -3424,7 +4581,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   plot(st_geometry(my_circle_1), add = T, border= cols[1],
              col = alpha(cols[1], 0.4), lty=1, lwd=1)
   
-    mtext(my_var, side = 4, line = -3.5, las = 0, cex = 0.8)
+    mtext(title_var, side = 4, line = -3.5, las = 0, cex = 0.8)
     
   legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
@@ -3475,12 +4632,10 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 #  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
-
-<img src="README_files/figure-gfm/unnamed-chunk-172-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-172-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-172-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-172-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods (Table 2 in the supplementary material).
@@ -3502,10 +4657,152 @@ knitr::kable(res_NGA)
 
 |       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
 |-------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |           51 |          0.001 |          100 |          0.001 |
+| NPFSS |          200 |          0.001 |           48 |          0.001 |
 | PFSS  |            9 |          0.001 |           35 |          0.001 |
 | DFFSS |           35 |          0.001 |            9 |          0.001 |
 | HFSS  |            9 |          0.001 |           36 |          0.001 |
+
+In the case where the size of the first cluster had been restricted to
+50% of the population, we display the corresponding clusters. Only the
+non-parametric method is different, and it is the only one we present
+here.
+
+``` r
+res[[3]][[1]] <- res_np_restrict
+res[[3]][[2]] <- res_np_restrict_2
+
+y_lim <- range(MatX)
+
+for(k in 3:3) {
+  my_cluster_1 <- res[[k]][[1]]$vec
+  my_cluster_2 <- res[[k]][[2]]$vec
+
+pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 13, height = 4) 
+sf_use_s2(F)
+nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
+  par(mar = c(1.5, 0, 0, 0.2), 
+      oma = c(0.5, 0, 2.4, 0), mgp = c(2.4, 0.6, 0), las = 1)
+  ##### Map #########
+    # map
+  col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(poly_cell))
+  cex_geo <- rep(0.7, nrow(poly_cell))
+  col_geo[my_cluster_1] <- alpha(cols[1], 0.8)
+  cex_geo[my_cluster_1] <- 1
+
+  col_geo[my_cluster_2] <- alpha(cols[2], 0.5)
+  cex_geo[my_cluster_2] <- 1
+  
+  plot_tiles(nc_osm)
+  mf_shadow(my_contours, add = T, cex = 0.8)
+  mf_shadow(st_union(poly_cell[my_cluster_1, ]), 
+                add = T, cex = 0.8, col = cols[1])
+  mf_shadow(st_union(poly_cell[my_cluster_2, ]), 
+         add = T, col= cols[2], cex = 0.8)
+      
+  plot(st_geometry(poly_cell), border = rgb(0.5, 0.5, 0.5), 
+           lwd = 0.4, add = T, col = rgb(0.82, 0.82, 0.82))
+
+  
+  plot(st_geometry(poly_cell), 
+        border = "white",
+        col = col_geo, 
+        cex = cex_geo,
+        pch = 16, asp = 1, add = T, lwd = 0.1)
+
+  plot(st_geometry(st_union(poly_cell[my_cluster_1, ])), 
+         add = T, border= cols[1], col = NULL)
+  plot(st_geometry(st_union(poly_cell[my_cluster_2, ])), 
+         add = T, border= cols[2], col = NULL)
+      
+  temp_1 <- draw.circle(coord_proj[my_cluster_1[1], 1], 
+                           coord_proj[my_cluster_1[1], 2], 
+                  as.numeric(dist_proj[my_cluster_1[1], 
+                                       my_cluster_1[length(my_cluster_1)]]))
+
+    my_circle_1 <- st_transform(st_sfc(st_polygon(
+         list(
+           cbind(
+             c(temp_1$x, temp_1$x[1]), 
+             c(temp_1$y, temp_1$y[1]))
+         )), crs = my_proj
+       ), 4326)
+    
+  temp_2 <- draw.circle(coord_proj[my_cluster_2[1], 1], 
+                           coord_proj[my_cluster_2[1], 2], 
+                  as.numeric(dist_proj[my_cluster_2[1], 
+                                       my_cluster_2[length(my_cluster_2)]]))
+    
+  my_circle_2 <- st_transform(st_sfc(st_polygon(
+         list(
+           cbind(
+             c(temp_2$x, temp_2$x[1]), 
+             c(temp_2$y, temp_2$y[1]))
+         )), crs = my_proj
+       ), 4326)
+  
+  
+  ###############
+  plot(st_geometry(my_circle_2), add = T, border= cols[2],
+             col = alpha(cols[2], 0.4), lty=1, lwd=1)
+  plot(st_geometry(my_circle_1), add = T, border= cols[1],
+             col = alpha(cols[1], 0.4), lty=1, lwd=1)
+  
+    mtext(title_var,
+       side = 4, line = -3.5, las = 0)
+    
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
+         fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
+      
+  ##### Functional data
+  plot(dates, MatX[1, ], ylim = y_lim, xlab = '',
+       ylab = '', col = rgb(0.6, 0.6, 0.6, alpha = 0.5), xaxt = 'n', 
+        type = "l")
+  legend("topleft", legend = c("Most likely cluster"),
+         lty = 1, col = c(cols[1]), cex = 0.9)
+  abline(v = seq(1980, 2025, by = 5), lty = 2, 
+             col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  abline(h = seq(-4, 4, by = 0.5),
+             lty = 2, col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+
+  for (j in 2:nrow(MatX))
+        lines(dates, MatX[j, ], lwd = 1.3, 
+          col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
+    
+  for(i in my_cluster_1)
+        lines(dates, MatX[i, ], col = alpha(cols[1], 0.3),
+          lty = 1, lwd = 1.3)
+  
+  lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
+  
+
+plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
+       ylab = title_var, xaxt = "n", 
+       col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
+        type = "l")
+  legend("topleft", legend = c("Secondary cluster"),
+         lty = 1, col = c(cols[2]), cex = 0.9)
+  abline(v = seq(1980, 2025, by = 5), lty = 2, 
+             col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  abline(h = seq(-4, 4, by = 0.5),
+             lty = 2, col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  axis(1, at = seq(1980, 2025, by = 5), xlab = "years",
+           labels = as.character(seq(1980, 2025, by = 5)))
+  for (j in 2:nrow(MatX))
+        lines(dates, MatX[j, ], lwd = 1.3, 
+          col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
+      
+  for(i in my_cluster_2)
+        lines(dates, MatX[i, ], col = alpha(cols[2], 0.3),
+          lty = 1, lwd = 1.3)
+  
+    
+  lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
+  
+  mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
+dev.off()
+#  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
+}
+```
 
 ### 3.2.3 Pakistan
 
@@ -3534,21 +4831,25 @@ nc_osm <- get_tiles(my_contours,
 We compute all possible clusters:
 
 ``` r
-  coord_proj <- st_coordinates(st_centroid(coord_temp))
+coord_proj <- st_coordinates(st_centroid(coord_temp))
   pairs_geo <- find_all_cluster(coord_proj)
 ```
 
     ## Number of possible combinaison:  71053
 
 ``` r
-  # restrict the size of the cluster
-size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
-pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
-                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
   dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
-
   dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
-  coord_4326 <- st_transform(poly_cell, 4326) 
+  coord_4326 <- st_transform(poly_cell, 4326)
+```
+
+We can restrict the cluster size to half of the total population. To do
+so, simply run the following code:
+
+``` r
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo_restrict <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
 ```
 
 #### 3.2.3.1 Descriptive Analysis
@@ -3583,7 +4884,7 @@ abline(h = seq(0, 800, by = 200),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-179-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-212-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -3628,7 +4929,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-180-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-213-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -3672,7 +4973,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-181-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-214-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -3689,13 +4990,22 @@ res_np
 ```
 
     ## $stat
-    ## [1] 4.47674
+    ## [1] 4.568634
     ## 
     ## $vec
-    ##  [1] 17 18 16 27 28 26 19 15 37 29 25  9  8 38 36 39 35 20 14 30 24 10  7 47 48
-    ## [26] 46 40 34  2 49 45 21 13 31 11 23  6 57 50 44 58 41 56 33  3 59 55 12 22  5
-    ## [51] 51 43 60 54 32  4 66 67 65 68 64 61 53 42  1 69 63 76 77 52 75 70 62 78 74
-    ## [76] 79
+    ##   [1] 246 247 229 264 230 228 248 211 265 231 212 210 213 209 249 266 232 195
+    ##  [19] 196 194 281 214 197 193 250 267 233 177 198 178 282 176 215 179 175 251
+    ##  [37] 268 234 295 199 180 283 216 159 160 158 161 157 296 181 200 252 174 269
+    ##  [55] 235 162 284 156 217 302 182 142 143 173 141 297 163 201 192 155 144 253
+    ##  [73] 140 270 236 145 285 218 208 139 164 183 172 154 298 202 146 125 191 126
+    ##  [91] 138 124 254 127 271 237 123 165 303 286 184 153 147 219 128 207 171 122
+    ## [109] 137 299 203 129 190 305 121 166 148 108 109 255 107 272 304 152 238 136
+    ## [127] 110 185 130 106 287 170 220 111 120 105 300 204 306 149 189 167 112 131
+    ## [145] 135 151 104 119 256 186 273 239  92  93 169  91 113 288  94 221  90 103
+    ## [163] 132  95 205 168 134  89 118 114 150  96 102 187  88 257 274 240  97 289
+    ## [181]  78 222  79  77  80 117 133  87  76 206  81 101  98  75  82 188  86 258
+    ## [199] 275  74 241 116 290  83 223 100  68  69  67  73  70  85  66  71  65 115
+    ## [217]  72  99 259 276 242  84 291  64 224 301
 
 **Significance (using parallel computing)**
 
@@ -3714,6 +5024,17 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np$stat < x))) /  (
 
     ## p-value:  0.001
 
+As the cluster size is somewhat large, we can, if needed, restrict the
+size to $50\%$ of the number of observations.
+
+``` r
+if(length(res_np$vec) >= ceiling(nrow(MatX) / 2)) {
+  res_np_restrict <- compute_np(pairs_geo_restrict[[1]], pairs_geo_restrict[[2]], t(MatX))
+} else {
+    res_np_restrict <- res_np
+}
+```
+
 **Secondary cluster (2MLC)**
 
 ``` r
@@ -3730,16 +5051,10 @@ res_np_2
 ```
 
     ## $stat
-    ## [1] 3.719626
+    ## [1] 2.894225
     ## 
     ## $vec
-    ##   [1] 177 178 176 195 159 196 160 194 158 179 175 211 142 197 161 193 157 212
-    ##  [19] 210 143 141 213 144 209 140 180 198 162 156 229 125 230 228 126 124 214
-    ##  [37] 145 139 231 127 123 181 174 199 163 155 246 232 108 128 247 122 215 109
-    ##  [55] 146 107 138 248 110 106 182 173 200 164 154 233 129 121 249 111 105 216
-    ##  [73] 147 137 264  92  93  91 265 250  94 234  90 112 183 130 172 104 120 201
-    ##  [91] 165 192 153 266  95 217  89 148 136 251 113 267 103 235  96 131 119  88
-    ## [109]  80 184
+    ##  [1] 50 51 49 60 40 61 59 41 39 48 30 58 38 31 29
 
 **Significance**
 
@@ -3757,6 +5072,25 @@ cat("p-value: ", (1 + sum(sapply(res_par_np, function(x) res_np_2$stat < x))) / 
 
     ## p-value:  0.001
 
+In the case where the size of the first cluster had been restricted to
+$50\%$ of the population, the second cluster must be calculated by
+removing the observations from the restricted cluster:
+
+``` r
+if(length(res_np$vec) >= ceiling(nrow(MatX) / 2)) {
+  cluster_g1_temp <- sapply(pairs_geo_restrict[[1]], function(x) 
+    setdiff(x, res_np_restrict$vec))
+  cluster_g2_temp <- sapply(pairs_geo_restrict[[2]], function(x) 
+    setdiff(x, res_np_restrict$vec))
+id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
+          which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
+
+  res_np_restrict_2 <- compute_np(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX))
+} else {
+    res_np_restrict_2 <- res_np_2
+}
+```
+
 #### 3.2.3.3 PFSS method
 
 **Most Likely Cluster (MLC)**
@@ -3767,13 +5101,22 @@ res_p
 ```
 
     ## $stat
-    ## [1] 46.04561
+    ## [1] 48.70816
     ## 
     ## $vec
-    ##  [1] 17 18 16 27 28 26 19 15 37 29 25  9  8 38 36 39 35 20 14 30 24 10  7 47 48
-    ## [26] 46 40 34  2 49 45 21 13 31 11 23  6 57 50 44 58 41 56 33  3 59 55 12 22  5
-    ## [51] 51 43 60 54 32  4 66 67 65 68 64 61 53 42  1 69 63 76 77 52 75 70 62 78 74
-    ## [76] 79
+    ##   [1] 246 247 229 264 230 228 248 211 265 231 212 210 213 209 249 266 232 195
+    ##  [19] 196 194 281 214 197 193 250 267 233 177 198 178 282 176 215 179 175 251
+    ##  [37] 268 234 295 199 180 283 216 159 160 158 161 157 296 181 200 252 174 269
+    ##  [55] 235 162 284 156 217 302 182 142 143 173 141 297 163 201 192 155 144 253
+    ##  [73] 140 270 236 145 285 218 208 139 164 183 172 154 298 202 146 125 191 126
+    ##  [91] 138 124 254 127 271 237 123 165 303 286 184 153 147 219 128 207 171 122
+    ## [109] 137 299 203 129 190 305 121 166 148 108 109 255 107 272 304 152 238 136
+    ## [127] 110 185 130 106 287 170 220 111 120 105 300 204 306 149 189 167 112 131
+    ## [145] 135 151 104 119 256 186 273 239  92  93 169  91 113 288  94 221  90 103
+    ## [163] 132  95 205 168 134  89 118 114 150  96 102 187  88 257 274 240  97 289
+    ## [181]  78 222  79  77  80 117 133  87  76 206  81 101  98  75  82 188  86 258
+    ## [199] 275  74 241 116 290  83 223 100  68  69  67  73  70  85  66  71  65 115
+    ## [217]  72  99 259 276 242  84 291  64 224 301
 
 **Significance**
 
@@ -3791,6 +5134,17 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p$stat <x))) /  (1 +
 
     ## p-value:  0.001
 
+As the cluster size is somewhat large, we can, if needed, restrict the
+size to $50\%$ of the number of observations.
+
+``` r
+if(length(res_p$vec) >= ceiling(nrow(MatX) / 2)) {
+  res_p_restrict <- compute_p(pairs_geo_restrict[[1]], pairs_geo_restrict[[2]], t(MatX))
+} else {
+    res_p_restrict <- res_p
+}
+```
+
 **Secondary cluster (2MLC)**
 
 ``` r
@@ -3807,10 +5161,10 @@ res_p_2
 ```
 
     ## $stat
-    ## [1] 41.66656
+    ## [1] 47.41137
     ## 
     ## $vec
-    ##  [1]  83  82  97  98  96  81 113  95  71 114 112
+    ##  [1] 61 60 51 50 59 41 49 40 39 58 48 31 30 38
 
 **Significance**
 
@@ -3827,6 +5181,24 @@ cat("p-value: ", (1 + sum(sapply(res_par_p, function(x) res_p_2$stat <x))) /  (1
 ```
 
     ## p-value:  0.001
+
+In the case where the size of the first cluster had been restricted to
+50% of the population, the second cluster must be calculated by removing
+the observations from the restricted cluster:
+
+``` r
+if(length(res_p$vec) >= ceiling(nrow(MatX) / 2)) {
+  # We exclude cells that are not contiguous.
+cluster_g1_temp <- sapply(pairs_geo_restrict[[1]], function(x) setdiff(x, res_p_restrict$vec))
+cluster_g2_temp <- sapply(pairs_geo_restrict[[2]], function(x) setdiff(x, res_p_restrict$vec))
+id_pos <- union(which(sapply(cluster_g1_temp, function(x) length(x) == 0)),
+          which(sapply(cluster_g2_temp, function(x) length(x) == 0)))
+
+  res_p_restrict_2 <- compute_p(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX))
+} else {
+    res_p_restrict_2 <- res_p_2
+}
+```
 
 #### 3.2.3.4 DFFSS method
 
@@ -3910,9 +5282,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-203-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-240-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  30.04 53.68 68.33 77.64 84.9 89.79 91.95 93.55 94.88 95.91
+    ## Variance explained in % by the 10 first components:  30.03 53.64 68.29 77.6 84.99 89.76 91.91 93.52 94.87 95.91
 
 ``` r
 #dev.off()
@@ -3965,9 +5337,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-208-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-245-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  33 56.99 68.16 77.13 83.42 88.41 90.83 92.65 94.16 95.35
+    ## Variance explained in % by the 10 first components:  33.05 56.84 68.03 77.17 83.4 88.36 90.77 92.61 94.14 95.35
 
 ``` r
 #dev.off()
@@ -4023,7 +5395,7 @@ res[[4]][[2]] <- res_p_2
 We plot Figure 6 from the article:
 
 ``` r
-title_var <- 'Maximum consecutive 5-days precipitation (in mm)'
+title_var <- 'Max. consecutive 5-days precipitation (in mm)'
 dates <- unique_year[chosen_years]
 y_lim <- range(MatX)
 
@@ -4031,7 +5403,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
+pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
   sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -4101,7 +5473,7 @@ nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   plot(st_geometry(my_circle_1), add = T, border= cols[1],
              col = alpha(cols[1], 0.4), lty=1, lwd=1)
   
-    mtext(my_var, side = 4, line = -3.5, las = 0, cex = 0.8)
+    mtext(title_var, side = 4, line = -3.5, las = 0, cex = 1.1)
     
   legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
          fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
@@ -4152,12 +5524,10 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-#dev.off()
+dev.off()
 #R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
-
-<img src="README_files/figure-gfm/unnamed-chunk-213-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-213-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-213-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-213-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods (Table 3 from the supplementary material).
@@ -4179,10 +5549,155 @@ knitr::kable(res_PAK)
 
 |       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
 |-------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |           76 |          0.001 |          110 |          0.001 |
-| PFSS  |           76 |          0.001 |           11 |          0.001 |
+| NPFSS |          226 |          0.001 |           15 |          0.001 |
+| PFSS  |          226 |          0.001 |           14 |          0.001 |
 | DFFSS |           16 |          0.001 |           25 |          0.001 |
 | HFSS  |           11 |          0.001 |           31 |          0.001 |
+
+In the case where the size of the first cluster had been restricted to
+50% of the population, we display the corresponding clusters. Since the
+Hotelling and DFSS methods have not changed, it is not shown here.
+
+``` r
+res <- vector("list", 4)
+res[[3]][[1]] <- res_np_restrict
+res[[3]][[2]] <- res_np_restrict_2
+res[[4]][[1]] <- res_p_restrict
+res[[4]][[2]] <- res_p_restrict_2
+
+title_var <- 'Max. consecutive 5-days precipitation (in mm)'
+dates <- unique_year[chosen_years]
+y_lim <- range(MatX)
+
+for(k in 3:4) {
+  my_cluster_1 <- res[[k]][[1]]$vec
+  my_cluster_2 <- res[[k]][[2]]$vec
+
+pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 13, height = 4.2) 
+  sf_use_s2(F)
+nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
+  par(mar = c(1.5, 0, 0, 0.2), 
+      oma = c(0.5, 0, 2.4, 0), mgp = c(2.4, 0.6, 0), las = 1)
+  ##### Map #########
+    # map
+  col_geo <- rep(rgb(0.9, 0.9, 0.9, alpha = 0.1), nrow(poly_cell))
+  cex_geo <- rep(0.7, nrow(poly_cell))
+  col_geo[my_cluster_1] <- alpha(cols[1], 0.8)
+  cex_geo[my_cluster_1] <- 1
+
+  col_geo[my_cluster_2] <- alpha(cols[2], 0.5)
+  cex_geo[my_cluster_2] <- 1
+  
+  plot_tiles(nc_osm)
+  mf_shadow(my_contours, add = T, cex = 0.8)
+  mf_shadow(st_union(poly_cell[my_cluster_1, ]), 
+                add = T, cex = 0.8, col = cols[1])
+  mf_shadow(st_union(poly_cell[my_cluster_2, ]), 
+         add = T, col= cols[2], cex = 0.8)
+      
+  plot(st_geometry(poly_cell), border = rgb(0.5, 0.5, 0.5), 
+           lwd = 0.4, add = T, col = rgb(0.82, 0.82, 0.82))
+
+  
+  plot(st_geometry(poly_cell), 
+        border = "white",
+        col = col_geo, 
+        cex = cex_geo,
+        pch = 16, asp = 1, add = T, lwd = 0.1)
+
+  plot(st_geometry(st_union(poly_cell[my_cluster_1, ])), 
+         add = T, border= cols[1], col = NULL)
+  plot(st_geometry(st_union(poly_cell[my_cluster_2, ])), 
+         add = T, border= cols[2], col = NULL)
+      
+  temp_1 <- draw.circle(coord_proj[my_cluster_1[1], 1], 
+                           coord_proj[my_cluster_1[1], 2], 
+                  as.numeric(dist_proj[my_cluster_1[1], 
+                                       my_cluster_1[length(my_cluster_1)]]))
+
+    my_circle_1 <- st_transform(st_sfc(st_polygon(
+         list(
+           cbind(
+             c(temp_1$x, temp_1$x[1]), 
+             c(temp_1$y, temp_1$y[1]))
+         )), crs = my_proj
+       ), 4326)
+    
+  temp_2 <- draw.circle(coord_proj[my_cluster_2[1], 1], 
+                           coord_proj[my_cluster_2[1], 2], 
+                  as.numeric(dist_proj[my_cluster_2[1], 
+                                       my_cluster_2[length(my_cluster_2)]]))
+    
+  my_circle_2 <- st_transform(st_sfc(st_polygon(
+         list(
+           cbind(
+             c(temp_2$x, temp_2$x[1]), 
+             c(temp_2$y, temp_2$y[1]))
+         )), crs = my_proj
+       ), 4326)
+  
+  
+  ###############
+  plot(st_geometry(my_circle_2), add = T, border= cols[2],
+             col = alpha(cols[2], 0.4), lty=1, lwd=1)
+  plot(st_geometry(my_circle_1), add = T, border= cols[1],
+             col = alpha(cols[1], 0.4), lty=1, lwd=1)
+  
+    mtext(title_var, side = 4, line = -3.5, las = 0, cex = 0.8)
+    
+  legend("topleft", legend = c("Most likely cluster", "Secondary cluster"),
+         fill = c(cols[1], cols[2]), cex = 0.9, box.lty = 0)
+      
+  ##### Functional data
+  plot(dates, MatX[1, ], ylim = y_lim, xlab = '',
+       ylab = '', col = rgb(0.6, 0.6, 0.6, alpha = 0.5), xaxt = 'n', 
+        type = "l")
+  legend("topleft", legend = c("Most likely cluster"),
+         lty = 1, col = c(cols[1]), cex = 0.9)
+  abline(v = seq(1980, 2025, by = 5), lty = 2, 
+             col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  abline(h = seq(0, 2500, by = 200),
+             lty = 2, col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+
+  for (j in 2:nrow(MatX))
+        lines(dates, MatX[j, ], lwd = 1.3, 
+          col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
+    
+  for(i in my_cluster_1)
+        lines(dates, MatX[i, ], col = alpha(cols[1], 0.3),
+          lty = 1, lwd = 1.3)
+  
+  lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
+  
+
+plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
+       ylab = title_var, xaxt = "n", 
+       col = rgb(0.6, 0.6, 0.6, alpha = 0.5),
+        type = "l")
+  legend("topleft", legend = c("Secondary cluster"),
+         lty = 1, col = c(cols[2]), cex = 0.9)
+  abline(v = seq(1980, 2025, by = 5), lty = 2, 
+             col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  abline(h = seq(0, 2500, by = 200),
+             lty = 2, col = rgb(0.7, 0.7, 0.7, alpha = 0.3))
+  axis(1, at = seq(1980, 2025, by = 5), xlab = "years",
+           labels = as.character(seq(1980, 2025, by = 5)))
+  for (j in 2:nrow(MatX))
+        lines(dates, MatX[j, ], lwd = 1.3, 
+          col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
+      
+  for(i in my_cluster_2)
+        lines(dates, MatX[i, ], col = alpha(cols[2], 0.3),
+          lty = 1, lwd = 1.3)
+  
+    
+  lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
+  
+  mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
+dev.off()
+#R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
+}
+```
 
 ### 3.2.6 Venezuela
 
@@ -4211,21 +5726,25 @@ nc_osm <- get_tiles(my_contours,
 We compute all possible clusters:
 
 ``` r
-  coord_proj <- st_coordinates(st_centroid(coord_temp))
+coord_proj <- st_coordinates(st_centroid(coord_temp))
   pairs_geo <- find_all_cluster(coord_proj)
 ```
 
     ## Number of possible combinaison:  76138
 
 ``` r
-  # restrict the size of the cluster
-size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
-pairs_geo <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
-                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
   dist_proj <- as(dist(cbind(coord_proj[, 1], coord_proj[, 2])), "matrix")
-
   dist_4326 <- as(dist(cbind(poly_cell$long, poly_cell$lat)), "matrix")
-  coord_4326 <- st_transform(poly_cell, 4326) 
+  coord_4326 <- st_transform(poly_cell, 4326)
+```
+
+We can restrict the cluster size to half of the total population. To do
+so, simply run the following code:”
+
+``` r
+size_c1 <- sapply(pairs_geo[[1]], function(x) length(x))
+pairs_geo_restrict <- list(pairs_geo[[1]][size_c1 < nrow(coord_proj) / 2], 
+                      pairs_geo[[2]][size_c1 < nrow(coord_proj) / 2])
 ```
 
 #### 3.2.6.1 Descriptive Analysis
@@ -4260,7 +5779,7 @@ abline(h = seq(0, 250, by = 50),
           col = rgb(0.4, 0.4, 0.4, alpha = 0.1)) 
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-220-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-259-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -4305,7 +5824,7 @@ par(mfrow = c(2, 4), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-221-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-260-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -4349,7 +5868,7 @@ par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
     }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-222-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-261-1.png" style="display: block; margin: auto;" />
 
 ``` r
 #dev.off()
@@ -4588,9 +6107,9 @@ temp <- compute_h(pairs_geo[[1]], pairs_geo[[2]], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-244-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-283-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  52.66 72.58 82.05 88.92 91.75 93.89 95.17 96.16 97.06 97.7
+    ## Variance explained in % by the 10 first components:  52.58 72.55 82.14 89.04 91.83 93.95 95.22 96.19 97.09 97.73
 
 ``` r
 #dev.off()
@@ -4644,9 +6163,9 @@ temp <- compute_h(cluster_g1_temp[-id_pos], cluster_g2_temp[-id_pos], t(MatX),
                            ncol(MatX), plot_eigen = T)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-249-1.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-288-1.png" style="display: block; margin: auto;" />
 
-    ## Variance explained in % by the 10 first components:  62.69 79.51 87.4 90.58 93.06 94.72 96.04 97 97.67 98.14
+    ## Variance explained in % by the 10 first components:  62.47 79.57 87.5 90.63 93.12 94.77 96.08 97.03 97.7 98.16
 
 ``` r
 #dev.off()
@@ -4839,7 +6358,7 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
 }
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-254-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-254-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-254-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-254-4.png" style="display: block; margin: auto;" />
+<img src="README_files/figure-gfm/unnamed-chunk-293-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-293-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-293-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-293-4.png" style="display: block; margin: auto;" />
 
 The following table presents the results obtained from the various
 methods (Table 4 in the supplementary material).
