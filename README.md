@@ -2252,7 +2252,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.) 
 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
@@ -2374,10 +2374,12 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 #  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
+
+<img src="README_files/figure-gfm/unnamed-chunk-133-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-133-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-133-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-133-4.png" style="display: block; margin: auto;" />
 
 The following table presents a summary of the clusters found based on
 the method used.
@@ -2419,7 +2421,7 @@ for(k in 3:3) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 13, height = 4) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 13, height = 4) 
 sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -2541,10 +2543,12 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 #  R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
+
+<img src="README_files/figure-gfm/unnamed-chunk-135-1.png" style="display: block; margin: auto;" />
 
 ### Pakistan
 
