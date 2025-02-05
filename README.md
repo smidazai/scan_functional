@@ -3,7 +3,7 @@ parametric spatial scan statistic for functional data: application to
 climate change data’’
 ================
 Zaineb Smida, Thibault Laurent, Lionel Cucala
-(Last update: 2025-02-04)
+(Last update: 2025-02-05)
 
 
 
@@ -712,22 +712,22 @@ res_spain <- data.frame(nb_cluster_1 = c(length(res_np$vec),
                             length(res_p$vec),
                             length(res_dffss$vec),
                             length(res_h$vec)),
-           sign_cluster_1 = c(0.001, 0.001, 0.001, 0.001),
+           p_value_MLC = c(0.001, 0.001, 0.001, 0.001),
            nb_cluster_2 = c(length(res_np_2$vec), 
                             length(res_p_2$vec),
                             length(res_dffss_2$vec),
                             length(res_h_2$vec)),
-           sign_cluster_2 = c(0.023, 0.015, 0.004, 0.003))
+           p_value_2MLC = c(0.023, 0.015, 0.004, 0.003))
 row.names(res_spain) <- c("NPFSS", "PFSS", "DFFSS", "HFSS")
 knitr::kable(res_spain)
 ```
 
-|       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
-|:------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |           17 |          0.001 |           15 |          0.023 |
-| PFSS  |           13 |          0.001 |           16 |          0.015 |
-| DFFSS |           13 |          0.001 |           22 |          0.004 |
-| HFSS  |           13 |          0.001 |           15 |          0.003 |
+|       | nb_cluster_1 | p_value_MLC | nb_cluster_2 | p_value_2MLC |
+|:------|-------------:|------------:|-------------:|-------------:|
+| NPFSS |           17 |       0.001 |           15 |        0.023 |
+| PFSS  |           13 |       0.001 |           16 |        0.015 |
+| DFFSS |           13 |       0.001 |           22 |        0.004 |
+| HFSS  |           13 |       0.001 |           15 |        0.003 |
 
 ## Climate Data
 
@@ -1518,22 +1518,22 @@ res_GB <- data.frame(nb_cluster_1 = c(length(res_np$vec),
                             length(res_p$vec),
                             length(res_dffss$vec),
                             length(res_h$vec)),
-           sign_cluster_1 = c(0.001, 0.001, 0.001, 0.001),
+           p_value_MLC = c(0.001, 0.001, 0.001, 0.001),
            nb_cluster_2 = c(length(res_np_2$vec), 
                             length(res_p_2$vec),
                             length(res_dffss_2$vec),
                             length(res_h_2$vec)),
-           sign_cluster_2 = c(0.001, 0.001, 0.001, 0.001))
+           p_value_2MLC = c(0.001, 0.001, 0.001, 0.001))
 row.names(res_GB) <- c("NPFSS", "PFSS", "DFFSS", "HFSS")
 knitr::kable(res_GB)
 ```
 
-|       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
-|:------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |           73 |          0.001 |           48 |          0.001 |
-| PFSS  |           73 |          0.001 |           49 |          0.001 |
-| DFFSS |          104 |          0.001 |           20 |          0.001 |
-| HFSS  |           50 |          0.001 |           31 |          0.001 |
+|       | nb_cluster_1 | p_value_MLC | nb_cluster_2 | p_value_2MLC |
+|:------|-------------:|------------:|-------------:|-------------:|
+| NPFSS |           73 |       0.001 |           48 |        0.001 |
+| PFSS  |           73 |       0.001 |           49 |        0.001 |
+| DFFSS |          104 |       0.001 |           20 |        0.001 |
+| HFSS  |           50 |       0.001 |           31 |        0.001 |
 
 In the case where the size of the first cluster had been restricted to
 50% of the population, we display the corresponding clusters. Since the
@@ -2387,22 +2387,22 @@ res_NGA <- data.frame(nb_cluster_1 = c(length(res_np$vec),
                             length(res_p$vec),
                             length(res_dffss$vec),
                             length(res_h$vec)),
-           sign_cluster_1 = c(0.001, 0.001, 0.001, 0.001),
+           p_value_MLC = c(0.001, 0.001, 0.001, 0.001),
            nb_cluster_2 = c(length(res_np_2$vec), 
                             length(res_p_2$vec),
                             length(res_dffss_2$vec),
                             length(res_h_2$vec)),
-           sign_cluster_2 = c(0.001, 0.001, 0.001, 0.001))
+           p_value_2MLC = c(0.001, 0.001, 0.001, 0.001))
 row.names(res_NGA) <- c("NPFSS", "PFSS", "DFFSS", "HFSS")
 knitr::kable(res_NGA)
 ```
 
-|       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
-|:------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |          200 |          0.001 |           48 |          0.001 |
-| PFSS  |            9 |          0.001 |           35 |          0.001 |
-| DFFSS |           35 |          0.001 |            9 |          0.001 |
-| HFSS  |            9 |          0.001 |           36 |          0.001 |
+|       | nb_cluster_1 | p_value_MLC | nb_cluster_2 | p_value_2MLC |
+|:------|-------------:|------------:|-------------:|-------------:|
+| NPFSS |          200 |       0.001 |           48 |        0.001 |
+| PFSS  |            9 |       0.001 |           35 |        0.001 |
+| DFFSS |           35 |       0.001 |            9 |        0.001 |
+| HFSS  |            9 |       0.001 |           36 |        0.001 |
 
 In the case where the size of the first cluster had been restricted to
 50% of the population, we display the corresponding clusters. Only the
@@ -3155,7 +3155,7 @@ for(k in 1:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], ".pdf"), width = 13, height = 4.2) 
   sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3276,10 +3276,12 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 #R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
+
+<img src="README_files/figure-gfm/unnamed-chunk-180-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-180-2.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-180-3.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-180-4.png" style="display: block; margin: auto;" />
 
 The following table presents a summary of the clusters found based on
 the method used.
@@ -3289,22 +3291,22 @@ res_PAK <- data.frame(nb_cluster_1 = c(length(res_np$vec),
                             length(res_p$vec),
                             length(res_dffss$vec),
                             length(res_h$vec)),
-           sign_cluster_1 = c(0.001, 0.001, 0.001, 0.001),
+           p_value_MLC = c(0.001, 0.001, 0.001, 0.001),
            nb_cluster_2 = c(length(res_np_2$vec), 
                             length(res_p_2$vec),
                             length(res_dffss_2$vec),
                             length(res_h_2$vec)),
-           sign_cluster_2 = c(0.001, 0.001, 0.001, 0.001))
+           p_value_2MLC = c(0.001, 0.001, 0.001, 0.001))
 row.names(res_PAK) <- c("NPFSS", "PFSS", "DFFSS", "HFSS")
 knitr::kable(res_PAK)
 ```
 
-|       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
-|:------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |          226 |          0.001 |           15 |          0.001 |
-| PFSS  |          226 |          0.001 |           14 |          0.001 |
-| DFFSS |           16 |          0.001 |           25 |          0.001 |
-| HFSS  |           11 |          0.001 |           31 |          0.001 |
+|       | nb_cluster_1 | p_value_MLC | nb_cluster_2 | p_value_2MLC |
+|:------|-------------:|------------:|-------------:|-------------:|
+| NPFSS |          226 |       0.001 |           15 |        0.001 |
+| PFSS  |          226 |       0.001 |           14 |        0.001 |
+| DFFSS |           16 |       0.001 |           25 |        0.001 |
+| HFSS  |           11 |       0.001 |           31 |        0.001 |
 
 In the case where the size of the first cluster had been restricted to
 50% of the population, we display the corresponding clusters. Since the
@@ -3325,7 +3327,7 @@ for(k in 3:4) {
   my_cluster_1 <- res[[k]][[1]]$vec
   my_cluster_2 <- res[[k]][[2]]$vec
 
-pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 13, height = 4.2) 
+#pdf(file = paste0("figures/", my_country, "_", names_method[k], "_restrict.pdf"), width = 13, height = 4.2) 
   sf_use_s2(F)
 nf <- layout( matrix(c(1,1,2,3), nrow=2, byrow=F) )
   par(mar = c(1.5, 0, 0, 0.2), 
@@ -3446,10 +3448,12 @@ plot(dates, MatX[1, ], ylim = y_lim, xlab = 'Years',
   lines(dates, colMeans(MatX), lwd = 1.3, lty = 2)
   
   mtext(paste0("Clusters for the ", names_method[k]), side = 3, line = 0.8, outer = TRUE)
-dev.off()
+#dev.off()
 #R.utils::compressPDF(paste0("figures/", my_country, "_", names_method[k], ".pdf"))
 }
 ```
+
+<img src="README_files/figure-gfm/unnamed-chunk-182-1.png" style="display: block; margin: auto;" /><img src="README_files/figure-gfm/unnamed-chunk-182-2.png" style="display: block; margin: auto;" />
 
 ### Venezuela
 
@@ -4129,19 +4133,19 @@ res_VEN <- data.frame(nb_cluster_1 = c(length(res_np$vec),
                             length(res_p$vec),
                             length(res_dffss$vec),
                             length(res_h$vec)),
-           sign_cluster_1 = c(0.001, 0.001, 0.001, 0.001),
+           p_value_MLC = c(0.001, 0.001, 0.001, 0.001),
            nb_cluster_2 = c(length(res_np_2$vec), 
                             length(res_p_2$vec),
                             length(res_dffss_2$vec),
                             length(res_h_2$vec)),
-           sign_cluster_2 = c(0.001, 0.001, 0.001, 0.001))
+           p_value_2MLC = c(0.001, 0.001, 0.001, 0.001))
 row.names(res_VEN) <- c("NPFSS", "PFSS", "DFFSS", "HFSS")
 knitr::kable(res_VEN)
 ```
 
-|       | nb_cluster_1 | sign_cluster_1 | nb_cluster_2 | sign_cluster_2 |
-|:------|-------------:|---------------:|-------------:|---------------:|
-| NPFSS |          105 |          0.001 |           46 |          0.001 |
-| PFSS  |           73 |          0.001 |           27 |          0.001 |
-| DFFSS |           73 |          0.001 |           24 |          0.001 |
-| HFSS  |           35 |          0.001 |           71 |          0.001 |
+|       | nb_cluster_1 | p_value_MLC | nb_cluster_2 | p_value_2MLC |
+|:------|-------------:|------------:|-------------:|-------------:|
+| NPFSS |          105 |       0.001 |           46 |        0.001 |
+| PFSS  |           73 |       0.001 |           27 |        0.001 |
+| DFFSS |           73 |       0.001 |           24 |        0.001 |
+| HFSS  |           35 |       0.001 |           71 |        0.001 |
